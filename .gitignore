@@ -1,4 +1,4 @@
-/target
+/build
 **/*.rs.bk
 
-src/.*.swp
+**/.*.swp
