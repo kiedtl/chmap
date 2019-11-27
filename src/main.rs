@@ -8,8 +8,8 @@ use terminal_size::{ Width, Height, terminal_size };
 
 const LCHARMAP_VERSION:    &str  = "0.1.0";
 
-const DEFAULT_RANGE_START: usize = 0;
-const DEFAULT_RANGE_STOP:  usize = 255;
+//const DEFAULT_RANGE_START: usize = 0;
+//const DEFAULT_RANGE_STOP:  usize = 255;
 
 // escape char; needed for formatting
 const ESCAPE:              char  = 0x1B as char;
@@ -45,7 +45,7 @@ fn to_char(code: usize) -> char {
 
 fn print_rows(range: &[usize; 2]) {
     if range[1] < range[0] {
-        println!("err: range {} -> {} doesn't make sense.", range[0], range[1]);
+        println!("err!: range {} -> {} doesn't make sense.", range[0], range[1]);
         process::exit(1);
     }
     
@@ -56,7 +56,7 @@ fn print_rows(range: &[usize; 2]) {
         print_line(term_width());
         println!("DEC\tHEX\tOCT\tHTML\tCHAR");
         print_line(term_width());
-        for c in range[0]..range[1] {
+        for c in range[0]..range[1]+1 {
             print_entry_short(c);
         }
     }
@@ -169,3 +169,5 @@ EXAMPLES:
 \tlcharmap
 ", LCHARMAP_VERSION);
 }
+
+
