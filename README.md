@@ -20,7 +20,7 @@ allow to search characters based on description. (*TODO*)
 
 #### Build dependencies
 - the Rust compiler toolchain (Stable)
-- GNU Make
+- [just](https://github.com/casey/just) 
 
 #### Binaries
 In the future, compiled binaries for the following platforms will be
@@ -43,12 +43,12 @@ $ git clone https://github.com/lptstr/lcharmap
 Build:
 ```
 $ cd lcharmap
-$ make release
+$ just release
 ```
 
 Install (**Linux**)
 ```
-$ make install
+$ just install
 ```
 
 Install (**Windows**)
