@@ -8,4 +8,4 @@ edition = "2018"
 
 [dependencies]
 terminal_size = "0.1.8"
-getopt = "0.2"
+getopts = "0.2.21"

@@ -1,9 +1,13 @@
+extern crate getopts;
+extern crate terminal_size;
+
 use std;
 use std::env;
 use std::char;
 use std::process;
 use std::vec::Vec;
 
+use getopts::Options;
 use terminal_size::{ Width, Height, terminal_size };
 
 const LCHARMAP_VERSION:    &str  = "0.1.0";
@@ -15,10 +19,74 @@ const LCHARMAP_VERSION:    &str  = "0.1.0";
 const ESCAPE:              char  = 0x1B as char;
 
 fn main() {
-    // parse arguments
-    let range: [usize; 2] = args();
-    print_rows(&range);
-    process::exit(0);
+    // parse arguments via getopt
+    let args: Vec<String> = env::args().collect::<Vec<String>>();
+    let program = args[0].clone();
+
+    let mut opts = Options::new();
+    opts.optflag("h", "help", "Print this help message.");
+    opts.optflag("V", "version", "Print version and exit.");
+    opts.optopt("r", "range", "Print a range of Unicode codepoints. (e.g., `128,255')", "RANGE");
+    opts.optopt("c", "chars", "Print a range of Unicode codepoints that match provided character(s). (e.g., `xyz')",
+                "CHARS");
+    opts.optopt("s", "search", "Search character descriptions for *term*.", "TERM");
+
+    let matches = match opts.parse(&args[1..]) {
+        Ok(m) => m,
+        Err(e) => {
+            println!("{}", e);
+            process::exit(1);
+        },
+    };
+
+    // range
+    if matches.opt_present("r") {
+        let range_str = match matches.opt_str("r") {
+            Some(r) => &*r,
+            None => "0,128",    // default range (ASCII characters)
+        };
+
+        // parse range into [usize, 2]
+        let range = range_str.split(",")
+                             .map(|i| {
+                                    let tmp = i.parse::<usize>();
+                                        match tmp {
+                                            Ok(ni) => ni,
+                                                Err(e) => {
+                                                    println!("err!: '{}' as range doesn't make sense.", i);
+                                                    process::exit(1);
+                                                },
+                                            }
+                             }).collect::<Vec<usize>>();
+        print_rows(&range);
+    }
+
+    if matches.opt_present("c") {
+        // here, we basically do the exact same thing as with range, only
+        // we turn each char into a u32 before processing it.
+
+        // convert to ints
+        let chars_str = match matches.opt_str("c") {
+            Some(c) => c,
+            None => &format!("{}", to_char(0)),   // null character default
+        };
+
+        print_line(term_width());
+        println!("DEC\tHEX\tOCT\tHTML\tCHAR");
+        print_line(term_width());
+
+        chars_str.chars().map(|c| print_entry_short(c as u32 as usize));
+    }
+
+    if matches.opt_present("h") {
+        usage(&program, opts);
+    }
+
+    if matches.opt_present("V") {
+        version();
+    }
+
+    // TODO: search (--search, -s)
 }
 
 fn term_width() -> usize {
@@ -38,17 +106,16 @@ fn to_char(code: usize) -> char {
     if let Some(ch) = char::from_u32(code as u32) {
         return ch;
     } else {
-        println!("err!: unable to convert '{:X}' to type char", code);
         return char::from_u32(32 as u32).unwrap();
     }
 }
 
-fn print_rows(range: &[usize; 2]) {
+fn print_rows(range: &Vec<usize>) {
     if range[1] < range[0] {
         println!("err!: range {} -> {} doesn't make sense.", range[0], range[1]);
         process::exit(1);
     }
-    
+
     if range[1] == range[0] {
         print_entry_long(range[0]);
         process::exit(0);
@@ -81,7 +148,7 @@ fn print_line(width: usize) {
 fn print_entry_long(entry: usize) {
     // print decimal
     print_entry_row("decimal", &format!("{}", entry));
-    
+
     // print hexadecimal
     print_entry_row("hexadecimal", &format!("{:X}", entry));
 
@@ -104,70 +171,13 @@ fn print_entry_row(key: &str, value: &str) {
     println!("  {}", value);
 }
 
-fn args() -> [usize; 2] {
-    let args = env::args().collect::<Vec<String>>();
-    let mut range: [usize; 2] = [0, 0];
-    
-    // print usage
-    // TODO: use better lib (structopt/getopt)
-    if args.len() == 1 || (args.len() > 1 && (args[1] == "--help" || args[1] == "-h")) {
-        usage();
-        process::exit(1);
-    }
-   
-    // print version
-    // TODO: use better lib (structopt/getopt)
-    if args.len() > 1 && (args[1] == "--version" || args[1] == "-V") {
-        println!("lcharmap {}", LCHARMAP_VERSION);
-        process::exit(0);
-    }
+fn version() {
+    println!("lcharmap {}", LCHARMAP_VERSION);
+}
 
-    // get range beginning
-    if args.len() < 2 {
-        return [0, 255];
-    }
-
-    let arg1_res = args[1].parse::<usize>();
-    match arg1_res {
-        Ok(val) => range[0] = val,
-        Err(_er) => {
-            let val = args[1].chars().collect::<Vec<char>>()[0] as u32 as usize;
-            return [val, val];
-        },
-    }
-
-    // get range end
-    if args.len() < 3 {
-        range[1] = range[0];
-        return range;
-    }
-    let arg2_res = args[2].parse::<usize>();
-    match arg2_res {
-        Ok(val) => range[1] = val,
-        Err(_er) => {
-            println!("warn: '{}' is not a valid integer. defaulting to '{}'.", args[2], range[0]);
-            range[1] = range[0];
-        },
-    }
-    
-    // return range
-    range
-}   
-
-fn usage() {
-    println!("lcharmap {}
-MIT (c) Kied Llaentenn
-USAGE:
-\tlcharmap [RANGE BEGIN] [RANGE END]
-\tlcharmap [CHAR]
-
-EXAMPLES:
-\tlcharmap 0 25
-\tlcharmap 255
-\tlcharmap 128 255
-\tlcharmap A
-\tlcharmap
-", LCHARMAP_VERSION);
+fn usage(prog: &str, opts: Options) {
+    let usage = format!("lcharmap {}\n{} [OPTIONS] [ARGS]", prog, LCHARMAP_VERSION);
+    print!("{}", opts.usage(&*usage));
 }
 
 
