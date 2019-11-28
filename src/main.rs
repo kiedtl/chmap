@@ -67,8 +67,8 @@ fn main() {
 
         // convert to ints
         let chars_str = match matches.opt_str("c") {
-            Some(c) => c,
-            None => &format!("{}", to_char(0)),   // null character default
+            Some(c) => &*c,
+            None => &*format!("{}", to_char(0)),   // null character default
         };
 
         print_line(term_width());
