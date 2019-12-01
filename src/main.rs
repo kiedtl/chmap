@@ -134,7 +134,7 @@ fn print_entry_short(entry: usize) {
              &format!("{}", entry),
              &format!("{:X}", entry),
              &format!("{:o}", entry),
-             &format!("&#{:x};", entry),
+             &format!("&#{};", entry),
              &format!("{}", to_char(entry)));
     print_line(term_width());
 }
@@ -156,7 +156,7 @@ fn print_entry_long(entry: usize) {
     print_entry_row("octal", &format!("{:o}", entry));
 
     // print HTML code
-    print_entry_row("HTML entity", &format!("&#{:x};", entry));
+    print_entry_row("HTML entity", &format!("&#{};", entry));
 
     // print char
     print_entry_row("character", &format!("{}", to_char(entry)));
