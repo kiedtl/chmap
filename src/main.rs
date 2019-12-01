@@ -42,8 +42,8 @@ fn main() {
     // range
     if matches.opt_present("r") {
         let range_str = match matches.opt_str("r") {
-            Some(r) => &*r,
-            None => "0,128",    // default range (ASCII characters)
+            Some(r) => r,
+            None => "0,128".to_owned(),    // default range (ASCII characters)
         };
 
         // parse range into [usize, 2]
@@ -67,19 +67,19 @@ fn main() {
 
         // convert to ints
         let chars_str = match matches.opt_str("c") {
-            Some(c) => &*c,
-            None => &*format!("{}", to_char(0)),   // null character default
+            Some(c) => c,
+            None => format!("{}", to_char(0)),   // null character default
         };
 
         print_line(term_width());
         println!("DEC\tHEX\tOCT\tHTML\tCHAR");
         print_line(term_width());
 
-        chars_str.chars().map(|c| print_entry_short(c as u32 as usize));
+        chars_str.chars().map(|c| { print_entry_short(c as u32 as usize); c }).collect::<Vec<char>>();
     }
 
     if matches.opt_present("h") {
-        usage(&program, opts);
+        usage(&opts);
     }
 
     if matches.opt_present("V") {
@@ -175,8 +175,8 @@ fn version() {
     println!("lcharmap {}", LCHARMAP_VERSION);
 }
 
-fn usage(prog: &str, opts: Options) {
-    let usage = format!("lcharmap {}\n{} [OPTIONS] [ARGS]", prog, LCHARMAP_VERSION);
+fn usage(opts: &Options) {
+    let usage = format!("lcharmap {}\n\nUsage:\n    lcharmap [OPTIONS] [ARGS]", LCHARMAP_VERSION);
     print!("{}", opts.usage(&*usage));
 }
 
