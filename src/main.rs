@@ -60,7 +60,7 @@ fn main() {
                                     match tmp {
                                         Ok(ni) => ni,
                                         Err(_) => {
-                                            println!("err!: '{}' as range doesn't make sense.", i);
+                                            println!("lcharmap: '{}' as range doesn't make sense.", i);
                                             process::exit(1);
                                         },
                                     }
@@ -90,8 +90,9 @@ fn main() {
         chars.iter().map(|c| { print_rows(&vec![*c as u32 as usize], show_long); *c }).collect::<Vec<char>>();
     }
 
-    // stub
+    // searching
     if matches.opt_present("s") {
+
     }
 
     if matches.opt_present("h") {
@@ -114,7 +115,7 @@ fn term_width() -> usize {
 
 fn to_char(code: usize) -> char {
     if code > char::MAX as u32 as usize {
-        println!("err!: '{}' is not a valid character.", code);
+        println!("lcharmap: '{}' is not a valid character.", code);
         process::exit(1);
     }
     if let Some(ch) = char::from_u32(code as u32) {
@@ -131,7 +132,7 @@ fn print_rows(range: &Vec<usize>, long: bool) {
     }
 
     if range[1] < range[0] {
-        println!("err!: range {} -> {} doesn't make sense.", range[0], range[1]);
+        println!("lcharmap: range {} -> {} doesn't make sense.", range[0], range[1]);
         return;
     }
 
