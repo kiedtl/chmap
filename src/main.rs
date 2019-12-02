@@ -75,7 +75,12 @@ fn main() {
         println!("DEC\tHEX\tOCT\tHTML\tCHAR");
         print_line(term_width());
 
-        chars_str.chars().map(|c| { print_entry_short(c as u32 as usize); c }).collect::<Vec<char>>();
+        // sort and dedup
+        let mut chars = chars_str.chars().collect::<Vec<char>>();
+        chars.sort();
+        chars.dedup();
+
+        chars.iter().map(|c| { print_entry_short(*c as u32 as usize); *c }).collect::<Vec<char>>();
     }
 
     if matches.opt_present("h") {
