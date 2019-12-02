@@ -19,11 +19,14 @@ const LCHARMAP_VERSION:    &str  = "0.1.0";
 const ESCAPE:              char  = 0x1B as char;
 
 fn main() {
+    // show in long format?
+    let mut show_long = false;
+    
     // parse arguments via getopt
     let args: Vec<String> = env::args().collect::<Vec<String>>();
-    let program = args[0].clone();
 
     let mut opts = Options::new();
+    opts.optflag("l", "long", "Print character entries in long format");
     opts.optflag("h", "help", "Print this help message.");
     opts.optflag("V", "version", "Print version and exit.");
     opts.optopt("r", "range", "Print a range of Unicode codepoints. (e.g., `128,255')", "RANGE");
@@ -39,6 +42,10 @@ fn main() {
         },
     };
 
+    if matches.opt_present("l") {
+        show_long = true;
+    }
+
     // range
     if matches.opt_present("r") {
         let range_str = match matches.opt_str("r") {
@@ -50,15 +57,15 @@ fn main() {
         let range = range_str.split(",")
                              .map(|i| {
                                     let tmp = i.parse::<usize>();
-                                        match tmp {
-                                            Ok(ni) => ni,
-                                                Err(e) => {
-                                                    println!("err!: '{}' as range doesn't make sense.", i);
-                                                    process::exit(1);
-                                                },
-                                            }
+                                    match tmp {
+                                        Ok(ni) => ni,
+                                        Err(_) => {
+                                            println!("err!: '{}' as range doesn't make sense.", i);
+                                            process::exit(1);
+                                        },
+                                    }
                              }).collect::<Vec<usize>>();
-        print_rows(&range);
+        print_rows(&range, show_long);
     }
 
     if matches.opt_present("c") {
@@ -80,7 +87,7 @@ fn main() {
         chars.sort();
         chars.dedup();
 
-        chars.iter().map(|c| { print_entry_short(*c as u32 as usize); *c }).collect::<Vec<char>>();
+        chars.iter().map(|c| { print_rows(&vec![*c as u32 as usize], show_long); *c }).collect::<Vec<char>>();
     }
 
     if matches.opt_present("h") {
@@ -115,21 +122,33 @@ fn to_char(code: usize) -> char {
     }
 }
 
-fn print_rows(range: &Vec<usize>) {
+fn print_rows(range: &Vec<usize>, long: bool) {
+    if range.len() < 2 {
+        print_entry_long(range[0]); // don't panic on single ranges (such as `--range 0`)
+        return;
+    }
+
     if range[1] < range[0] {
         println!("err!: range {} -> {} doesn't make sense.", range[0], range[1]);
-        process::exit(1);
+        return;
     }
 
     if range[1] == range[0] {
         print_entry_long(range[0]);
-        process::exit(0);
+        return;
     } else {
-        print_line(term_width());
-        println!("DEC\tHEX\tOCT\tHTML\tCHAR");
-        print_line(term_width());
-        for c in range[0]..range[1]+1 {
-            print_entry_short(c);
+        if long {
+            for x in range[0]..range[1] {
+                print_entry_long(x);
+                println!("\n");
+            }
+        } else {
+            print_line(term_width());
+            println!("DEC\tHEX\tOCT\tHTML\tCHAR");
+            print_line(term_width());
+            for c in range[0]..range[1]+1 {
+                print_entry_short(c);
+            }
         }
     }
 }
