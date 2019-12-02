@@ -21,6 +21,8 @@ typedef struct Item
 	char *desc;
 } Item;
 
+static int ELEMCOUNT = 32842;
+
 int
 main ( void )
 {
@@ -29,16 +31,16 @@ main ( void )
 	size_t len = 0;
 	size_t read;
 
-	Item *items = (Item *) malloc(32842 * sizeof(Item)); // there are 32,842 items to process
+	Item *items = (Item *) malloc(ELEMCOUNT * sizeof(Item)); // there are 32,842 items to process
 
 	fp = fopen("./unicode.txt", "r");
 	if (fp == NULL)
 		exit(1);
 
-	fprintf(stderr, "DEBUG: opened file; sizeof(items) = %i\n", sizeof(items));
+	//fprintf(stderr, "DEBUG: opened file; sizeof(items) = %i\n", sizeof(items));
 	int ctr = 0;
 	while ((read = getline(&line, &len, fp) != -1)) {
-		fprintf(stderr, "DEBUG: read line %i of length %i\n", ctr, len);
+		//fprintf(stderr, "DEBUG: read line %i of length %i\n", ctr, len);
 		// parse into new Item
 		// 255 (max desc size) + 6 (hex codepoint)
 		char *token = (char *) malloc((255 + 6) * sizeof(char)); 
@@ -57,8 +59,8 @@ main ( void )
 		}
 		
 		// malloc for item.desc
-		items[ctr].desc = (char *) malloc(sizeof(desc) * sizeof(char));
-		strcpy(items[ctr].desc, "a");
+		items[ctr].desc = (char *) malloc(255);
+		strcpy(items[ctr].desc, desc);
 		items[ctr].value = codepoint;
 	
 		// free stuff
@@ -68,8 +70,8 @@ main ( void )
 		ctr++;
 	}
 
-	for (int i = 0; i < (sizeof(items)); i++) {
-		printf("%i;%s", items[i].value, items[i].desc);
+	for (int i = 0; i < ELEMCOUNT; i++) {
+		printf("%i;%s\n", items[i].value, items[i].desc);
 	}
 
 	fclose(fp);
