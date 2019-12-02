@@ -124,7 +124,7 @@ fn to_char(code: usize) -> char {
 
 fn print_rows(range: &Vec<usize>, long: bool) {
     if range.len() < 2 {
-        print_entry_long(range[0]); // don't panic on single ranges (such as `--range 0`)
+        print_entry_long(range[0]); // don't panic on single item ranges (such as `--range 0`)
         return;
     }
 
@@ -140,7 +140,7 @@ fn print_rows(range: &Vec<usize>, long: bool) {
         if long {
             for x in range[0]..range[1] {
                 print_entry_long(x);
-                println!("\n");
+                print!("\n");
             }
         } else {
             print_line(term_width());
