@@ -90,6 +90,10 @@ fn main() {
         chars.iter().map(|c| { print_rows(&vec![*c as u32 as usize], show_long); *c }).collect::<Vec<char>>();
     }
 
+    // stub
+    if matches.opt_present("s") {
+    }
+
     if matches.opt_present("h") {
         usage(&opts);
     }
@@ -97,8 +101,6 @@ fn main() {
     if matches.opt_present("V") {
         version();
     }
-
-    // TODO: search (--search, -s)
 }
 
 fn term_width() -> usize {
