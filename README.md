@@ -60,9 +60,9 @@ C:\> copy build\release\lcharmap C:\<install location>
 
 ### How?
 
-Simply run `lcharmap` with a range of characters you want info for:
+Simply run `lcharmap -r` with a range of characters you want info for:
 ```
-$ lcharmap 65 66
+$ lcharmap -r 65,66
 --------------------------------------------------------------------
 DEC	HEX	OCT	HTML	CHAR
 --------------------------------------------------------------------
@@ -73,20 +73,22 @@ DEC	HEX	OCT	HTML	CHAR
 ```
 You can run it on a single code point (or character!) too:
 ```
-$ lcharmap 67
+$ lcharmap -r 67
                decimal  67
            hexadecimal  43
                  octal  103
            HTML entity  &#43;
              character  C
 
-$ lcharmap C
+$ lcharmap -c C
                decimal  67
            hexadecimal  43
                  octal  103
            HTML entity  &#43;
              character  C
 ```
+
+**Note:** if you wish, you can run `lcharmap --chars` on multiple characters as well (e.g. `lcharmap -c ThisIsATest`)
 
 Run `lcharmap --help`/`man lcharmap` for more information.
 
