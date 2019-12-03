@@ -1,7 +1,11 @@
-all: clean upddb
+all: clean run
 
 clean:
 	rm -f upddb
 
 upddb:
 	gcc -std=c99 -Wall -pedantic upddb.c -o upddb
+
+run: upddb
+	stat ./upddb > /dev/null
+	./upddb > chars.db
