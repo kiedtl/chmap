@@ -21,7 +21,7 @@ typedef struct Item
 	char *desc;
 } Item;
 
-static int ELEMCOUNT = 32842;
+static int ELEMCOUNT = 32841;
 
 int
 main ( void )
@@ -44,14 +44,14 @@ main ( void )
 		// parse into new Item
 		// 255 (max desc size) + 6 (hex codepoint)
 		char *token = (char *) malloc((255 + 6) * sizeof(char)); 
-		int codepoint;
+		//int codepoint;
 		char *desc = (char *) malloc(255 * sizeof(char));
 		int tokctr = 0;
 		while ((token = strsep(&line, ";"))) {
-			if (tokctr == 0) {
+			//if (tokctr == 0) {
 				// convert hexadecimal codepoint to integer
-				codepoint = (int)strtol(token, NULL, 16);
-			}
+				//codepoint = (int)strtol(token, NULL, 16);
+			//}
 			if (tokctr == 1) {
 				strcpy(desc, token);
 			}
@@ -61,7 +61,7 @@ main ( void )
 		// malloc for item.desc
 		items[ctr].desc = (char *) malloc(255);
 		strcpy(items[ctr].desc, desc);
-		items[ctr].value = codepoint;
+		items[ctr].value = ctr;
 	
 		// free stuff
 		if (desc) free(desc);
@@ -70,8 +70,10 @@ main ( void )
 		ctr++;
 	}
 
+
+	// print it out
 	for (int i = 0; i < ELEMCOUNT; i++) {
-		printf("%i;%s\n", items[i].value, items[i].desc);
+		fprintf(stdout, "%c%c%s", items[i].value, strlen(items[i].desc), items[i].desc);
 	}
 
 	fclose(fp);
@@ -80,13 +82,4 @@ main ( void )
 
 	free(items);
 	exit(0);
-}
-
-char*
-mystrcat ( char *dest, char *src )
-{
-	while (*dest)
-		dest++;
-	while ((*dest++ = *src++));
-	return --dest;
 }
