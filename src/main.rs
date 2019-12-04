@@ -109,8 +109,10 @@ fn main() {
             print_line(term_width());
         }
 
-        chars.iter().map(|c| { print_rows(&mut db, &vec![*c as u32 as usize, *c as u32 as usize],
-                                          show_long); *c }).collect::<Vec<char>>();
+        chars.iter().map(|c| {
+            print_rows(&mut db, &vec![*c as u32 as usize, *c as u32 as usize],
+                                          show_long);
+        }).collect::<Vec<char>>();
     }
 
     // searching
