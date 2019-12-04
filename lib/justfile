@@ -1,11 +1,24 @@
+# TODO: add variables (CC, CFLAGS, etc)
+
 all: clean run
 
 clean:
 	rm -f upddb
 
-upddb:
-	gcc -std=c99 -Wall -pedantic upddb.c -o upddb
+debug:
+	@echo "\tCC\t\tupddb.c"
+	@gcc -ggdb -std=c99 -Wall -pedantic upddb.c -o upddb
 
-run: upddb
-	stat ./upddb > /dev/null
-	./upddb > chars.db
+release:
+	@echo "\tCC\t\tupddb.c"
+	@gcc -O3 -std=c99 -Wall -pedantic upddb.c -o upddb
+
+
+
+run: release
+	@echo "\tGEN\t\tchars.db"
+	@./upddb > chars.db
+
+install: run
+	@echo "\tINSTALL\t\tchars.db"
+	@install -m644 ./chars.db /etc/chars.db

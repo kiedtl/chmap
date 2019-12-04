@@ -10,15 +10,28 @@ use std::vec::Vec;
 use getopts::Options;
 use terminal_size::{ Width, Height, terminal_size };
 
-const LCHARMAP_VERSION:    &str  = "0.1.0";
+// database for character descriptions
+// database file are in the lib directory.
+// database (/etc/chars.db) is generated via
+// lib/upddb.c. You may build chars.db with `just run`
+// in the lib dir.
+mod db;
+use crate::db::DB;
+
+const LCHARMAP_VERSION:    &str    = "0.1.0";
+const LCHARMAP_DB_PATH:    &str  = "/etc/chars.db";
 
 //const DEFAULT_RANGE_START: usize = 0;
 //const DEFAULT_RANGE_STOP:  usize = 255;
 
 // escape char; needed for formatting
-const ESCAPE:              char  = 0x1B as char;
+const ESCAPE:              char    = 0x1B as char;
 
 fn main() {
+    // load database
+    let mut db = DB::new();
+    db.load(LCHARMAP_DB_PATH.to_owned());
+
     // show in long format?
     let mut show_long = false;
     
@@ -65,7 +78,7 @@ fn main() {
                                         },
                                     }
                              }).collect::<Vec<usize>>();
-        print_rows(&range, show_long);
+        print_rows(&db, &range, show_long);
     }
 
     if matches.opt_present("c") {
@@ -79,7 +92,7 @@ fn main() {
         };
 
         print_line(term_width());
-        println!("DEC\tHEX\tOCT\tHTML\tCHAR");
+        println!("DEC\tHEX\tOCT\tHTML\tCHAR\tDESC");
         print_line(term_width());
 
         // sort and dedup
@@ -87,7 +100,7 @@ fn main() {
         chars.sort();
         chars.dedup();
 
-        chars.iter().map(|c| { print_rows(&vec![*c as u32 as usize], show_long); *c }).collect::<Vec<char>>();
+        chars.iter().map(|c| { print_rows(&db, &vec![*c as u32 as usize], show_long); *c }).collect::<Vec<char>>();
     }
 
     // searching
@@ -125,9 +138,9 @@ fn to_char(code: usize) -> char {
     }
 }
 
-fn print_rows(range: &Vec<usize>, long: bool) {
+fn print_rows(db: &DB, range: &Vec<usize>, long: bool) {
     if range.len() < 2 {
-        print_entry_long(range[0]); // don't panic on single item ranges (such as `--range 0`)
+        print_entry_long(range[0], db.get_desc(range[0])); // don't panic on single item ranges (such as `--range 0`)
         return;
     }
 
@@ -137,32 +150,33 @@ fn print_rows(range: &Vec<usize>, long: bool) {
     }
 
     if range[1] == range[0] {
-        print_entry_long(range[0]);
+        print_entry_long(range[0], db.get_desc(range[0]));
         return;
     } else {
         if long {
             for x in range[0]..range[1] {
-                print_entry_long(x);
+                print_entry_long(x, db.get_desc(x));
                 print!("\n");
             }
         } else {
             print_line(term_width());
-            println!("DEC\tHEX\tOCT\tHTML\tCHAR");
+            println!("DEC\tHEX\tOCT\tHTML\tCHAR\tDESC");
             print_line(term_width());
             for c in range[0]..range[1]+1 {
-                print_entry_short(c);
+                print_entry_short(c, db.get_desc(c));
             }
         }
     }
 }
 
-fn print_entry_short(entry: usize) {
-    println!("{}\t{}\t{}\t{}\t{}",
+fn print_entry_short(entry: usize, description: String) {
+    println!("{}\t{}\t{}\t{}\t{}\t{}",
              &format!("{}", entry),
              &format!("{:X}", entry),
              &format!("{:o}", entry),
              &format!("&#{};", entry),
-             &format!("{}", to_char(entry)));
+             &format!("{}", to_char(entry)),
+             &format!("{}", description));
     print_line(term_width());
 }
 
@@ -172,7 +186,7 @@ fn print_line(width: usize) {
     }
 }
 
-fn print_entry_long(entry: usize) {
+fn print_entry_long(entry: usize, description: String) {
     // print decimal
     print_entry_row("decimal", &format!("{}", entry));
 
@@ -187,6 +201,9 @@ fn print_entry_long(entry: usize) {
 
     // print char
     print_entry_row("character", &format!("{}", to_char(entry)));
+
+    // description
+    print_entry_row("description", &*description);
 }
 
 fn print_entry_row(key: &str, value: &str) {

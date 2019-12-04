@@ -11,40 +11,36 @@ PLATFORM  := `gcc -dumpmachine`
 CARGOPTS := "build -j`nproc` --target-dir " + BUILDDIR
 CARGOBIN := 'cargo'
 
-CARGOPT_RELEASE := CARGOPTS + " --release"
+CARGOPT_RELEASE := CARGOPTS + " --release --quiet"
 
 PREFIX := '/usr'
 DESTDIR := '/bin'
 
 # ----- RECIPES -----
-all: options debug
+all: clean debug
 
 clean:
 	rm -f "{{BUILDDIR}}/release/lcharmap"
 	rm -f "{{BUILDDIR}}/debug/lcharmap"
 
-options:
-	@echo "OPTIONS:"
-	@echo "\tRC\t\t\t= {{CARGOBIN}}"
-	@echo "\tRCFLAGS\t\t\t= {{CARGOPTS}}"
-	@echo "\tBUILDDIR\t\t\t= {{BUILDDIR}}"
-	@echo "\tRCFLAGS_RELEASE\t\t= {{CARGOPT_RELEASE}}"
-	@echo "\tPLATFORM\t\t= {{PLATFORM}}"
-	@echo ""
-
 dev-install:
-	install -m 755 "{{BUILDDIR}}/debug/lcharmap" "{{PREFIX}}{{DESTDIR}}/lcharmap"
+	@echo "\tINSTALL\t\tbuild/debug/lcharmap"
+	@install -m 755 "{{BUILDDIR}}/debug/lcharmap" "{{PREFIX}}{{DESTDIR}}/lcharmap"
 
-install:
-	install -m 755 "{{BUILDDIR}}/release/lcharmap" "{{PREFIX}}{{DESTDIR}}/lcharmap"
+install: dbgen release
+	@echo "\tINSTALL\t\tbuild/release/lcharmap"
+	@install -m 755 "{{BUILDDIR}}/release/lcharmap" "{{PREFIX}}{{DESTDIR}}/lcharmap"
 
 uninstall:
 	rm -f "{{PREFIX}}{{DESTDIR}}/lcharmap"
 
-debug: options
-	@echo "RC {{CARGOPTS}}"
+dbgen:
+	@cd lib && just install
+
+debug:
+	@echo "\tRC\t\t{{CARGOPTS}}"
 	@{{CARGOBIN}} {{CARGOPTS}}
 
-release: options
-	@echo "RC {{CARGOPT_RELEASE}}"
+release:
+	@echo "\tRC\t\t{{CARGOPT_RELEASE}}"
 	@{{CARGOBIN}} {{CARGOPT_RELEASE}}
