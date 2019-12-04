@@ -95,6 +95,10 @@ Run `lcharmap --help`/`man lcharmap` for more information.
 ### Why?
 I miss some Windows utilities.
 
+### Known Issues
+- the source is extremely messy.
+- very slow on certain systems (due to the fact that `lcharmap` loads a 800k file to show character descriptions)
+
 ### License
 This lame little utility is licensed under the MIT License. See the `LICENSE.md`
 file for more information.
