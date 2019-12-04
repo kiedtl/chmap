@@ -17,7 +17,7 @@ PREFIX := '/usr'
 DESTDIR := '/bin'
 
 # ----- RECIPES -----
-all: clean debug
+all: debug
 
 clean:
 	rm -f "{{BUILDDIR}}/release/lcharmap"

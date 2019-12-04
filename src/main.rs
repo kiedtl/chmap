@@ -100,8 +100,9 @@ fn main() {
 
         // sort and dedup
         let mut chars = chars_str.chars().map(|c| c as u32 as usize).collect::<Vec<usize>>();
-        chars.sort();
-        chars.dedup();
+        println!("chars_str: {} \t chars: {:?}", chars_str, chars);
+        //chars.sort();
+        //chars.dedup();
 
         print_rows(&mut db, &chars, show_long);
     }
