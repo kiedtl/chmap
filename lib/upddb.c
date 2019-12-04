@@ -73,7 +73,7 @@ main ( void )
 
 	// print it out
 	for (int i = 0; i < ELEMCOUNT; i++) {
-		fprintf(stdout, "%s", 
+		fprintf(stdout, "%s\n", 
 				items[i].desc);
 	}
 
