@@ -99,7 +99,7 @@ fn main() {
         };
 
         // sort and dedup
-        let mut chars = chars_str.chars().collect::<Vec<char>>();
+        let mut chars = chars_str.chars().map(|c| c as u32 as usize).collect::<Vec<usize>>();
         chars.sort();
         chars.dedup();
 
@@ -109,10 +109,7 @@ fn main() {
             print_line(term_width());
         }
 
-        chars.iter().map(|c| {
-            print_rows(&mut db, &vec![*c as u32 as usize, *c as u32 as usize],
-                                          show_long);
-        }).collect::<Vec<char>>();
+        print_rows(&mut db, &chars, show_long);
     }
 
     // searching
