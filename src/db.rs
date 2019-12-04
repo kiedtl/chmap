@@ -4,11 +4,6 @@ use std::io::Seek;
 use std::fs::File;
 use std::result::Result;
 
-pub struct CharInfo {
-    code: u32,
-    desc: String,
-}
-
 pub struct DB {
     path: Option<String>,
     file: Option<File>,
