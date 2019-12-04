@@ -30,7 +30,14 @@ const ESCAPE:              char    = 0x1B as char;
 fn main() {
     // load database
     let mut db = DB::new();
-    db.load(LCHARMAP_DB_PATH.to_owned());
+    let result = db.load(LCHARMAP_DB_PATH.to_string());
+    match result {
+        Ok(__) => (),
+        Err(_) => {
+            println!("lcharmap: err!: fatal error whilst loading chardb!");
+            panic!("Check previous error.");
+        },
+    }
 
     // show in long format?
     let mut show_long = false;
@@ -78,7 +85,7 @@ fn main() {
                                         },
                                     }
                              }).collect::<Vec<usize>>();
-        print_rows(&db, &range, show_long);
+        print_rows(&mut db, &range, show_long);
     }
 
     if matches.opt_present("c") {
@@ -91,16 +98,18 @@ fn main() {
             None => format!("{}", to_char(0)),   // null character default
         };
 
-        print_line(term_width());
-        println!("DEC\tHEX\tOCT\tHTML\tCHAR\tDESC");
-        print_line(term_width());
-
         // sort and dedup
         let mut chars = chars_str.chars().collect::<Vec<char>>();
         chars.sort();
         chars.dedup();
 
-        chars.iter().map(|c| { print_rows(&db, &vec![*c as u32 as usize], show_long); *c }).collect::<Vec<char>>();
+        if chars.len() > 2 {
+            print_line(term_width());
+            println!("DEC\tHEX\tOCT\tHTML\tCHAR\tDESC");
+            print_line(term_width());
+        }
+
+        chars.iter().map(|c| { print_rows(&mut db, &vec![*c as u32 as usize], show_long); *c }).collect::<Vec<char>>();
     }
 
     // searching
@@ -138,9 +147,9 @@ fn to_char(code: usize) -> char {
     }
 }
 
-fn print_rows(db: &DB, range: &Vec<usize>, long: bool) {
+fn print_rows(db: &mut DB, range: &Vec<usize>, long: bool) {
     if range.len() < 2 {
-        print_entry_long(range[0], db.get_desc(range[0])); // don't panic on single item ranges (such as `--range 0`)
+        print_entry_long(range[0], db.get_desc(range[0]).unwrap()); // don't panic on single item ranges (such as `--range 0`)
         return;
     }
 
@@ -150,12 +159,12 @@ fn print_rows(db: &DB, range: &Vec<usize>, long: bool) {
     }
 
     if range[1] == range[0] {
-        print_entry_long(range[0], db.get_desc(range[0]));
+        print_entry_long(range[0], db.get_desc(range[0]).unwrap());
         return;
     } else {
         if long {
             for x in range[0]..range[1] {
-                print_entry_long(x, db.get_desc(x));
+                print_entry_long(x, db.get_desc(x).unwrap());
                 print!("\n");
             }
         } else {
@@ -163,7 +172,7 @@ fn print_rows(db: &DB, range: &Vec<usize>, long: bool) {
             println!("DEC\tHEX\tOCT\tHTML\tCHAR\tDESC");
             print_line(term_width());
             for c in range[0]..range[1]+1 {
-                print_entry_short(c, db.get_desc(c));
+                print_entry_short(c, db.get_desc(c).unwrap());
             }
         }
     }
