@@ -103,12 +103,6 @@ fn main() {
         chars.sort();
         chars.dedup();
 
-        if chars.len() > 2 {
-            print_line(term_width());
-            println!("DEC\tHEX\tOCT\tHTML\tCHAR\tDESC");
-            print_line(term_width());
-        }
-
         print_rows(&mut db, &chars, show_long);
     }
 
