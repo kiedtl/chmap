@@ -68,6 +68,6 @@ impl DB {
         Ok(std::str::from_utf8(&buff).unwrap().to_string())
     }
     // TODO: implement
-    pub fn search_desc() {}
+    //pub fn search_desc() {}
 }
 
