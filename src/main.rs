@@ -100,11 +100,22 @@ fn main() {
 
         // sort and dedup
         let mut chars = chars_str.chars().map(|c| c as u32 as usize).collect::<Vec<usize>>();
-        println!("chars_str: {} \t chars: {:?}", chars_str, chars);
-        //chars.sort();
-        //chars.dedup();
+        chars.sort();
+        chars.dedup();
 
-        print_rows(&mut db, &chars, show_long);
+        if chars.len() > 2  && ! show_long {
+            print_line(term_width());
+            println!("DEC\tHEX\tOCT\tHTML\tCHAR\tDESC");
+            print_line(term_width());
+        }
+
+        let _ = chars.iter().map(|c| {
+            if chars.len() < 2 || show_long {
+                print_entry_long(*c, db.get_desc(*c).unwrap());
+            } else {
+                print_entry_short(*c, db.get_desc(*c).unwrap());
+            }
+        }).collect::<()>();
     }
 
     // searching
