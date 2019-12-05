@@ -60,7 +60,9 @@ impl DB {
         // convert buffer to string and return
         Ok(std::str::from_utf8(&buff).unwrap().to_string())
     }
-    // TODO: implement
-    //pub fn search_desc() {}
+    // return vector of codepoints which match the regex provided
+    pub fn search_desc(regex: String) -> Vec<usize> {
+                
+    }
 }
 
