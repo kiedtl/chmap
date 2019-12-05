@@ -98,8 +98,9 @@ I miss some Windows utilities.
 
 ### Known Issues
 - the source is extremely messy.
+- resulting binary isn't as small as I would like it to be (debug: 12M, release: ?M)
 - very slow on certain systems (due to the fact that `lcharmap` loads a *2.8* database to search. there doesn't
-seem to be any way around this)
+seem to be any way around this, see below)
 
 #### the description database
 Currently, lcharmap uses a database generated with upddb (located in `lcharmap/lib/upddb.c`) in `/etc/chars.db`. The database contains the

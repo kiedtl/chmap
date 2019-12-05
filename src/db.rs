@@ -62,7 +62,7 @@ impl DB {
         Ok(std::str::from_utf8(&buff).unwrap().to_string())
     }
     // return vector of codepoints which match the regex provided
-    pub fn search_desc(&mut self, regex: Regex) -> Result<Vec<usize>, std::io::Error> {
+    pub fn search(&mut self, regex: Regex) -> Result<Vec<usize>, std::io::Error> {
         // load entire description database into vector
         let mut matches = Vec::new();
         let mut descs = Vec::new();
@@ -70,11 +70,11 @@ impl DB {
         let mut readct = 1;
 
         // move cursor to beginning of file
-        let mut cursor = file.seek(io::SeekFrom::Start(0)).unwrap();
+        file.seek(io::SeekFrom::Start(0)).unwrap();
 
         // read until EOF
         while readct != 0 {
-            let buffer = [0; 85];
+            let mut buffer = [0; 85];
             readct = file.read(&mut buffer)?;
             if readct != 0 {
                 descs.push(std::str::from_utf8(&buffer).unwrap().to_string());
@@ -84,7 +84,7 @@ impl DB {
         // iterate over each description, looking for matches
         let mut ctr = 0;
         for desc in descs {
-            if regex.is_match(desc) {
+            if regex.is_match(&*desc) {
                 matches.push(ctr);
             }
             ctr = ctr + 1;

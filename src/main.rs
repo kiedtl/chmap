@@ -5,6 +5,7 @@ extern crate regex;
 use std;
 use std::env;
 use std::char;
+use regex::Regex;
 use std::process;
 use std::vec::Vec;
 
@@ -122,8 +123,16 @@ fn main() {
 
     // searching
     if matches.opt_present("s") {
-        let mut regex;
-        let regex_res = Regex::new(matches.opt_str("s"));
+        let regex;
+        let term = match matches.opt_str("s") {
+            Some(t) => t,
+            None => {
+                println!("lcharmap: err!: no search term provided!");
+                process::exit(1);
+            },
+        };
+
+        let regex_res = Regex::new(&*term);
         match regex_res {
             Ok(rgx) => regex = rgx,
             Err(__) => {
@@ -133,7 +142,7 @@ fn main() {
         }
        
         let mut matches;
-        let result = db::search_desc(regex);
+        let result = db.search(regex);
         match result {
             Ok(ms) => matches = ms,
             Err(e) => {
