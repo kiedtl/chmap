@@ -105,7 +105,7 @@ fn main() {
         chars.sort();
         chars.dedup();
 
-        if chars.len() > 2  && ! show_long {
+        if chars.len() > 1  && ! show_long {
             print_line(term_width());
             println!("DEC\tHEX\tOCT\tHTML\tCHAR\tDESC");
             print_line(term_width());
@@ -155,7 +155,7 @@ fn main() {
         matches.sort();
         matches.dedup();
         
-        if matches.len() > 2 && ! show_long {
+        if matches.len() > 1 && ! show_long {
             print_line(term_width());
             println!("DEC\tHEX\tOCT\tHTML\tCHAR\tDESC");
             print_line(term_width());
