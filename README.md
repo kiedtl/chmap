@@ -105,7 +105,7 @@ I miss some Windows utilities.
 
 ### Known Issues
 - the source is extremely messy.
-- resulting binary isn't as small as I would like it to be (debug: 12M, release: ?M)
+- resulting binary isn't as small as I would like it to be (debug: 12M, release: 1.4M)
 - very slow on certain systems (due to the fact that `lcharmap` loads a *2.8M* database to search. there doesn't
 seem to be any way around this, see below)
 
