@@ -31,7 +31,7 @@ impl DB {
     // read specific line corresponding to codepoint
     // e.g. with codepoint 0 read line 0 of db file
     pub fn get_desc(&mut self, codepoint: usize) -> Result<String, std::io::Error> {
-        let mut line = 0;
+        let mut entry = 0;
         let mut cursor = 0;
         let mut file: File = self.file.take().unwrap();
 
@@ -39,27 +39,20 @@ impl DB {
         file.seek(io::SeekFrom::Start(0))?;
 
         // move cursor to beginning of specified line
-        while line < codepoint {
-            let mut buff = [0; 1];
-            file.read(&mut buff)?;
-            let byte = buff[0];
-            if byte == 10 {
-                line = line + 1;
-            }
-            cursor = file.seek(io::SeekFrom::Start(cursor + 1)).unwrap();
+        while entry < codepoint {
+            cursor = file.seek(io::SeekFrom::Start(cursor + 85)).unwrap();
+            entry += 1;
         }
-        // read untill end of line
-        let mut ctr = 0;
-        let mut buff = [0; 255]; // allocate 255 bytes for description
+        // read 85 bytes, which is the maximum description length
+        let mut buff = [0; 85]; // allocate bytes for description
         let mut char_buff = [0; 1];
         file.read(&mut char_buff)?;
-        let mut char = char_buff[0] as char;
-        while char != '\n' && ctr < buff.len() {
-           cursor = file.seek(io::SeekFrom::Start(cursor + 1)).unwrap();
-           let byte = file.read(&mut char_buff)? as u8;
-           buff[ctr] = byte;
-           char = byte as char;
-           ctr += 1;
+        let mut ctr = 0;
+        while char_buff[0] as usize != 0 {
+            buff[ctr] = char_buff[0];   // copy char buffer onto main buffer
+            ctr = ctr + 1;
+            cursor = file.seek(io::SeekFrom::Start(cursor + 1)).unwrap();
+            file.read(&mut char_buff)?;
         }
         
         // <hacky>
