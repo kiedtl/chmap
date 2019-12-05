@@ -6,7 +6,7 @@
 
 `lcharmap` is a CLI port of the Windows `charmap.exe` utility for Unix.
 It displays information for a particular Unicode code point, including
-it's hexadecimal/octal and HTML entity representation. 
+it's hexadecimal/octal and HTML entity representation.
 
 In addition, it dislays character description from an extremely bloated
 character database (2.8M) and allows you to search for character based
@@ -24,7 +24,7 @@ lcharmap load the entire database into memory and matched each entry).
 - the GNU C compiler (`gcc`)
 - `binutils`
 - the Rust compiler toolchain (Stable)
-- [just](https://github.com/casey/just) 
+- [just](https://github.com/casey/just)
 
 #### Binaries
 In the future, compiled binaries for the following platforms will be
@@ -56,7 +56,7 @@ Install
 ```
 
 *Note: on the installation step, you may need root/admin privileges.*
-*Note: `just install` also installs the character database to `/etc/chars.db`, so if 
+*Note: `just install` also installs the character database to `/etc/chars.db`, so if
 you install manually, ensure that you complete that step with `cd lib; just install`.**
 
 ### How?
@@ -67,7 +67,7 @@ $ lcharmap -r 65,66
 --------------------------------------------------------------------
 DEC	HEX	OCT	HTML	CHAR    DESC
 --------------------------------------------------------------------
-65	41	101	&#41;	A       LATIN CAPITAL LETTER A 
+65	41	101	&#41;	A       LATIN CAPITAL LETTER A
 --------------------------------------------------------------------
 66	42	102	&#42;	B       LATIN CAPITAL LETTER B
 --------------------------------------------------------------------
@@ -106,14 +106,14 @@ I miss some Windows utilities.
 ### Known Issues
 - the source is extremely messy.
 - resulting binary isn't as small as I would like it to be (debug: 12M, release: ?M)
-- very slow on certain systems (due to the fact that `lcharmap` loads a *2.8* database to search. there doesn't
+- very slow on certain systems (due to the fact that `lcharmap` loads a *2.8M* database to search. there doesn't
 seem to be any way around this, see below)
 
 #### the description database
 Currently, lcharmap uses a database generated with upddb (located in `lcharmap/lib/upddb.c`) in `/etc/chars.db`. The database contains the
 descriptions for each character. Each database entry is exactly 85 bytes long, which has two advanteges:
-- for loading the description for a single codepoint, we can simply move the file pointer to where we know the description is 
-  read 85 bytes. No parsing or lexing needed, and there is no need to load the entire 3M database at once.
+- for loading the description for a single codepoint, we can simply move the file pointer to where we know the description is
+  and read 85 bytes. No parsing or lexing needed, and there is no need to load the entire 3M database at once.
 - for loading the description for multiple codepoints, we just do the above multiple times. No parsing or lexing needed here either.
 Unfortunately:
 - for searching, we must load the entire database at once, read every description, and check if the provided term matches it.
@@ -122,6 +122,11 @@ Unfortunately:
   have to be added to the end of the description to make it the same size. Which means that the database is 3 time bigger that it could
   be (2.8M instead of 800K). In the future this will be fixed by storing a byte count in the first byte of each description, thus negating
   the need for each description to be the same size (since we will already know how long each description is simply from reading the first byte).
+
+### Status
+This project is now in maintainence mode. No new features will be added and only bugs will be fixed.
+The afore-mentioned issues, which I'm too time-strapped ("lazy") to fix, will be looked at in the future. PRs
+fixing them would be appreciated.
 
 ### License
 This lame little utility is licensed under the MIT License. See the `LICENSE.md`
