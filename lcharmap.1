@@ -1,0 +1,50 @@
+.TH LCHARMAP "1" "December 2019" "lcharmap 0.1.0" "User Commands"
+.SH NAME
+lcharmap \- a CLI port of the Windows charmap utility for Linux.
+.SH SYNOPSIS
+.B lcharmap
+\fI\,[OPTIONS] [ARGS]\/\fR
+.SH DESCRIPTION
+.PP
+lcharmap prints information for characters provided at runtime, including
+decimal, hexadecimal, octal, and HTML codes. It also prints out a description
+of each character, taked from it's character database located at /etc/chars.db.
+This character database is generated automatically on installation from
+the UCD (Unicode Character Database).
+.SH OPTIONS
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Print this help message.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Print version and exit.
+.TP
+\fB\-l\fR, \fB\-\-long\fR
+Print character entries in long format
+.TP
+\fB\-r\fR, \fB\-\-range\fR RANGE
+Print a range of Unicode codepoints. (e.g., `128,255')
+.TP
+\fB\-c\fR, \fB\-\-chars\fR CHARS
+Print a range of Unicode codepoints that match
+provided character(s). (e.g., `xyz')
+.TP
+\fB\-s\fR, \fB\-\-search\fR TERM
+Search character descriptions for *term*.
+.SH EXAMPLES
+lcharmap --range 128,136\/\fR
+
+lcharmap --chars ThisIsATest
+
+lcharmap --search "^LATIN (SMALL|CAPITAL) A$"
+.SH KNOWN ISSUES
+\(bu
+The source code is extremely messy and must be cleaned up.
+
+\(bu
+The resulting binary isn't as small as I would like it to be (debug: 12M, release: ?M).
+
+\(bu
+searching is very slow, due to large database size.
+.SH REPORTING BUGS
+Please report any found bugs to https://github.com/lptstr/lcharmap/issues
