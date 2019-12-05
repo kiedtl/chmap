@@ -147,7 +147,13 @@ fn to_char(code: usize) -> char {
         process::exit(1);
     }
     if let Some(ch) = char::from_u32(code as u32) {
-        return ch;
+        // only if printable.
+        // if not printable, causes wierd things to happen
+        if code < 32 {
+            return ' ';
+        } else {
+            return ch;
+        }
     } else {
         return char::from_u32(32 as u32).unwrap();
     }
