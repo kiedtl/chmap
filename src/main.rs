@@ -122,7 +122,44 @@ fn main() {
 
     // searching
     if matches.opt_present("s") {
+        let mut regex;
+        let regex_res = Regex::new(matches.opt_str("s"));
+        match regex_res {
+            Ok(rgx) => regex = rgx,
+            Err(__) => {
+                println!("lcharmap: err!: invalid regex: {}", __);
+                process::exit(1);
+            },
+        }
+       
+        let mut matches;
+        let result = db::search_desc(regex);
+        match result {
+            Ok(ms) => matches = ms,
+            Err(e) => {
+                println!("lcharmap: err!: error whilst searching: {}", e);
+                process::exit(1);
+            },
+        }
 
+        // print out matchesf
+        matches.sort();
+        matches.dedup();
+        
+        if matches.len() > 2 && ! show_long {
+            print_line(term_width());
+            println!("DEC\tHEX\tOCT\tHTML\tCHAR\tDESC");
+            print_line(term_width());
+        }
+
+        let _ = matches.iter().map(|m| {
+            if matches.len() < 2 || show_long {
+                print_entry_long(*m, db.get_desc(*m).unwrap());
+                print!("\n");
+            } else {
+                print_entry_short(*m, db.get_desc(*m).unwrap());
+            }
+        }).collect::<()>();
     }
 
     if matches.opt_present("h") {
