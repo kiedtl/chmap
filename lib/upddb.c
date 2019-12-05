@@ -71,10 +71,20 @@ main ( void )
 	}
 
 
-	// print it out
+	// get max len of description (one-time only)
+	//int dlen = 0;
+	//for (int i = 0; i<ELEMCOUNT; i++) {
+	//	int newlen = strlen(items[i].desc);
+	//	if (newlen > dlen) dlen = newlen;
+	//}
+	//fprintf(stdout, "%i\n", dlen);
+
+	// print it out, justfile will redirect it to chars.db
+	// i.e. `$ ./upddb > chars.db`
 	for (int i = 0; i < ELEMCOUNT; i++) {
-		fprintf(stdout, "%s\n", 
-				items[i].desc);
+		fprintf(stdout, "%s", items[i].desc);
+		for (int c = 0; c < (85 - strlen(items[i].desc)); c++)
+			fprintf(stdout, "%c", 0);
 	}
 
 	fclose(fp);
