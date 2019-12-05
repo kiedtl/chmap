@@ -1,5 +1,6 @@
 extern crate getopts;
 extern crate terminal_size;
+extern crate regex;
 
 use std;
 use std::env;
@@ -112,6 +113,7 @@ fn main() {
         let _ = chars.iter().map(|c| {
             if chars.len() < 2 || show_long {
                 print_entry_long(*c, db.get_desc(*c).unwrap());
+                print!("\n");
             } else {
                 print_entry_short(*c, db.get_desc(*c).unwrap());
             }
@@ -148,7 +150,7 @@ fn to_char(code: usize) -> char {
     }
     if let Some(ch) = char::from_u32(code as u32) {
         // only if printable.
-        // if not printable, causes wierd things to happen
+        // if not printable, causes weird things to happen
         if code < 32 {
             return ' ';
         } else {
