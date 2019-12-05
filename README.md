@@ -8,8 +8,10 @@
 It displays information for a particular Unicode code point, including
 it's hexadecimal/octal and HTML entity representation. 
 
-In the future, it will also display character descriptions and will
-allow to search characters based on description. (*TODO*)
+In addition, it dislays character description from an extremely bloated
+character database (2.8M) and allows you to search for character based
+on their description (provided, of course, you are willing to wait while
+lcharmap load the entire database into memory and matched each entry).
 
 ### Where?
 #### Dependencies
@@ -90,6 +92,11 @@ $ lcharmap -c C
 ```
 
 **Note:** if you wish, you can run `lcharmap --chars` on multiple characters as well (e.g. `lcharmap -c ThisIsATest`)
+
+Searching for a character is easy, too:
+```
+$ lcharmap -s "^LATIN (SMALL|CAPITAL) LETTER A$"
+```
 
 Run `lcharmap --help`/`man lcharmap` for more information.
 
