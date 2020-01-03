@@ -3,10 +3,11 @@ use regex::Regex;
 use std::io::Read;
 use std::io::Seek;
 use std::fs::File;
+use std::path::PathBuf;
 use std::result::Result;
 
 pub struct DB {
-    path: Option<String>,
+    path: Option<PathBuf>,
     file: Option<File>,
 }
 
@@ -18,13 +19,13 @@ impl DB {
             file: None,
         }
     }
-    pub fn load(&mut self, path: String) -> Result<(), std::io::Error> {
-        if ! std::fs::metadata(&*path).is_ok() {
+    pub fn load(&mut self, path: PathBuf) -> Result<(), std::io::Error> {
+        if ! std::fs::metadata(&path).is_ok() {
             panic!("lcharmap: db.new(): chardb path not OK.");
         }
         
         // initialize file pointer
-        let file = File::open(&*path)?;
+        let file = File::open(&path)?;
         self.path = Some(path);
         self.file = Some(file);
         Ok(())

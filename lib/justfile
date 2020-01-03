@@ -21,4 +21,4 @@ run: release
 
 install: run
 	@echo "\tINSTALL\t\tchars.db"
-	@install -m644 ./chars.db /etc/chars.db
+	@install -m644 ./chars.db $HOME/.local/share/lcharmap/chars.db
