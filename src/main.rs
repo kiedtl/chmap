@@ -11,6 +11,7 @@ use std::vec::Vec;
 
 use getopts::Options;
 use terminal_size::{ Width, Height, terminal_size };
+use directories::ProjectDirs;
 
 // database for character descriptions
 // database file are in the lib directory.
@@ -20,8 +21,7 @@ use terminal_size::{ Width, Height, terminal_size };
 mod db;
 use crate::db::DB;
 
-const LCHARMAP_VERSION:    &str    = "0.1.0";
-const LCHARMAP_DB_PATH:    &str  = "/etc/chars.db";
+const LCHARMAP_VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
 //const DEFAULT_RANGE_START: usize = 0;
 //const DEFAULT_RANGE_STOP:  usize = 255;
@@ -32,7 +32,12 @@ const ESCAPE:              char    = 0x1B as char;
 fn main() {
     // load database
     let mut db = DB::new();
-    let result = db.load(LCHARMAP_DB_PATH.to_string());
+    let proj_dir = ProjectDirs::from("", "", "lcharmap").unwrap_or_else(|| {
+        eprintln!("cannot determine location of chars.db");
+        process::exit(1);
+    });
+    let db_path = proj_dir.data_dir().join("chars.db");
+    let result = db.load(db_path);
     match result {
         Ok(__) => (),
         Err(_) => {
