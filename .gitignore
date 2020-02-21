@@ -1,7 +1,11 @@
 /build
 **/*.rs.bk
 
+# ignore vim's swap files
 **/.*.swp
 
+# ignore generated files
 **/upddb
 **/chars.db
+
+lcharmap.1
