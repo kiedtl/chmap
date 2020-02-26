@@ -17,10 +17,7 @@ fn main() {
 			desc = data[11]
 		}
 
+		print(rune(desc.len))
 		print(desc)
-
-		for c := 0; c < (86 - desc.len); c++ {
-			print(rune(0))
-		}
 	}
 }
