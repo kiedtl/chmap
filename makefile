@@ -36,7 +36,7 @@ target/debug/lcharmap:
 target/release/lcharmap:
 	cargo $(CARGOPTS) --release
 
-lcharmap.1: lcharmap.sc
-	scdoc < lcharmap.sc > lcharmap.1
+lcharmap.1: lcharmap.scd
+	scdoc < lcharmap.scd > lcharmap.1
 
 .PHONY: all clean dev-install install uninstall
