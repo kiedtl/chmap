@@ -1,3 +1,0 @@
-[submodule "src/vargs"]
-	path = src/vargs
-	url = git://github.com/nedpals/vargs
