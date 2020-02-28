@@ -9,7 +9,7 @@ import vargs
 
 const (
 	LCHARMAP_VERSION = "0.3.0"
-	ESCAPE = 0x1B
+	ESCAPE = rune(0x1B)
 	LONG_FORMAT_PADDING = 20
 )
 
@@ -150,6 +150,7 @@ fn main() {
 }
 
 fn print_rows(chardb db.Charmap, range []u32, opts Options) {
+
 	if range.len < 2 {
 		// don't panic on single item ranges (e.g. `--range 0`)
 		print_entry_long(range[0], chardb.get_desc(range[0]))

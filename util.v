@@ -66,7 +66,7 @@ fn sort(u mut []u32) {
 }
 
 // array MUST be sorted first
-fn dedup(things mut []u32) {
+fn dedup(things []u32) []u32 {
 	mut data := []u32
 
 	for thing in things {
@@ -75,7 +75,7 @@ fn dedup(things mut []u32) {
 		}
 	}
 
-	things = data
+	return data
 }
 
 // reverse array in place
@@ -120,27 +120,39 @@ fn to_oct(u u32) string {
 // convert int to hexadecimal string
 // credits: musl libc
 fn to_hex(u u32, lowercase bool) string {
+	if u == 0 {
+		return "0"
+	}
+
 	// copy u since we will be modifiying it
+	println("gonna copy u:$u to x")
 	mut x := u
 
+	println("gonna set lower")
 	mut lower := 0 // FALSE
 
 	if lowercase {
 		lower = 1 // TRUE
 	}
 
+	println("gonna init buffer")
 	mut buf := []u32
-	for x == 0 {
+	println("gonna start")
+	for x != 0 {
+		println("x = $x; buf = $buf; lower = $lower")
 		buf << u32(HEXDIGITS[(x & 15)]) | lower
 		x >>= 4
 	}
 
 	// reverse buffer
+	println("gonna reverse")
 	reverse_in_place(mut buf)
 
+	println("gonna turn into string")
 	mut str := ""
 	for item in buf {
-		str = str + rune(item).str() }
+		str = str + rune(item).str()
+	}
 
 	return str
 }

@@ -15,7 +15,7 @@ pub:
 }
 
 pub fn new(fpath string) Charmap {
-	if !os.file_exists(fpath) {
+	if !os.exists(fpath) {
 		panic("lcharmap: unable to open character database at '$fpath'.")
 	}
 	
