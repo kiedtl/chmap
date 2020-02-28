@@ -1,8 +1,9 @@
 #include <stdlib.h>
+#include "util.h"
 #include "types.h"
 
 u32
-compare_u32(void *a, void *c)
+compare_u32(void *a, void *b)
 {
 	if *(u32*)a > *(u32*)b {
 		return -1;
