@@ -60,7 +60,8 @@ fn main() {
 		mut range_str := _or(args.options['r'], args.options['range'])
 
 		if range_str == "" {
-			range_str = "0,128"
+			eprintln("lcharmap: error: argument to --range missing.")
+			exit(1)
 		}
 
 		// parse range into []u32
@@ -70,7 +71,6 @@ fn main() {
 		if range_data.len > 1 {
 			range << to_i(range_data[1])
 		}
-
 
 		print_rows(chardb, range, opts)
 	}
