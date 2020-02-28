@@ -8,7 +8,7 @@ import terminfo
 import vargs
 
 const (
-	LCHARMAP_VERSION = "0.2.0"
+	LCHARMAP_VERSION = "0.3.0"
 	ESCAPE = 0x1B
 	LONG_FORMAT_PADDING = 20
 )
@@ -89,7 +89,7 @@ fn main() {
 		// only show each character once
 		mut chars := to_u32(characters)
 		sort(mut chars)
-		dedup(mut chars)
+		chars = dedup(chars)
 
 		if chars.len > 1 && !opts.format_long {
 			print_line(opts.ttywidth)
@@ -130,7 +130,7 @@ fn main() {
 
 		mut matches := chardb.search(mut re)
 		sort(mut matches)
-		dedup(mut matches)
+		matches = dedup(matches)
 
 		if matches.len > 1 && !opts.format_long {
 			print_line(opts.ttywidth)
