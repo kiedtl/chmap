@@ -1,6 +1,5 @@
 #ifndef UTIL_H
 #define UTIL_H
-
 #include "types.h"
 
 u32 compare_u32(void *a, void *b);
