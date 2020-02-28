@@ -13,39 +13,40 @@
  * information.
  */
 
-#if defined(_WIN32) || defined (__WIN32__)
+#include "terminfo.h"
+#include "types.h"
+
+#if defined(_WIN32) || defined(__WIN32__)
 #define WOE_IS_ME
 #endif
 
-#ifndef WOE_IS_ME
+#ifdef WOE_IS_ME
+#else
 #include <sys/ioctl.h>
 #endif
 
-unsigned short ttywidth(void);
-unsigned short ttyheight(void);
-
-unsigned short
+u16
 ttywidth(void)
 {
-#ifndef WOE_IS_ME
+#ifdef WOE_IS_ME
+	return (u16) 80;
+#else
 	struct winsize w;
 	ioctl(0, TIOCGWINSZ, &w);
 
 	return w.ws_col;
-#else
-	return (unsigned short) 80;
 #endif
 }
 
-unsigned short
+u16
 ttyheight(void)
 {
-#ifndef WOE_IS_ME
+#ifdef WOE_IS_ME
+	return (u16) 24;
+#else
 	struct winsize w;
 	ioctl(0, TIOCGWINSZ, &w);
 
 	return w.ws_row;
-#else
-	return (unsigned short) 24;
 #endif
 }
