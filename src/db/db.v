@@ -4,38 +4,41 @@
 
 module db
 
+import os
 import sqlite
 import regex
 
-struct charmap {
+pub struct Charmap {
+pub:
 	path string
 	db   sqlite.DB
 }
 
-pub fn new(fpath string) charmap {
+pub fn new(fpath string) Charmap {
 	if !os.file_exists(fpath) {
 		panic("lcharmap: unable to open character database at '$fpath'.")
 	}
 	
-	return DB {
+	return Charmap {
 		path: fpath,
 		db:   sqlite.connect(fpath)
 	}
 }
 
-pub fn (self charmap) get_desc(ch u32) string {
+pub fn (c Charmap) get_desc(ch u32) string {
 	// TODO: panic if:
 	//    - codepoint > 32841
 	//    - return code is error
-	return self.db.q_string("SELECT description FROM map WHERE id=$ch")
+	return c.db.q_string("SELECT description FROM map WHERE id=$ch")
 }
 
-pub fn (self charmap) search(re regex.RE) []u32 {
-	matches := []u32([])
+pub fn (c Charmap) search(re mut regex.RE) []u32 {
+	mut matches := []u32
 
-	rows := self.db.exec("SELECT description FROM map")
+	// TODO: panic on error code
+	rows, ex := c.db.exec("SELECT description FROM map")
 	for i, row in rows {
-		start, end := re.match_string(row[0])
+		start, end := re.match_string(row.vals[0])
 		if start >= 0 && end > start {
 			matches << i
 		}
