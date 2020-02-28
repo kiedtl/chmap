@@ -194,7 +194,7 @@ fn print_entry_short(entry u32, description string, opts Options) {
 
 fn print_line(width u16) {
 	line := "─".repeat(int(width))
-	print(line)
+	println(line)
 }
 
 fn print_entry_long(entry u32, description string) {
