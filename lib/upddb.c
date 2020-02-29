@@ -32,7 +32,7 @@ main(void)
 	 * we're assuming that the makefile has already
 	 * purged the file
 	 */
-	sqlite3_exec(db, "CREATE TABLE map (id int, description varchar(255));",
+	sqlite3_exec(db, "CREATE TABLE map (id INTEGER PRIMARY KEY, description TEXT);",
 		NULL, NULL, &err);
 
 	/* wrap inserts in transaction to improve insert speed */
@@ -46,7 +46,7 @@ main(void)
 			+ (sizeof(", '") - 1)
 			+ 90 + (sizeof("');") - 1);
 	char insertq[insertq_len];
-	sprintf((char*) &insertq, "INSERT INTO map VALUES ($ID, '$DE');");
+	sprintf((char*) &insertq, "INSERT INTO map VALUES (?1, ?2);");
 	sqlite3_stmt *insert_stmt;
 	sqlite3_prepare_v2(db, insertq, insertq_len, &insert_stmt, NULL);
 
@@ -68,7 +68,7 @@ main(void)
 			data[i] = tmp;
 		}
 
-		char *desc = data[1];
+		char *desc = data[2];
 
 		/*
 		 * the "descriptions" for some characters aren't really
@@ -76,7 +76,7 @@ main(void)
 		 * TODO: get proper descriptions for other control chars (like 0x81)
 		 */
 		if (linectr < 32) {
-			desc = data[10];
+			desc = data[11];
 		}
 
 		/*
@@ -90,8 +90,8 @@ main(void)
 		char id[snprintf(NULL, 0, "%d", linectr)];
 		sprintf((char*) &id, "%d", linectr);
 
-		sqlite3_bind_text(insert_stmt, 1, (char*) &id, -1, SQLITE_TRANSIENT);
-		sqlite3_bind_text(insert_stmt, 2, desc, -1, SQLITE_TRANSIENT);
+		sqlite3_bind_int(insert_stmt, 1, linectr);
+		sqlite3_bind_text(insert_stmt, 2, desc, desclen, SQLITE_STATIC);
 		sqlite3_step(insert_stmt);
 		sqlite3_clear_bindings(insert_stmt);
 		sqlite3_reset(insert_stmt);
@@ -101,6 +101,7 @@ main(void)
 	fprintf(stdout, "\n");
 	sqlite3_finalize(insert_stmt);
 	sqlite3_exec(db, "END TRANSACTION", NULL, NULL, &err);
+	sqlite3_exec(db, "CREATE INDEX idx ON map (id);", NULL, NULL, &err);
 	sqlite3_close(db);
 	free(line);
 	fclose(unicode_txt);
