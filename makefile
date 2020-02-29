@@ -6,6 +6,8 @@
 DESTDIR =
 PREFIX  = /usr/local
 
+VERSION = 0.3.0
+
 BIN     = lcharmap
 SRC     = sub/argoat/src/argoat.c util.c db.c $(BIN).c
 OBJ     = $(SRC:.c=.o)
@@ -16,7 +18,7 @@ INC     = -I. -Isub/ccommon/ -Isub/argoat/src/
 
 CC      = cc
 LD      = gold
-CFLAGS  = -std=c99 $(WARNING) $(INC)
+CFLAGS  = -std=c99 -DVERSION=$(VERSION) $(WARNING) $(INC)
 LDFLAGS = -lsqlite3 -fuse-ld=$(LD)
 
 all: debug
