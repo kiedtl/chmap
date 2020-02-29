@@ -9,7 +9,7 @@ PREFIX  = /usr/local
 VERSION = \"0.3.0\"
 
 BIN     = lcharmap
-SRC     = sub/argoat/src/argoat.c util.c db.c $(BIN).c
+SRC     = sub/argoat/src/argoat.c util.c db.c terminfo.c $(BIN).c
 OBJ     = $(SRC:.c=.o)
 
 WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes -Wno-unused-parameter \
