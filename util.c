@@ -2,7 +2,25 @@
 #include "util.h"
 #include "types.h"
 
-u32
+void
+print_line(u16 termwidth)
+{
+	char line[termwidth + 2];
+	for (usize i = 0; i < termwidth; ++i) {
+		line[i] = '─';
+	}
+	line[termwidth] = '\n';
+	line[termwidth + 1] = '\0';
+	printf(line);
+}
+
+void
+print_header()
+{
+	printf("DEC\tHEX\tOCT\tHTML\tCHAR\tDESC\n");
+}
+
+usize
 compare_u32(void *a, void *b)
 {
 	if *(u32*)a > *(u32*)b {
@@ -12,12 +30,6 @@ compare_u32(void *a, void *b)
 	} else {
 		return 0;
 	}
-}
-
-void
-sort_u32(u32* u, usize len)
-{
-	qsort(u, len, sizeof(u32), compare_u32);
 }
 
 usize

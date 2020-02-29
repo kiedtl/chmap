@@ -1,7 +1,7 @@
 #include <regex.h>
 #include <stdio.h>
 #include <string.h>
-#include <sqlite.h>
+#include <sqlite3.h>
 #include <unistd.h>
 
 #include "types.h"
@@ -46,25 +46,20 @@ chardb_getdesc(sqlite3 *db, u32 _char)
 		+ (sizeof(";") - 1);
 	char query[max_query_size];
 
-	strcpy(&query, "SELECT description FROM map WHERE id=");
-	strcat(&query, atoi(_char));
-	strcat(&query, ";");
+	char *err = NULL;
+	sprintf(&query, "SELECT description FROM map WHERE id=%i;", _char);
+	sqlite3_exec(db, &query, NULL, NULL, &err);
 
-	sqlite3_stmt stmt;
-	sqlite3_prepare_v2(db, &query, strlen(&query), &stmt, NULL);
-	sqlite3_step(stmt);
-	char *desc = sqlite3_column_text(stmt, NULL);
-	sqlite3_finalize(stmt);
+	if (err != NULL) {
+		fprintf(stderr, "lcharmap: warning: character database error: %s\n", err);
+	}
 
 	return desc;
 }
 
-u32*
-chardb_search(sqlite3 *db, regex_t *re)
+usize
+chardb_search(sqlite3 *db, regex_t *re, u32 *matchbuf)
 {
-	/* TODO: malloc as needed */
-	/* 32841: number of characters in chardb */
-	u32 matches[32841];
 	usize mctr = 0;
 
 	/* TODO: panic on sqlite err */
@@ -87,11 +82,11 @@ chardb_search(sqlite3 *db, regex_t *re)
 		bool match = regexec(re, desc, 0, NULL, 0);
 		
 		if (match) {
-			matches[mctr] = strtol(sqlite3_column_text(stmt, 0), 10);
+			matchbuf[mctr] = strtol(sqlite3_column_text(stmt, 0), 10);
 			++mctr;
 		}
 	}
 
 	regfree(re);
-	return matches;
+	return mctr;
 }
