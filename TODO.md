@@ -1,4 +1,6 @@
 # TODO
 
-- rewrite the $h!tTy argument parser
+- statically linked `sqlite3`
+- `--chars`: support multibyte chars
+- use cross-platform regex library (PCRE?)
 - `grep -nRE 'XXX|TODO' src'
