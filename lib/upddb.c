@@ -45,12 +45,12 @@ main(void)
 	sqlite3_exec(db, "BEGIN TRANSACTION", NULL, NULL, &err);
 
 	/* pre-compile sql queries */
-	usize insertq_len = (sizeof("INSERT INTO map VALUE (") - 1)
+	usize insertq_len = (sizeof("INSERT INTO map VALUES (") - 1)
 			+ (sizeof("32841") - 1) /* 32841 = num of chars */
 			+ (sizeof(", '") - 1)
 			+ 90 + (sizeof("');") - 1);
 	char insertq[insertq_len];
-	sprintf((char*) &insertq, "INSERT INTO map VALUE ($ID, '$DE');");
+	sprintf((char*) &insertq, "INSERT INTO map VALUES ($ID, '$DE');");
 	sqlite3_stmt *insert_stmt;
 	sqlite3_prepare_v2(db, insertq, insertq_len, &insert_stmt, NULL);
 
