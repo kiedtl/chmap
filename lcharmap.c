@@ -33,8 +33,8 @@ main(int argc, char **argv)
 		return 1;
 	}
 
-	/* ttywidth will be set later */
 	opts->format_long = FALSE;
+	opts->ttywidth    = ttywidth();
 
 	/* parse arguments with cylgom/argoat */
 	const struct argoat_sprig sprigs[15] = {
