@@ -2,8 +2,9 @@
 #define UTIL_H
 #include "types.h"
 
-u32 compare_u32(void *a, void *b);
-void sort_u32(u32 *u, usize len);
+void  print_line(u16 termwidth);
+void  print_header(void);
+int   compare_u32(void *a, void *b);
 usize dedup(u32 *u, usize len);
 
 #endif
