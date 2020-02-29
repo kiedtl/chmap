@@ -3,40 +3,54 @@
 # https://github.com/lptstr/lcharmap
 #
 
-CARGOPTS = build -j`nproc`
-CARGOBIN = cargo
+DESTDIR =
+PREFIX  = /usr/local
 
+BIN     = lcharmap
+SRC     = sub/argoat/src/argoat.c util.c db.c $(BIN).c
+OBJ     = $(SRC:.c=.o)
+
+WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes \
+	  -Wold-style-definition -Wno-unused-parameter
+INC     = -I. -Isub/ccommon/ -Isub/argoat/src/
+
+CC      = cc
+LD      = gold
+CFLAGS  = -std=c99 $(WARNING) $(INC)
+LDFLAGS = -lsqlite3 -fuse-ld=$(LD)
 
 all: debug
 
-clean:
-	rm -f "target/release/lcharmap"
-	rm -f "target/debug/lcharmap"
+.c.o:
+	$(CC) $(CFLAGS) $(CFLAGS_OPT) -c $< -o $(<:.c=.o)
 
-dev-install: target/debug/lcharmap
-	install -m 755 target/debug/lcharmap /usr/bin/lcharmap
+debug: CFLAGS_OPT := -ggdb
+debug: $(BIN)
 
-install: target/release/lcharmap lcharmap.1 lib/chars.db
-	install -Dm755 "target/release/lcharmap" "/usr/bin/lcharmap"
-	install -Dm644 "./lcharmap.1" "/usr/share/man/man1/lcharmap.1"
-	install -Dm644 "lib/chars.db" "$(HOME)/.local/share/lcharmap/chars.db"
+release: CFLAGS_OPT := -O4 -s
+release: $(BIN)
 
-uninstall:
-	rm -f /usr/bin/lcharmap
-	rm -f /usr/share/man/man1/lcharmap.1
-	rm -f $(HOME)/.local/share/lcharmap/chars.db
+$(BIN): $(OBJ)
+	$(CC) -o $@ $^ $(CFLAGS) $(CFLAGS_OPT) $(LDFLAGS)
 
-
-chars.db:
+lib/chars.db:
 	@cd lib && make
 
-target/debug/lcharmap:
-	cargo $(CARGOPTS)
+$(BIN).1: $(BIN).scd
+	scdoc < $^ > $@
 
-target/release/lcharmap:
-	cargo $(CARGOPTS) --release
+clean:
+	rm -f $(BIN) $(OBJ)
 
-lcharmap.1: lcharmap.scd
-	scdoc < lcharmap.scd > lcharmap.1
 
-.PHONY: all clean dev-install install uninstall
+install: $(BIN) $(BIN).1 lib/chars.db
+	install -Dm755 $(BIN) $(DESTDIR)/$(PREFIX)/bin/$(BIN)
+	install -Dm644 $(BIN).1 $(DESTDIR)/$(PREFIX)/share/man/man1/$(BIN).1
+	install -Dm644 lib/chars.db $(HOME)/.local/share/$(BIN)/chars.db
+
+uninstall:
+	rm -f $(DESTDIR)/$(PREFIX)/bin/$(BIN)
+	rm -f $(DESTDIR)/$(PREFIX)/share/man/man1/$(BIN).1
+	rm -f $(HOME)/.local/share/$(BIN)/chars.db
+
+.PHONY: all debug release clean install uninstall
