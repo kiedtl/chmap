@@ -1,9 +1,12 @@
+/* TODO: sort include alphabetically */
+#include "bool.h"
 #include <regex.h>
 #include <stdio.h>
 #include <string.h>
 #include <sqlite3.h>
 #include <unistd.h>
-
+#include "db.h"
+#include <stdlib.h>
 #include "types.h"
 
 sqlite3*
@@ -47,8 +50,12 @@ chardb_getdesc(sqlite3 *db, u32 _char)
 	char query[max_query_size];
 
 	char *err = NULL;
-	sprintf(&query, "SELECT description FROM map WHERE id=%i;", _char);
-	sqlite3_exec(db, &query, NULL, NULL, &err);
+	sprintf((char*) &query, "SELECT description FROM map WHERE id=%i;", _char);
+	sqlite3_stmt *stmt;
+	sqlite3_prepare_v2(db, (char*) &query, strlen(query), &stmt, NULL);
+	sqlite3_step(stmt);
+	char *desc = (char*) sqlite3_column_text(stmt, 0);
+	sqlite3_finalize(stmt);
 
 	if (err != NULL) {
 		fprintf(stderr, "lcharmap: warning: character database error: %s\n", err);
@@ -66,7 +73,7 @@ chardb_search(sqlite3 *db, regex_t *re, u32 *matchbuf)
 	char *query = "SELECT description FROM map;";
 	usize query_len = strlen(query);
 
-	sqlite3_stmt stmt;
+	sqlite3_stmt *stmt;
 	sqlite3_prepare_v2(db, query, query_len, &stmt, NULL);
 
 	isize result = 0;
@@ -74,15 +81,15 @@ chardb_search(sqlite3 *db, regex_t *re, u32 *matchbuf)
 		result = sqlite3_step(stmt);
 
 		/* is another row available? */
-		if result != SQLITE_ROW {
+		if (result != SQLITE_ROW) {
 			break;
 		}
 
-		char *desc = sqlite3_column_test(stmt, 0);
+		char *desc = (char*) sqlite3_column_text(stmt, 0);
 		bool match = regexec(re, desc, 0, NULL, 0);
 		
 		if (match) {
-			matchbuf[mctr] = strtol(sqlite3_column_text(stmt, 0), 10);
+			matchbuf[mctr] = i;
 			++mctr;
 		}
 	}
