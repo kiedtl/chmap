@@ -97,6 +97,8 @@ main(void)
 		sqlite3_bind_text(insert_stmt, 1, (char*) &id, -1, SQLITE_TRANSIENT);
 		sqlite3_bind_text(insert_stmt, 2, desc, -1, SQLITE_TRANSIENT);
 		sqlite3_step(insert_stmt);
+		sqlite3_clear_bindings(insert_stmt);
+		sqlite3_reset(insert_stmt);
 		++linectr;
 	}
 
