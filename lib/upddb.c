@@ -97,11 +97,11 @@ main(void)
 		sqlite3_bind_text(insert_stmt, 1, (char*) &id, -1, SQLITE_TRANSIENT);
 		sqlite3_bind_text(insert_stmt, 2, desc, -1, SQLITE_TRANSIENT);
 		sqlite3_step(insert_stmt);
-		sqlite3_finalize(insert_stmt);
 		++linectr;
 	}
 
 	fprintf(stdout, "\n");
+	sqlite3_finalize(insert_stmt);
 	sqlite3_exec(db, "END TRANSACTION", NULL, NULL, &err);
 	sqlite3_close(db);
 	free(line);
