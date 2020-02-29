@@ -103,6 +103,7 @@ main(void)
 
 	fprintf(stdout, "\n");
 	sqlite3_exec(db, "END TRANSACTION", NULL, NULL, &err);
+	sqlite3_close(db);
 	free(line);
 	fclose(unicode_txt);
 }
