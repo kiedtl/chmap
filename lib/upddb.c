@@ -20,6 +20,7 @@ main(void)
 		return 1;
 	}
 
+	char *err = NULL;
 	sqlite3 *db;
 	int rc = sqlite3_open("./chars.db", &db);
 	if (rc) {
@@ -31,15 +32,10 @@ main(void)
 	 * we're assuming that the makefile has already
 	 * purged the file
 	 */
-	char *query = "CREATE TABLE map (id int, description varchar(255));";
-	usize query_len = strlen(query);
-	sqlite3_stmt *stmt;
-	sqlite3_prepare_v2(db, query, query_len, &stmt, NULL);
-	sqlite3_step(stmt);
-	sqlite3_finalize(stmt);
+	sqlite3_exec(db, "CREATE TABLE map (id int, description varchar(255));",
+		NULL, NULL, &err);
 
 	/* wrap inserts in transaction to improve insert speed */
-	char *err = NULL;
 	sqlite3_exec(db, "PRAGMA synchronous = OFF", NULL, NULL, &err);
 	sqlite3_exec(db, "PRAGMA journal_mode = MEMORY", NULL, NULL, &err);
 	sqlite3_exec(db, "BEGIN TRANSACTION", NULL, NULL, &err);
