@@ -6,19 +6,19 @@
 DESTDIR =
 PREFIX  = /usr/local
 
-VERSION = 0.3.0
+VERSION = \"0.3.0\"
 
 BIN     = lcharmap
 SRC     = sub/argoat/src/argoat.c util.c db.c $(BIN).c
 OBJ     = $(SRC:.c=.o)
 
-WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes \
-	  -Wold-style-definition -Wno-unused-parameter
+WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes -Wno-unused-parameter \
+	  -Wold-style-definition -Wno-incompatible-pointer-types
 INC     = -I. -Isub/ccommon/ -Isub/argoat/src/
 
 CC      = cc
 LD      = gold
-CFLAGS  = -std=c99 -DVERSION=$(VERSION) $(WARNING) $(INC)
+CFLAGS  = -std=c99 -DVERSION=$(VERSION) -D_DEFAULT_SOURCE $(WARNING) $(INC)
 LDFLAGS = -lsqlite3 -fuse-ld=$(LD)
 
 all: debug
