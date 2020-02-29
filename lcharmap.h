@@ -11,14 +11,18 @@ const usize LONG_FORMAT_PADDING = 20;
 struct Options {
 	bool format_long;
 	u16  ttywidth;
-}
+};
 
-static sqlite3 *db;
-static struct Options *opts;
+sqlite3 *db;
+struct Options *opts;
 
 void range(void *data, char **pars, const int pars_count);
 void chars(void *data, char **pars, const int pars_count);
 void search(void *data, char **pars, const int pars_count);
+
+void print_entry_short(u32 entry, char *description);
+void print_entry_long(u32 entry, char *description);
+void print_entry_row(char *key, char *val);
 
 void handle_bool(void *data, char **pars, const int pars_count);
 void handle_anger(void *data, char **pars, const int pars_count);

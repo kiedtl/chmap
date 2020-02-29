@@ -1,16 +1,19 @@
 /* TODO: order includes alphabetically */
-
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <regex.h>
 #include <sqlite3.h>
-#include <limits.h>
+
+/* TODO: import differently on windoez/BSD platforms */
+#include <linux/limits.h>
 
 #include "types.h"
 #include "bool.h"
 #include "argoat.h"
 #include "terminfo.h"
 #include "db.h"
+#include "util.h"
 #include "lcharmap.h"
 
 int
@@ -19,8 +22,8 @@ main(int argc, char **argv)
 	/* load database */
 	char dbpath[PATH_MAX];
 	/* TODO: get actual directory */
-	sprintf(&dbpath, "/home/kiedtl/.local/share/lcharmap/chars.db");
-	db = chardb_open(&dbpath);
+	sprintf((char*) &dbpath, "/home/kiedtl/.local/share/lcharmap/chars.db");
+	db = chardb_open((char*) &dbpath);
 
 	/* set default options */
 	opts = (struct Options*) malloc(1 * sizeof(struct Options));
@@ -89,7 +92,38 @@ range(void *data, char **pars, const int pars_count)
 		range[1] = strtol(range2, NULL, base);
 	}
 
-	print_rows(range);
+	/* print range */
+	/* TODO: merge this code with above */
+	if (range2 == NULL) {
+		print_entry_long(range[0], chardb_getdesc(db, range[0]));
+		return;
+	}
+
+	if (range[1] < range[0]) {
+		fprintf(stderr, "lcharmap: error: provided range %i -> %i doesn't make sense.\n",
+			range[0], range[1]);
+		exit(1);
+	}
+
+	if (range[1] == range[0]) {
+		print_entry_long(range[0], chardb_getdesc(db, range[0]));
+		return;
+	}
+
+	if (opts->format_long) {
+		for (usize i = range[0]; i <= range[1]; ++i) {
+			print_entry_long(i, chardb_getdesc(db, i));
+			printf("\n");
+		}
+	} else {
+		print_line(opts->ttywidth);
+		print_header();
+		print_line(opts->ttywidth);
+
+		for (usize i = range[0]; i <= range[1]; ++i) {
+			print_entry_short(i, chardb_getdesc(db, i));
+		}
+	}
 }
 
 void
@@ -142,13 +176,13 @@ search(void *data, char **pars, const int pars_count)
 	/* TODO: reusable die() function */
 	if (err) {
 		/* TODO: get char of error and error message */
-		fprintf(stderr, "lcharmap: error: '%s': invalid regex query.\n");
+		fprintf(stderr, "lcharmap: error: '%s': invalid regex query.\n", query);
 		exit(1);
 	}
 
 	/* TODO: malloc as needed */
 	u32 matches[32841];
-	usize match_count = chardb_search(db, re);
+	usize match_count = chardb_search(db, &re, &matches);
 	qsort(matches, match_count, sizeof(u32), compare_u32);
 	dedup(matches, match_count);
 
@@ -235,7 +269,7 @@ version(void *data, char **pars, const int pars_count)
 }
 
 void
-usage(void *data char **pars, const int pars_count)
+usage(void *data, char **pars, const int pars_count)
 {
 	printf("Usage: lcharmap [OPTIONS] [ARGS]\n");
 	printf("Print and search information on the provided Unicode characters.\n\n");
