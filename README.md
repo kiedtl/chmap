@@ -45,13 +45,13 @@ For now, you must build from source.
 #### Building from Source
 Download the latest release:
 ```
-$ wget https://github.com/lptstr/lcharmap/
+$ wget https://github.com/lptstr/lcharmap/archive/0.1.0.tar.gz
 ```
 
 Build:
 ```
-$ tar -xvf 
-$ cd lcharmap
+$ tar -xvf 0.1.0.tar.gz
+$ cd lcharmap-0.1.0
 $ just release
 ```
 
