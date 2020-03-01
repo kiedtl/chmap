@@ -54,7 +54,10 @@ chardb_getdesc(sqlite3 *db, u32 _char)
 	sqlite3_stmt *stmt;
 	sqlite3_prepare_v2(db, &query, querylen, &stmt, NULL);
 	sqlite3_step(stmt);
-	char *desc = (char*) sqlite3_column_text(stmt, 0);
+
+	/* copy string onto our buffer, to prevent
+	 * sqlite3_finalize from ruining it */
+	char *desc = strdup((char*) sqlite3_column_text(stmt, 0));
 	sqlite3_finalize(stmt);
 
 	if (err != NULL) {
