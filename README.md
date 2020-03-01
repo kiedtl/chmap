@@ -2,20 +2,24 @@
 
 > A CLI port of the Windows `charmap` utility
 
+### Status
+
+**This utility is currently being rewritten in C for speed and size, and will
+also use sqlite3 instead of a custom database format.** The `master` branch is
+currently broken, so it is advised to build from the latest stable release
+instead.
+
 ### What?
 
-`lcharmap` is a CLI port of the Windows `charmap.exe` utility for Unix.
+`lcharmap` is similar to the `charmap.exe` utility in Windows XP and newer.
 It displays information for a particular Unicode code point, including
-it's hexadecimal/octal and HTML entity representation.
-
-In addition, it dislays character description from an extremely bloated
-character database (2.8M) and allows you to search for character based
-on their description (provided, of course, you are willing to wait while
-lcharmap load the entire database into memory and matched each entry).
+it's hexadecimal/octal and HTML entity representation. It is also capable of
+displaying a description for each character from a database generated at
+install time.
 
 ### Where?
 #### Dependencies
-- Windows (*not supported, not tested*)
+- Windows (*supported, not tested*)
 - macOS (*not supported or tested*)
 - Linux (*supported and tested*)
 - Free|Open|Net|Dragonfly BSD (*not supported, not tested*)
@@ -39,18 +43,19 @@ available to download from GitHub Releases:
 For now, you must build from source.
 
 #### Building from Source
-Clone the project:
+Download the latest release:
 ```
-$ git clone https://github.com/lptstr/lcharmap
+$ wget https://github.com/lptstr/lcharmap/
 ```
 
 Build:
 ```
+$ tar -xvf 
 $ cd lcharmap
 $ just release
 ```
 
-Install
+Install:
 ```
 # just install
 ```
@@ -122,11 +127,6 @@ Unfortunately:
   have to be added to the end of the description to make it the same size. Which means that the database is 3 time bigger that it could
   be (2.8M instead of 800K). In the future this will be fixed by storing a byte count in the first byte of each description, thus negating
   the need for each description to be the same size (since we will already know how long each description is simply from reading the first byte).
-
-### Status
-This project is now in maintainence mode. No new features will be added and only bugs will be fixed.
-The afore-mentioned issues, which I'm too time-strapped ("lazy") to fix, will be looked at in the future. PRs
-fixing them would be appreciated.
 
 ### License
 This lame little utility is licensed under the MIT License. See the `LICENSE.md`
