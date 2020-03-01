@@ -136,11 +136,11 @@ chars(void *data, char **pars, const int pars_count)
 
 	/* TODO: unicode support, currently UTF8 continuation chars will be
 	 * counted as an extra character */
-	u32 *chars = (u32*) pars[0];
+	char *chars = pars[0];
 	usize len = strlen(pars[0]);
 
 	/* dedup to only print info for each character once */
-	qsort(chars, len, sizeof(char), compare_u32);
+	qsort(chars, len, sizeof(char), compare_char);
 	dedup(chars, len);
 
 	if (len > 1 && !opts->format_long) {
@@ -222,13 +222,17 @@ print_entry_long(u32 entry, char *description)
 	sprintf(&hex, "%X", entry);
 
 	char oct[snprintf(NULL, 0, "%o", entry)];
-	sprintf(&hex, "%o", entry);
+	sprintf(&oct, "%o", entry);
 
+	/*
+	 * TODO: display "readable" html entities
+	 * e.g. &amp; instead for '&' instead of &#38;
+	 */
 	char htm[snprintf(NULL, 0, "&#%d;", entry)];
 	sprintf(&htm, "&#%d;", entry);
 
-	char cha[snprintf(NULL, 0, "\"%c\"", entry)];
-	sprintf(&cha, "\"%c\"", entry);
+	char cha[snprintf(NULL, 0, "%c", entry)];
+	sprintf(&cha, "%c", entry);
 
 	print_entry_row("decimal", &dec);
 	print_entry_row("hexadecimal", &hex);
