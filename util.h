@@ -4,6 +4,7 @@
 
 void  print_line(u16 termwidth);
 void  print_header(void);
+int   compare_char(void *a, void *b);
 int   compare_u32(void *a, void *b);
 usize dedup(u32 *u, usize len);
 

@@ -25,6 +25,18 @@ print_header(void)
 }
 
 int
+compare_char(void *a, void *b)
+{
+	if (*(char*)a > *(char*)b) {
+		return -1;
+	} else if (*(char*)a > *(char*)b) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int
 compare_u32(void *a, void *b)
 {
 	if (*(u32*)a > *(u32*)b) {
