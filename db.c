@@ -44,15 +44,13 @@ chardb_close(sqlite3 *db)
 char*
 chardb_getdesc(sqlite3 *db, u32 _char)
 {
-	usize max_query_size = (sizeof("SELECT description FROM map WHERE id=") - 1)
-		+ (sizeof("32841") - 1)
-		+ (sizeof(";") - 1);
-	char query[max_query_size];
+	usize querylen = snprintf(NULL, 0, "SELECT description FROM map WHERE id=%i;", _char);
+	char query[querylen];
 
 	char *err = NULL;
-	sprintf((char*) &query, "SELECT description FROM map WHERE id=%i;", _char);
+	sprintf(&query, "SELECT description FROM map WHERE id=%i;", _char);
 	sqlite3_stmt *stmt;
-	sqlite3_prepare_v2(db, (char*) &query, strlen(query), &stmt, NULL);
+	sqlite3_prepare_v2(db, &query, querylen, &stmt, NULL);
 	sqlite3_step(stmt);
 	char *desc = (char*) sqlite3_column_text(stmt, 0);
 	sqlite3_finalize(stmt);
