@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include "types.h"
 
+/* TODO: make database loading/descriptions optional */
+/* TODO: allow user to modify db path at runtime via cmd args */
 sqlite3*
 chardb_open(char *path)
 {
