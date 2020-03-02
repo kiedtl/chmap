@@ -139,9 +139,7 @@ chars(void *data, char **pars, const int pars_count)
 	char *chars = pars[0];
 	usize len = strlen(pars[0]);
 
-	/* dedup to only print info for each character once */
-	qsort(chars, len, sizeof(char), compare_char);
-	dedup(chars, len);
+	/* TODO: deduplicate and sort string */
 
 	if (len > 1 && !opts->format_long) {
 		print_line(opts->ttywidth);
@@ -183,8 +181,6 @@ search(void *data, char **pars, const int pars_count)
 	/* TODO: malloc as needed */
 	u32 matches[32841];
 	usize match_count = chardb_search(db, &re, &matches);
-	qsort(matches, match_count, sizeof(u32), compare_u32);
-	dedup(matches, match_count);
 
 	if (match_count > 1 && !opts->format_long) {
 		print_line(opts->ttywidth);
