@@ -9,8 +9,10 @@
 void
 print_line(u16 termwidth)
 {
-	char line[(termwidth + 2) * sizeof("─")];
-	for (usize i = 0; i < termwidth; ++i) {
+	/* don't forget the null terminator! */
+	char line[((termwidth) * sizeof("─")) + 1];
+	strcpy(line, "─");
+	for (usize i = 0; i < termwidth - 1; ++i) {
 		strcat(line, "─");
 	}
 	line[termwidth * sizeof("─")] = '\n';
