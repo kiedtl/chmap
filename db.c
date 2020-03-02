@@ -89,7 +89,7 @@ chardb_search(sqlite3 *db, regex_t *re, u32 *matchbuf)
 		}
 
 		char *desc = (char*) sqlite3_column_text(stmt, 0);
-		bool match = regexec(re, desc, 0, NULL, 0);
+		bool match = !regexec(re, desc, 0, NULL, 0);
 		
 		if (match) {
 			matchbuf[mctr] = i;
