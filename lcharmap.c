@@ -203,8 +203,15 @@ search(void *data, char **pars, const int pars_count)
 void
 print_entry_short(u32 entry, char *description)
 {
-	printf("%i\t%X\t%o\t&#%i;\t%c\t%s\n", entry, entry,
-		entry, entry, entry, description);
+	/* don't print control characters */
+	if (entry < 32) {
+		printf("%i\t%X\t%o\t&#%i;\t \t%s\n", entry, entry, entry,
+				entry, description);
+	} else {
+		printf("%i\t%X\t%o\t&#%i;\t%c\t%s\n", entry, entry, entry,
+				entry, entry, description);
+	}
+
 	print_line(opts->ttywidth);
 }
 
