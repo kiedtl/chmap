@@ -5,9 +5,6 @@
 #include <regex.h>
 #include <sqlite3.h>
 
-/* TODO: import differently on windoez/BSD platforms */
-#include <linux/limits.h>
-
 #include "types.h"
 #include "bool.h"
 #include "argoat.h"
@@ -20,7 +17,7 @@ int
 main(int argc, char **argv)
 {
 	/* load database */
-	char dbpath[PATH_MAX];
+	char dbpath[4091];
 	/* TODO: get actual directory */
 	sprintf((char*) &dbpath, "/home/kiedtl/.local/share/lcharmap/chars.db");
 	db = chardb_open((char*) &dbpath);
