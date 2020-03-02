@@ -9,6 +9,10 @@
 void
 print_line(u16 termwidth)
 {
+	/* TODO: allow user to change line character
+	 * via cmd options, just in case their terminal/font
+	 * doesn't fully support UTF8 */
+
 	/* don't forget the null terminator! */
 	char line[((termwidth) * sizeof("─")) + 1];
 	strcpy(line, "─");
