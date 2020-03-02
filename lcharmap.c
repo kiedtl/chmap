@@ -1,17 +1,16 @@
-/* TODO: order includes alphabetically */
-#include <string.h>
+#include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <regex.h>
+#include <string.h>
 #include <sqlite3.h>
 
-#include "types.h"
-#include "bool.h"
 #include "argoat.h"
-#include "terminfo.h"
+#include "bool.h"
 #include "db.h"
-#include "util.h"
 #include "lcharmap.h"
+#include "terminfo.h"
+#include "types.h"
+#include "util.h"
 
 int
 main(int argc, char **argv)
