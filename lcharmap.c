@@ -20,21 +20,16 @@ main(int argc, char **argv)
 	char dbpath[4091];
 	
 	char *datadir = dirs_data_dir();
-	if (datadir == NULL) {
-		fprintf(stderr, "lcharmap: error: unable to determine location of character database.\n");
-		return 1;
-	}
+	if (datadir == NULL)
+		die("lcharmap: error: unable to determine location of character database.");
 
 	sprintf(&dbpath, "%s%clcharmap%cchars.db", datadir, pathsep(), pathsep());
 	db = chardb_open((char*) &dbpath);
 
 	/* set default options */
 	opts = (struct Options*) malloc(1 * sizeof(struct Options));
-	if (opts == NULL) {
-		fprintf(stderr, "lcharmap: error: unable to allocate memory:");
-		perror(NULL);
-		return 1;
-	}
+	if (opts == NULL)
+		die("lcharmap: error: unable to allocate memory:");
 
 	opts->format_long = FALSE;
 	opts->ttywidth    = ttywidth();
@@ -69,10 +64,8 @@ main(int argc, char **argv)
 void
 range(void *data, char **pars, const int pars_count)
 {
-	if (pars_count < 1) {
-		fprintf(stderr, "lcharmap: error: argument to --range missing.\n");
-		exit(0);
-	}
+	if (pars_count < 1)
+		die("lcharmap: error: argument to --range missing.");
 
 	usize range[2];
 	char *range1 = strsep(&pars[0], ",");
@@ -132,10 +125,8 @@ range(void *data, char **pars, const int pars_count)
 void
 chars(void *data, char **pars, const int pars_count)
 {
-	if (pars_count < 1) {
-		fprintf(stderr, "lcharmap: error: argument to --chars missing.\n");
-		exit(1);
-	}
+	if (pars_count < 1)
+		die("lcharmap: error: argument to --chars missing.");
 
 	/* TODO: unicode support, currently UTF8 continuation chars will be
 	 * counted as an extra character */
@@ -165,21 +156,15 @@ chars(void *data, char **pars, const int pars_count)
 void
 search(void *data, char **pars, const int pars_count)
 {
-	if (pars_count < 1) {
-		fprintf(stderr, "lcharmap: error: argument to --search missing.\n");
-		exit(1);
-	}
+	if (pars_count < 1)
+		die("lcharmap: error: argument to --search missing.");
 
 	char *query = pars[0];
 	regex_t re;
-	isize err = regcomp(&re, query, 0);
+	isize is_ok = regcomp(&re, query, 0);
 
-	/* TODO: reusable die() function */
-	if (err) {
-		/* TODO: get char of error and error message */
-		fprintf(stderr, "lcharmap: error: '%s': invalid regex query.\n", query);
-		exit(1);
-	}
+	/* TODO: get char of error and error message */
+	!is_ok ??!??! die("lcharmap: error: '%s': invalid regex query.", query);
 
 	/* TODO: malloc as needed */
 	u32 matches[32841];
@@ -267,8 +252,7 @@ handle_bool(void *data, char **pars, const int pars_count)
 void
 handle_anger(void *data, char **pars, const int pars_count)
 {
-	fprintf(stderr, "Grrr\n");
-	exit(0);
+	die("Grrr");
 }
 
 void
