@@ -2,7 +2,7 @@ lcharmap(1) "General Commands Manual"
 
 # NAME
 
-lcharmap - print and search information for Unicode characters.
+lcharmap - retrieve information for Unicode characters.
 
 # SYNOPSIS
 
@@ -35,14 +35,14 @@ the UCD (Unicode Character Database).
 
 *-c, --chars* CHARS
 	Print a range of Unicode codepoints that match the provided
-	character(s). (e.g., `Kiëd Llaentenn')
+	character(s). (e.g., `George Washington')
 
 *-s, --search* REGEX
-	Search character descriptions for *term*.
+	Search character descriptions for *REGEX*.
 
 # EXAMPLES
 
-lcharmap --range 128,136\/\fR
+lcharmap --range 128,136
 
 lcharmap --chars ThisIsATest
 
@@ -50,13 +50,9 @@ lcharmap --search "^LATIN (SMALL|CAPITAL) A"
 
 # KNOWN ISSUES
 
-- The source code is extremely messy and must be cleaned up.
-
-- The resulting binary isn't as small as I would like it to
-be (debug: 12M, release: 1.4M).
-
-- searching is very slow, due to large database size.
+- lcharmap currently only supports English.
+- lcharmap is currently buggy and untested on Windows.
 
 # REPORTING BUGS
 
-Please report any found bugs to https://github.com/lptstr/lcharmap/issues
+Please report any found bugs to _https://github.com/lptstr/lcharmap/issues_
