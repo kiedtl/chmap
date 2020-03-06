@@ -1,3 +1,7 @@
+#if defined(_WIN32) || defined(__WIN32__)
+#define WOE_IS_ME
+#endif
+
 /* TODO: sort include alphabetically */
 #include "bool.h"
 #include <stdio.h>
@@ -28,4 +32,14 @@ void
 print_header(void)
 {
 	printf("DEC\tHEX\tOCT\tHTML\tCHAR\tDESC\n");
+}
+
+char
+pathsep(void)
+{
+#ifdef WOE_IS_ME
+	return '\\';
+#else
+	return '/';
+#endif
 }

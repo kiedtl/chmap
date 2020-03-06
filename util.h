@@ -4,5 +4,6 @@
 
 void  print_line(u16 termwidth);
 void  print_header(void);
+char  pathsep(void);
 
 #endif
