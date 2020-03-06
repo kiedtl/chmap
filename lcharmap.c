@@ -7,6 +7,7 @@
 #include "argoat.h"
 #include "bool.h"
 #include "db.h"
+#include "dirs.h"
 #include "lcharmap.h"
 #include "terminfo.h"
 #include "types.h"
@@ -17,8 +18,14 @@ main(int argc, char **argv)
 {
 	/* load database */
 	char dbpath[4091];
-	/* TODO: get actual directory */
-	sprintf((char*) &dbpath, "/home/kiedtl/.local/share/lcharmap/chars.db");
+	
+	char *datadir = dirs_data_dir();
+	if (datadir == NULL) {
+		fprintf(stderr, "lcharmap: error: unable to determine location of character database.\n");
+		return 1;
+	}
+
+	sprintf(&dbpath, "%s%clcharmap%cchars.db", datadir, pathsep(), pathsep());
 	db = chardb_open((char*) &dbpath);
 
 	/* set default options */
