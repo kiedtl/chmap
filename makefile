@@ -18,8 +18,8 @@ LIBUTF  = sub/libutf/lib/libutf.a
 
 WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes -Wold-style-definition \
 	  -Wno-incompatible-pointer-types -Wno-unused-parameter \
-	  -Wno-unused-value -Wno-trigraphs \
-INC     = -I. -Isub/ccommon/ -Isub/argoat/src/ -Isub/libutf/include
+	  -Wno-unused-value -Wno-trigraphs
+INC     = -I. -Isub/ccommon/ -Isub/argoat/src/ -Isub/libutf/include/
 
 CC      = cc
 LD      = gold
