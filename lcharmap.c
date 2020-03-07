@@ -12,6 +12,7 @@
 #include "terminfo.h"
 #include "types.h"
 #include "util.h"
+#include "utf.h"
 
 int
 main(int argc, char **argv)
@@ -64,6 +65,10 @@ main(int argc, char **argv)
 void
 range(void *data, char **pars, const int pars_count)
 {
+	/*
+	 * TODO: support number characters from other languages
+	 * e.g. Chinese
+	 */
 	if (pars_count < 1)
 		die("lcharmap: error: argument to --range missing.");
 
@@ -128,12 +133,16 @@ chars(void *data, char **pars, const int pars_count)
 	if (pars_count < 1)
 		die("lcharmap: error: argument to --chars missing.");
 
-	/* TODO: unicode support, currently UTF8 continuation chars will be
-	 * counted as an extra character */
-	char *chars = pars[0];
-	usize len = strlen(pars[0]);
-
-	/* TODO: deduplicate and sort string */
+	/*
+	 * we must process each character as a Rune, not byte-wise (char),
+	 * to ensure that UTF8 continuation bytes don't get treated as a
+	 * separate character.
+	 */
+	usize len = utflen(pars[0]);
+	Rune *chars = (Rune*) malloc(len * sizeof(Rune));
+	chartorune(chars, pars[0]);
+	fprintf(stderr, "DEBUG:     strlen = %i\n", strlen(pars[0]));
+	fprintf(stderr, "DEBUG: runestrlen = %i\n", len);
 
 	if (len > 1 && !opts->format_long) {
 		print_line(opts->ttywidth);
@@ -151,6 +160,8 @@ chars(void *data, char **pars, const int pars_count)
 			print_entry_short(chars[i], chardb_getdesc(db, chars[i]));
 		}
 	}
+
+	if (chars) free(chars);
 }
 
 void
@@ -167,7 +178,7 @@ search(void *data, char **pars, const int pars_count)
 	!is_ok ??!??! die("lcharmap: error: '%s': invalid regex query.", query);
 
 	/* TODO: malloc as needed */
-	u32 matches[32841];
+	Rune matches[32841];
 	usize match_count = chardb_search(db, &re, &matches);
 
 	if (match_count > 1 && !opts->format_long) {
@@ -189,22 +200,25 @@ search(void *data, char **pars, const int pars_count)
 }
 
 void
-print_entry_short(u32 entry, char *description)
+print_entry_short(Rune entry, char *description)
 {
 	/* don't print control characters */
 	if (entry < 32) {
 		printf("%i\t%X\t%o\t&#%i;\t \t%s\n", entry, entry, entry,
 				entry, description);
 	} else {
-		printf("%i\t%X\t%o\t&#%i;\t%c\t%s\n", entry, entry, entry,
-				entry, entry, description);
+		char charbuf[runelen(entry)];
+		runetochar(&charbuf, &entry); /* TODO: check return value */
+
+		printf("%i\t%X\t%o\t&#%i;\t%s\t%s\n", entry, entry, entry,
+				entry, (char*) &charbuf, description);
 	}
 
 	print_line(opts->ttywidth);
 }
 
 void
-print_entry_long(u32 entry, char *description)
+print_entry_long(Rune entry, char *description)
 {
 	char dec[snprintf(NULL, 0, "%d", entry)];
 	sprintf(&dec, "%d", entry);
@@ -217,13 +231,13 @@ print_entry_long(u32 entry, char *description)
 
 	/*
 	 * TODO: display "readable" html entities
-	 * e.g. &amp; instead for '&' instead of &#38;
+	 * e.g. &amp; instead of &#38; for '&'
 	 */
 	char htm[snprintf(NULL, 0, "&#%d;", entry)];
 	sprintf(&htm, "&#%d;", entry);
 
-	char cha[snprintf(NULL, 0, "%c", entry)];
-	sprintf(&cha, "%c", entry);
+	char cha[runelen(entry)];
+	runetochar(&cha, &entry);
 
 	print_entry_row("decimal", &dec);
 	print_entry_row("hexadecimal", &hex);

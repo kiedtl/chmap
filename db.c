@@ -1,4 +1,5 @@
 /* TODO: sort include alphabetically */
+#include "utf.h"
 #include "bool.h"
 #include <regex.h>
 #include <stdio.h>
@@ -44,7 +45,7 @@ chardb_close(sqlite3 *db)
 }
 
 char*
-chardb_getdesc(sqlite3 *db, u32 _char)
+chardb_getdesc(sqlite3 *db, Rune _char)
 {
 	usize querylen = snprintf(NULL, 0, "SELECT description FROM map WHERE id=%i;", _char);
 	char query[querylen];
@@ -55,6 +56,7 @@ chardb_getdesc(sqlite3 *db, u32 _char)
 	sqlite3_prepare_v2(db, &query, querylen, &stmt, NULL);
 	sqlite3_step(stmt);
 
+	fprintf(stderr, "DEBUG: entry of value %i, runelen of %i\n", _char, runelen(_char));
 	/* copy string onto our buffer, to prevent
 	 * sqlite3_finalize from ruining it */
 	char *desc = strdup((char*) sqlite3_column_text(stmt, 0));
@@ -68,7 +70,7 @@ chardb_getdesc(sqlite3 *db, u32 _char)
 }
 
 usize
-chardb_search(sqlite3 *db, regex_t *re, u32 *matchbuf)
+chardb_search(sqlite3 *db, regex_t *re, Rune *matchbuf)
 {
 	usize mctr = 0;
 

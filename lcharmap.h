@@ -1,8 +1,9 @@
 #ifndef LCHARMAP_H
 #define LCHARMAP_H
 
-#include "types.h"
 #include "bool.h"
+#include "types.h"
+#include "utf.h"
 
 /* VERSION defined in makefile */
 const char  ESCAPE = 0x1B;
@@ -20,8 +21,8 @@ void range(void *data, char **pars, const int pars_count);
 void chars(void *data, char **pars, const int pars_count);
 void search(void *data, char **pars, const int pars_count);
 
-void print_entry_short(u32 entry, char *description);
-void print_entry_long(u32 entry, char *description);
+void print_entry_short(Rune entry, char *description);
+void print_entry_long(Rune entry, char *description);
 void print_entry_row(char *key, char *val);
 
 void handle_bool(void *data, char **pars, const int pars_count);
