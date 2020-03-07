@@ -2,6 +2,9 @@
 # lcharmap: a Linux port of the Windows `charmap` utility. 
 # https://github.com/lptstr/lcharmap
 #
+# (c) Kiëd Llaentenn and contributors
+# See the LICENSE.md file for more information
+#
 
 DESTDIR =
 PREFIX  = /usr/local
@@ -11,6 +14,7 @@ VERSION = \"0.3.0\"
 BIN     = lcharmap
 SRC     = sub/argoat/src/argoat.c util.c dirs.c db.c terminfo.c $(BIN).c
 OBJ     = $(SRC:.c=.o)
+LIBUTF  = sub/libutf/lib/libutf.a
 
 WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes -Wno-unused-parameter \
 	  -Wold-style-definition -Wno-incompatible-pointer-types
@@ -32,8 +36,11 @@ debug: $(BIN)
 release: CFLAGS_OPT := -O4 -s
 release: $(BIN)
 
-$(BIN): $(OBJ)
+$(BIN): $(OBJ) $(LIBUTF)
 	$(CC) -o $@ $^ $(CFLAGS) $(CFLAGS_OPT) $(LDFLAGS)
+
+$(LIBUTF):
+	cd sub/libutf && make
 
 lib/chars.db:
 	@cd lib && make
