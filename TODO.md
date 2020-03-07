@@ -1,6 +1,7 @@
 # TODO
 
-- statically linked `sqlite3`
-- `--chars`: support multibyte chars
+- statically link `sqlite3` (*and add as submodule*)
+- `--range`: support number characters from other languages
 - use cross-platform regex library (PCRE?)
-- `grep -nRE 'XXX|TODO' src'
+
+**other:** `grep -nRE 'XXX|TODO' src`
