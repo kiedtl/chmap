@@ -18,7 +18,7 @@ LIBUTF  = sub/libutf/lib/libutf.a
 
 WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes -Wno-unused-parameter \
 	  -Wold-style-definition -Wno-incompatible-pointer-types
-INC     = -I. -Isub/ccommon/ -Isub/argoat/src/
+INC     = -I. -Isub/ccommon/ -Isub/argoat/src/ -Isub/libutf/include
 
 CC      = cc
 LD      = gold
