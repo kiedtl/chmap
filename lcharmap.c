@@ -181,6 +181,9 @@ search(void *data, char **pars, const int pars_count)
 	Rune matches[32841];
 	usize match_count = chardb_search(db, &re, &matches);
 
+	if (match_count == 0)
+		die("lcharmap: error: no results found.");
+
 	if (match_count > 1 && !opts->format_long) {
 		print_line(opts->ttywidth);
 		print_header();
