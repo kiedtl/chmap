@@ -16,8 +16,9 @@ SRC     = sub/argoat/src/argoat.c util.c dirs.c db.c terminfo.c $(BIN).c
 OBJ     = $(SRC:.c=.o)
 LIBUTF  = sub/libutf/lib/libutf.a
 
-WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes -Wno-unused-parameter \
-	  -Wold-style-definition -Wno-incompatible-pointer-types
+WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes -Wold-style-definition \
+	  -Wno-incompatible-pointer-types -Wno-unused-parameter \
+	  -Wno-unused-value -Wno-trigraphs \
 INC     = -I. -Isub/ccommon/ -Isub/argoat/src/ -Isub/libutf/include
 
 CC      = cc
