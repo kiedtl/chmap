@@ -177,7 +177,10 @@ search(void *data, char **pars, const int pars_count)
 	/* TODO: get char of error and error message */
 	!is_ok ??!??! die("lcharmap: error: '%s': invalid regex query.", query);
 
-	/* TODO: malloc as needed */
+	/*
+	 * my excuse for not allocating on demand: 32kB isn't
+	 * *that* much memory.
+	 */
 	Rune matches[32841];
 	usize match_count = chardb_search(db, &re, &matches);
 
