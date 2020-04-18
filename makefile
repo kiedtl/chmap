@@ -27,7 +27,7 @@ DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0
 CC      = cc
 LD      = gold
 CFLAGS  = -std=c99 -DVERSION=$(VERSION) -D_DEFAULT_SOURCE $(WARNING) $(INC)
-LDFLAGS = -fuse-ld=$(LD)
+LDFLAGS = -lpthread -ldl -fuse-ld=$(LD)
 
 all: debug
 
@@ -51,8 +51,7 @@ $(LIBUTF):
 
 $(SQLITE): sql/sqlite3.c
 	@printf "    %-8s%s\n" "CC" $^
-	$(CMD)$(CC) -o $(@:.a=.o) -c $^ $(CFLAGS_OPT) $(LDFLAGS) \
-		$(LDFLAGS_OPT) -lpthread -ldl
+	$(CMD)$(CC) -o $(@:.a=.o) -c $^ $(CFLAGS_OPT)
 	@printf "    %-8s%s\n" "AR" $@
 	$(CMD)$(AR) rvs $@ $(^:.c=.o)
 
