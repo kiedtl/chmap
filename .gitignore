@@ -6,5 +6,6 @@ lib/upddb
 lib/chars.db
 lcharmap.1
 
-*.o
+# ignore compiled files
+*.[ao]
 lcharmap
