@@ -13,15 +13,17 @@ CMD     = @
 VERSION = \"0.3.0\"
 
 BIN     = lcharmap
-SRC     = sub/argoat/src/argoat.c util.c dirs.c db.c terminfo.c $(BIN).c
-OBJ     = $(SRC:.c=.o)
+SRC     = sub/arg/argoat.c src/util.c src/dirs.c \
+	  src/db.c src/terminfo.c src/$(BIN).c
+OBJ     = $(subst src/,obj/,$(SRC:.c=.o))
+
 LIBUTF  = sub/libutf/lib/libutf.a
 SQLITE  = sub/sql/sqlite3.a
 
 WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes -Wold-style-definition \
 	  -Wno-incompatible-pointer-types -Wno-unused-parameter \
 	  -Wno-unused-value -Wno-trigraphs
-INC     = -I. -Isub/ccommon/ -Isub/argoat/src/ -Isub/libutf/include/
+INC     = -I. -Isub/ccommon/ -Isub/arg/ -Isub/libutf/include/ -Isub/sql/
 DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0
 
 AR      = ar
@@ -30,24 +32,28 @@ LD      = gold
 CFLAGS  = -std=c99 -DVERSION=$(VERSION) -D_DEFAULT_SOURCE $(WARNING) $(INC)
 LDFLAGS = -lpthread -ldl -fuse-ld=$(LD)
 
-all: debug
+all: man/$(BIN).1 debug
+
+obj/:
+	$(CMD)mkdir -p obj
 
 .o.a:
 	@printf "    %-8s%s\n" "AR" $<
 	$(CMD)$(AR) rvs $@ $(^:.c=.o) >/dev/null 2>&1
 
-.c.o:
-	@printf "    %-8s%s\n" "CC" $<
-	$(CMD)$(CC) $(CFLAGS) $(CFLAGS_OPT) -c $< -o $(<:.c=.o)
+obj/%.o: src/%.c obj/
+	@printf "    %-8s%s\n" "CC" $(subst src/,obj/,$(<:.c=.o))
+	$(CMD)$(CC) $(CFLAGS) $(CFLAGS_OPT) -c $< \
+		-o $(subst src/,obj/,$(<:.c=.o))
 
 debug: CFLAGS_OPT := -O0 -ggdb
-debug: $(BIN)
+debug: obj/$(BIN)
 
 release: CFLAGS_OPT  := -O3
 release: LDFLAGS_OPT := -march=native -flto -s
-release: $(BIN)
+release: obj/$(BIN)
 
-$(BIN): $(OBJ) $(LIBUTF) $(SQLITE)
+obj/$(BIN): $(OBJ) $(LIBUTF) $(SQLITE)
 	@printf "    %-8s%s\n" "CCLD" $@
 	$(CMD)$(CC) -o $@ $^ $(CFLAGS) $(CFLAGS_OPT) $(LDFLAGS) $(LDFLAGS_OPT)
 
@@ -58,16 +64,16 @@ lib/chars.db:
 	@printf "    %-8s%s\n" "GEN" $@
 	$(CMD)cd lib && make
 
-$(BIN).1: $(BIN).scd
+man/$(BIN).1: man/$(BIN).scd
 	@printf "    %-8s%s\n" "SCDOC" $@
 	$(CMD)scdoc < $^ > $@
 
 clean:
-	$(CMD)rm -f $(BIN) $(OBJ)
+	$(CMD)rm -f obj/$(BIN) $(OBJ) man/$(BIN).1
 
 install: $(BIN) $(BIN).1 lib/chars.db
-	$(CMD)install -Dm755 $(BIN) $(DESTDIR)/$(PREFIX)/bin/$(BIN)
-	$(CMD)install -Dm644 $(BIN).1 $(DESTDIR)/$(PREFIX)/share/man/man1/$(BIN).1
+	$(CMD)install -Dm755 obj/$(BIN) $(DESTDIR)/$(PREFIX)/bin/$(BIN)
+	$(CMD)install -Dm644 man/$(BIN).1 $(DESTDIR)/$(PREFIX)/share/man/man1/$(BIN).1
 	$(CMD)install -Dm644 lib/chars.db $(HOME)/.local/share/$(BIN)/chars.db
 
 uninstall:
