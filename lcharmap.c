@@ -141,8 +141,6 @@ chars(void *data, char **pars, const int pars_count)
 	usize len = utflen(pars[0]);
 	Rune *chars = (Rune*) malloc(len * sizeof(Rune));
 	chartorune(chars, pars[0]);
-	fprintf(stderr, "DEBUG:     strlen = %i\n", strlen(pars[0]));
-	fprintf(stderr, "DEBUG: runestrlen = %i\n", len);
 
 	if (len > 1 && !opts->format_long) {
 		print_line(opts->ttywidth);

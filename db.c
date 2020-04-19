@@ -56,7 +56,6 @@ chardb_getdesc(sqlite3 *db, Rune _char)
 	sqlite3_prepare_v2(db, &query, querylen, &stmt, NULL);
 	sqlite3_step(stmt);
 
-	fprintf(stderr, "DEBUG: entry of value %i, runelen of %i\n", _char, runelen(_char));
 	/* copy string onto our buffer, to prevent
 	 * sqlite3_finalize from ruining it */
 	char *desc = strdup((char*) sqlite3_column_text(stmt, 0));
