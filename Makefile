@@ -16,7 +16,7 @@ BIN     = lcharmap
 SRC     = sub/argoat/src/argoat.c util.c dirs.c db.c terminfo.c $(BIN).c
 OBJ     = $(SRC:.c=.o)
 LIBUTF  = sub/libutf/lib/libutf.a
-SQLITE  = sql/sqlite3.a
+SQLITE  = sub/sql/sqlite3.a
 
 WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes -Wold-style-definition \
 	  -Wno-incompatible-pointer-types -Wno-unused-parameter \
@@ -24,12 +24,17 @@ WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes -Wold-style-definition \
 INC     = -I. -Isub/ccommon/ -Isub/argoat/src/ -Isub/libutf/include/
 DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0
 
+AR      = ar
 CC      = cc
 LD      = gold
 CFLAGS  = -std=c99 -DVERSION=$(VERSION) -D_DEFAULT_SOURCE $(WARNING) $(INC)
 LDFLAGS = -lpthread -ldl -fuse-ld=$(LD)
 
 all: debug
+
+.o.a:
+	@printf "    %-8s%s\n" "AR" $<
+	$(CMD)$(AR) rvs $@ $(^:.c=.o) >/dev/null 2>&1
 
 .c.o:
 	@printf "    %-8s%s\n" "CC" $<
@@ -48,12 +53,6 @@ $(BIN): $(OBJ) $(LIBUTF) $(SQLITE)
 
 $(LIBUTF):
 	$(CMD)cd sub/libutf && make
-
-$(SQLITE): sql/sqlite3.c
-	@printf "    %-8s%s\n" "CC" $^
-	$(CMD)$(CC) -o $(@:.a=.o) -c $^ $(CFLAGS_OPT)
-	@printf "    %-8s%s\n" "AR" $@
-	$(CMD)$(AR) rvs $@ $(^:.c=.o)
 
 lib/chars.db:
 	@printf "    %-8s%s\n" "GEN" $@
