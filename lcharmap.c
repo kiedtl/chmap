@@ -211,11 +211,13 @@ print_entry_short(Rune entry, char *description)
 		printf("%i\t%X\t%o\t&#%i;\t \t%s\n", entry, entry, entry,
 				entry, description);
 	} else {
-		char charbuf[runelen(entry)];
-		runetochar(&charbuf, &entry); /* TODO: check return value */
+		usize sz = runelen(entry);
+		char cha[sz + 1];
+		runetochar(&cha, &entry);
+		cha[sz] = '\0';
 
 		printf("%i\t%X\t%o\t&#%i;\t%s\t%s\n", entry, entry, entry,
-				entry, (char*) &charbuf, description);
+				entry, (char*) &cha, description);
 	}
 
 	print_line(opts->ttywidth);
@@ -240,8 +242,10 @@ print_entry_long(Rune entry, char *description)
 	char htm[snprintf(NULL, 0, "&#%d;", entry)];
 	sprintf(&htm, "&#%d;", entry);
 
-	char cha[runelen(entry)];
+	usize sz = runelen(entry);
+	char cha[sz + 1];
 	runetochar(&cha, &entry);
+	cha[sz] = '\0';
 
 	print_entry_row("decimal", &dec);
 	print_entry_row("hexadecimal", &hex);
