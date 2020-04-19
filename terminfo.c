@@ -13,6 +13,8 @@
  * information.
  */
 
+#include <stdio.h>
+
 #include "terminfo.h"
 #include "types.h"
 
@@ -23,17 +25,35 @@
 #ifdef WOE_IS_ME
 #else
 #include <sys/ioctl.h>
+#include <unistd.h>
 #endif
+
+/*
+ * sizes to fall back to if:
+ *     1) stdout isn't a tty
+ *     2) if on Windows (temporary, only until win32
+ *     support it added
+ */
+const u16 fallback_width  = 80;
+const u16 fallback_height = 24;
+
+/*
+ * file descriptor to get dimensions of
+ * default: stdout (1)
+ */
+const usize fd = 1;
 
 u16
 ttywidth(void)
 {
 #ifdef WOE_IS_ME
-	return (u16) 80;
+	return (u16) fallback_width;
 #else
-	struct winsize w;
-	ioctl(0, TIOCGWINSZ, &w);
+	if (!isatty(fd))
+		return fallback_width;
 
+	struct winsize w;
+	ioctl(fd, TIOCGWINSZ, &w);
 	return w.ws_col;
 #endif
 }
@@ -44,8 +64,11 @@ ttyheight(void)
 #ifdef WOE_IS_ME
 	return (u16) 24;
 #else
+	if (!isatty(fd))
+		return fallback_height;
+
 	struct winsize w;
-	ioctl(0, TIOCGWINSZ, &w);
+	ioctl(fd, TIOCGWINSZ, &w);
 
 	return w.ws_row;
 #endif
