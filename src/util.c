@@ -7,14 +7,20 @@
 #include "bool.h"
 #include <stdio.h>
 #include <string.h>
+#include <sqlite3.h>
 #include <stdlib.h>
 #include "util.h"
+#include "db.h"
+#include "lcharmap.h"
 #include "types.h"
+
+extern sqlite3 *db;
+extern struct Options *opts;
 
 void*
 ecalloc(usize ct, usize sz)
 {
-	void *mem = calloc(blkct, blksz);
+	void *mem = calloc(ct, sz);
 	if (mem == NULL)
 		die("lcharmap: error: unable to allocate memory:");
 	return mem;
@@ -35,6 +41,7 @@ die(const char *fmt, ...)
 		fputc('\n', stderr);
 	}
 
+	cleanup();
 	exit(1);
 
 	/* return dummy value so that die() can
@@ -42,6 +49,13 @@ die(const char *fmt, ...)
 	 * e.g.: is_ok || die("message")
 	 */
 	return 0;
+}
+
+void
+cleanup(void)
+{
+	chardb_close(db);
+	free(opts);
 }
 
 void
