@@ -43,6 +43,7 @@ dirs_data_dir(void)
 			+ (sizeof("/.local/share") - 1)
 			+ 1 /* null terminator */;
 		char *buf = malloc(size * sizeof(char));
+		if (!buf) return NULL;
 		buf[size - 1] = '\0';
 
 		strcpy(buf, home);
