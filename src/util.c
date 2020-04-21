@@ -11,6 +11,15 @@
 #include "util.h"
 #include "types.h"
 
+void*
+ecalloc(usize ct, usize sz)
+{
+	void *mem = calloc(blkct, blksz);
+	if (mem == NULL)
+		die("lcharmap: error: unable to allocate memory:");
+	return mem;
+}
+
 usize
 die(const char *fmt, ...)
 {
