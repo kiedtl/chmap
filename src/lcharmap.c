@@ -14,6 +14,12 @@
 #include "util.h"
 #include "utf.h"
 
+const char ESCAPE = 0x1B;
+const usize LONG_FORMAT_PADDING = 20;
+
+sqlite3 *db;
+struct Options *opts;
+
 int
 main(int argc, char **argv)
 {
@@ -63,7 +69,7 @@ main(int argc, char **argv)
 	struct argoat args = { sprigs, sizeof(sprigs), NULL, 0, 0 };
 	argoat_graze(&args, argc, argv);
 
-	free(opts);
+	cleanup();
 }
 
 void
