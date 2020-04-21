@@ -2,17 +2,17 @@
 #define WOE_IS_ME
 #endif
 
-/* TODO: sort include alphabetically */
 #include <stdarg.h>
-#include "bool.h"
 #include <stdio.h>
-#include <string.h>
-#include <sqlite3.h>
 #include <stdlib.h>
-#include "util.h"
+#include <sqlite3.h>
+#include <string.h>
+
+#include "bool.h"
 #include "db.h"
 #include "lcharmap.h"
 #include "types.h"
+#include "util.h"
 
 extern sqlite3 *db;
 extern struct Options *opts;

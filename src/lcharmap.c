@@ -1,8 +1,8 @@
 #include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <sqlite3.h>
+#include <string.h>
 
 #include "argoat.h"
 #include "bool.h"
