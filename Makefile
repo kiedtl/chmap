@@ -14,15 +14,18 @@ VERSION = \"0.3.0\"
 
 BIN     = lcharmap
 SRC     = sub/arg/argoat.c src/util.c src/dirs.c \
+	  src/tables.c \
 	  src/db.c src/terminfo.c src/$(BIN).c
 OBJ     = $(subst src/,obj/,$(SRC:.c=.o))
 
 LIBUTF  = sub/libutf/lib/libutf.a
 SQLITE  = sub/sql/sqlite3.a
 
-WARNING = -Wall -Wextra -pedantic -Wmissing-prototypes -Wold-style-definition \
-	  -Wno-incompatible-pointer-types -Wno-unused-parameter \
-	  -Wno-unused-value -Wno-trigraphs
+WARNING = -Wall -Wpedantic -Wextra -Wold-style-definition \
+	  -Wmissing-prototypes -Winit-self -Wfloat-equal -Wstrict-prototypes \
+	  -Wredundant-decls -Wendif-labels -Wstrict-aliasing=2 -Woverflow \
+	  -Wformat=2 -Wmissing-include-dirs -Wno-trigraphs \
+	  -Wno-format-nonliteral
 INC     = -I. -Isub/ccommon/ -Isub/arg/ -Isub/libutf/include/ -Isub/sql/
 DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0
 

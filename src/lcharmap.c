@@ -9,13 +9,11 @@
 #include "db.h"
 #include "dirs.h"
 #include "lcharmap.h"
+#include "tables.h"
 #include "terminfo.h"
 #include "types.h"
 #include "util.h"
 #include "utf.h"
-
-const char ESCAPE = 0x1B;
-const usize LONG_FORMAT_PADDING = 20;
 
 sqlite3 *db;
 struct Options *opts;
@@ -106,7 +104,7 @@ range(void *data, char **pars, const int pars_count)
 	/* print range */
 	/* TODO: merge this code with above */
 	if (range2 == NULL) {
-		print_entry_long(range[0], chardb_getdesc(db, range[0]));
+		table_print_entry(range[0], chardb_getdesc(db, range[0]));
 		return;
 	}
 
@@ -117,22 +115,20 @@ range(void *data, char **pars, const int pars_count)
 	}
 
 	if (range[1] == range[0]) {
-		print_entry_long(range[0], chardb_getdesc(db, range[0]));
+		table_print_entry(range[0], chardb_getdesc(db, range[0]));
 		return;
 	}
 
 	if (opts->format_long) {
 		for (usize i = range[0]; i <= range[1]; ++i) {
-			print_entry_long(i, chardb_getdesc(db, i));
+			table_print_entry(i, chardb_getdesc(db, i));
 			printf("\n");
 		}
 	} else {
-		print_line(opts->ttywidth);
-		print_header();
-		print_line(opts->ttywidth);
+		table_print_header();
 
 		for (usize i = range[0]; i <= range[1]; ++i) {
-			print_entry_short(i, chardb_getdesc(db, i));
+			table_print_entry(i, chardb_getdesc(db, i));
 		}
 	}
 }
@@ -153,19 +149,17 @@ chars(void *data, char **pars, const int pars_count)
 	chartorune(chars, pars[0]);
 
 	if (len > 1 && !opts->format_long) {
-		print_line(opts->ttywidth);
-		print_header();
-		print_line(opts->ttywidth);
+		table_print_header();
 	}
 
 	for (usize i = 0; i < len; ++i) {
 		if (len < 2 || opts->format_long) {
-			print_entry_long(chars[i], chardb_getdesc(db, chars[i]));
+			table_print_entry(chars[i], chardb_getdesc(db, chars[i]));
 
 			/* line padding before next entry */
 			printf("\n");
 		} else {
-			print_entry_short(chars[i], chardb_getdesc(db, chars[i]));
+			table_print_entry(chars[i], chardb_getdesc(db, chars[i]));
 		}
 	}
 
@@ -196,82 +190,19 @@ search(void *data, char **pars, const int pars_count)
 		die("lcharmap: error: no results found.");
 
 	if (match_count > 1 && !opts->format_long) {
-		print_line(opts->ttywidth);
-		print_header();
-		print_line(opts->ttywidth);
+		table_print_header();
 	}
 
 	for (usize i = 0; i < match_count; ++i) {
 		if (match_count < 2 || opts->format_long) {
-			print_entry_long(matches[i], chardb_getdesc(db, matches[i]));
+			table_print_entry(matches[i], chardb_getdesc(db, matches[i]));
 
 			/* line padding before next entry */
 			printf("\n");
 		} else {
-			print_entry_short(matches[i], chardb_getdesc(db, matches[i]));
+			table_print_entry(matches[i], chardb_getdesc(db, matches[i]));
 		}
 	}
-}
-
-void
-print_entry_short(Rune entry, char *description)
-{
-	/* don't print control characters */
-	if (entry < 32) {
-		printf("%i\t%X\t%o\t&#%i;\t \t%s\n", entry, entry, entry,
-				entry, description);
-	} else {
-		usize sz = runelen(entry);
-		char cha[sz + 1];
-		runetochar(&cha, &entry);
-		cha[sz] = '\0';
-
-		printf("%i\t%X\t%o\t&#%i;\t%s\t%s\n", entry, entry, entry,
-				entry, (char*) &cha, description);
-	}
-
-	print_line(opts->ttywidth);
-}
-
-void
-print_entry_long(Rune entry, char *description)
-{
-	char dec[snprintf(NULL, 0, "%d", entry)];
-	sprintf(&dec, "%d", entry);
-
-	char hex[snprintf(NULL, 0, "%X", entry)];
-	sprintf(&hex, "%X", entry);
-
-	char oct[snprintf(NULL, 0, "%o", entry)];
-	sprintf(&oct, "%o", entry);
-
-	/*
-	 * TODO: display "readable" html entities
-	 * e.g. &amp; instead of &#38; for '&'
-	 */
-	char htm[snprintf(NULL, 0, "&#%d;", entry)];
-	sprintf(&htm, "&#%d;", entry);
-
-	usize sz = runelen(entry);
-	char cha[sz + 1];
-	runetochar(&cha, &entry);
-	cha[sz] = '\0';
-
-	print_entry_row("decimal", &dec);
-	print_entry_row("hexadecimal", &hex);
-	print_entry_row("octal", &oct);
-	print_entry_row("HTML entity", &htm);
-	print_entry_row("character", &cha);
-	print_entry_row("description", description);
-}
-
-void
-print_entry_row(char *key, char *val)
-{
-	usize keylen = strlen(key);
-	for (usize i = 0; i < (LONG_FORMAT_PADDING - keylen); ++i)
-		printf(" ");
-	printf("%c[1m%s%c[0m  %s\n", ESCAPE, key, ESCAPE, val);
 }
 
 void

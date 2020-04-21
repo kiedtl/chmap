@@ -51,9 +51,9 @@ chardb_getdesc(sqlite3 *db, Rune _char)
 	char query[querylen];
 
 	char *err = NULL;
-	sprintf(&query, "SELECT description FROM map WHERE id=%i;", _char);
+	sprintf((char*) &query, "SELECT description FROM map WHERE id=%i;", _char);
 	sqlite3_stmt *stmt;
-	sqlite3_prepare_v2(db, &query, querylen, &stmt, NULL);
+	sqlite3_prepare_v2(db, (char*) &query, querylen, &stmt, NULL);
 	sqlite3_step(stmt);
 
 	/* copy string onto our buffer, to prevent
