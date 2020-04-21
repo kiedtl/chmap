@@ -28,12 +28,16 @@ main(int argc, char **argv)
 	db = chardb_open((char*) &dbpath);
 
 	/* set default options */
-	opts = (struct Options*) malloc(1 * sizeof(struct Options));
-	if (opts == NULL)
-		die("lcharmap: error: unable to allocate memory:");
+	opts = (struct Options*) ecalloc(1, sizeof(struct Options));
 
 	opts->format_long = FALSE;
 	opts->ttywidth    = ttywidth();
+
+	/* TODO: get a better argument parser that
+	 * - WON'T crash on unrecognized arg
+	 * - SUPPORTS simple neighbors (e.g. "head -n1")
+	 * - SUPPORTS subcommands
+	 */
 
 	/* parse arguments with cylgom/argoat */
 	const struct argoat_sprig sprigs[15] = {
@@ -139,7 +143,7 @@ chars(void *data, char **pars, const int pars_count)
 	 * separate character.
 	 */
 	usize len = utflen(pars[0]);
-	Rune *chars = (Rune*) malloc(len * sizeof(Rune));
+	Rune *chars = (Rune*) ecalloc(len, sizeof(Rune));
 	chartorune(chars, pars[0]);
 
 	if (len > 1 && !opts->format_long) {
