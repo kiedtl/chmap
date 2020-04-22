@@ -38,11 +38,11 @@ table_print_entry(Rune entry, char *description)
 	char dec[snprintf(NULL, 0, "%d", entry)];
 	sprintf((char*) &dec, "%d", entry);
 
-	char hex[snprintf(NULL, 0, "%X", entry)];
-	sprintf((char*) &hex, "%X", entry);
+	char hex[snprintf(NULL, 0, "0x%X", entry)];
+	sprintf((char*) &hex, "0x%X", entry);
 
-	char oct[snprintf(NULL, 0, "%o", entry)];
-	sprintf((char*) &oct, "%o", entry);
+	char oct[snprintf(NULL, 0, "0b%o", entry)];
+	sprintf((char*) &oct, "0b%o", entry);
 
 	/*
 	 * TODO: display "readable" html entities
