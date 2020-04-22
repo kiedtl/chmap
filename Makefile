@@ -9,7 +9,7 @@
 DESTDIR =
 PREFIX  = /usr/local
 
-CMD     = @
+CMD     =
 VERSION = \"0.3.0\"
 
 BIN     = lcharmap
@@ -18,6 +18,7 @@ SRC     = sub/arg/argoat.c src/util.c src/dirs.c \
 	  src/db.c src/terminfo.c src/$(BIN).c
 OBJ     = $(subst src/,obj/,$(SRC:.c=.o))
 
+LIBULZ  = sub/ulz/lib/libulz.a
 LIBUTF  = sub/libutf/lib/libutf.a
 SQLITE  = sub/sql/sqlite3.a
 
@@ -26,7 +27,8 @@ WARNING = -Wall -Wpedantic -Wextra -Wold-style-definition \
 	  -Wredundant-decls -Wendif-labels -Wstrict-aliasing=2 -Woverflow \
 	  -Wformat=2 -Wmissing-include-dirs -Wno-trigraphs \
 	  -Wno-format-nonliteral
-INC     = -I. -Isub/ccommon/ -Isub/arg/ -Isub/libutf/include/ -Isub/sql/
+INC     = -I. -Isub/ccommon/ -Isub/arg/ -Isub/libutf/include/ -Isub/sql/ \
+	  -Isub/ulz/include
 DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0
 
 AR      = ar
@@ -41,11 +43,9 @@ obj/:
 	$(CMD)mkdir -p obj
 
 .o.a:
-	@printf "    %-8s%s\n" "AR" $<
 	$(CMD)$(AR) rvs $@ $(^:.c=.o) >/dev/null 2>&1
 
 obj/%.o: src/%.c obj/
-	@printf "    %-8s%s\n" "CC" $(subst src/,obj/,$(<:.c=.o))
 	$(CMD)$(CC) $(CFLAGS) $(CFLAGS_OPT) -c $< \
 		-o $(subst src/,obj/,$(<:.c=.o))
 
@@ -56,19 +56,19 @@ release: CFLAGS_OPT  := -O3
 release: LDFLAGS_OPT := -march=native -flto -s
 release: obj/$(BIN)
 
-obj/$(BIN): $(OBJ) $(LIBUTF) $(SQLITE)
-	@printf "    %-8s%s\n" "CCLD" $@
+obj/$(BIN): $(OBJ) $(LIBUTF) $(SQLITE) $(LIBULZ)
 	$(CMD)$(CC) -o $@ $^ $(CFLAGS) $(CFLAGS_OPT) $(LDFLAGS) $(LDFLAGS_OPT)
 
+$(LIBULZ):
+	$(CMD)make -C sub/ulz
+
 $(LIBUTF):
-	$(CMD)cd sub/libutf && make
+	$(CMD)make -C sub/libutf
 
 lib/chars.db:
-	@printf "    %-8s%s\n" "GEN" $@
 	$(CMD)cd lib && make
 
 man/$(BIN).1: man/$(BIN).scd
-	@printf "    %-8s%s\n" "SCDOC" $@
 	$(CMD)scdoc < $^ > $@
 
 clean:

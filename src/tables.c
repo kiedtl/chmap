@@ -67,12 +67,17 @@ table_print_entry(Rune entry, char *description)
 	}
 
 	if (opts->format_long) {
-		printf("%c[1m%20s%c[m%s\n", 0x1B, "decimal", 0x1B, (char*) &dec);
-		printf("%c[1m%20s%c[m%s\n", 0x1B, "hexadecimal", 0x1B, (char*) &hex);
-		printf("%c[1m%20s%c[m%s\n", 0x1B, "octal", 0x1B, (char*) &oct);
-		printf("%c[1m%20s%c[m%s\n", 0x1B, "HTML entity", 0x1B, (char*) &htm);
-		printf("%c[1m%20s%c[m%s\n", 0x1B, "character", 0x1B, (char*) &cha);
-		printf("%c[1m%20s%c[m%s\n", 0x1B, "description", 0x1B,
+		printf("%c[1m%20s  %c[m%s\n", 0x1B, "decimal", 0x1B,
+			(char*) &dec);
+		printf("%c[1m%20s  %c[m%s\n", 0x1B, "hexadecimal", 0x1B,
+			(char*) &hex);
+		printf("%c[1m%20s  %c[m%s\n", 0x1B, "octal", 0x1B,
+			(char*) &oct);
+		printf("%c[1m%20s  %c[m%s\n", 0x1B, "HTML entity", 0x1B,
+			(char*) &htm);
+		printf("%c[1m%20s  %c[m%s\n", 0x1B, "character", 0x1B,
+			(char*) &cha);
+		printf("%c[1m%20s  %c[m%s\n", 0x1B, "description", 0x1B,
 			description);
 	} else {
 		printf("%s\t%s\t%s\t%s\t%s\t%s\n", &dec, &hex, &oct, &htm,
