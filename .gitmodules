@@ -7,3 +7,6 @@
 [submodule "sub/libutf"]
 	path = sub/libutf
 	url = https://github.com/cls/libutf
+[submodule "sub/ulz"]
+	path = sub/ulz
+	url = https://github.com/rofl0r/libulz
