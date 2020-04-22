@@ -14,6 +14,8 @@
 #include "types.h"
 #include "util.h"
 #include "utf.h"
+#include "vec.h"
+#include "vecdef.h"
 
 sqlite3 *db;
 struct Options *opts;
@@ -80,57 +82,84 @@ range(void *data, char **pars, const int pars_count)
 	if (pars_count < 1)
 		die("lcharmap: error: argument to --range missing.");
 
-	usize range[2];
-	char *range1 = strsep(&pars[0], ",");
-	char *range2 = strsep(&pars[0], ",");
+	//usize range[2];
+	//char *range1 = strsep(&pars[0], ",");
+	//char *range2 = strsep(&pars[0], ",");
 
-	usize base = 10;
-	if (!strncmp(range1, "0x", 2))
-		base = 16;
-	else if (!strncmp(range1, "0", 1))
-		base = 8;
+	//usize base = 10;
+	//if (!strncmp(range1, "0x", 2))
+	//	base = 16;
+	//else if (!strncmp(range1, "0", 1))
+	//	base = 8;
 
-	range[0] = strtol(range1, NULL, base);
+	//range[0] = strtol(range1, NULL, base);
 
-	if (range2 != NULL) {
-		base = 10;
-		if (!strncmp(range2, "0x", 2))
-			base = 16;
-		else if (!strncmp(range2, "0", 1))
-			base = 8;
-		range[1] = strtol(range2, NULL, base);
-	}
+	//if (range2 != NULL) {
+	//	base = 10;
+	//	if (!strncmp(range2, "0x", 2))
+	//		base = 16;
+	//	else if (!strncmp(range2, "0", 1))
+	//		base = 8;
+	//	range[1] = strtol(range2, NULL, base);
+	//}
 
-	/* print range */
-	/* TODO: merge this code with above */
-	if (range2 == NULL) {
-		table_print_entry(range[0], chardb_getdesc(db, range[0]));
-		return;
-	}
+	///* print range */
+	///* TODO: merge this code with above */
+	//if (range2 == NULL) {
+	//	table_print_entry(range[0], chardb_getdesc(db, range[0]));
+	//	return;
+	//}
 
-	if (range[1] < range[0]) {
-		fprintf(stderr, "lcharmap: error: provided range %i -> %i doesn't make sense.\n",
-			range[0], range[1]);
-		exit(1);
-	}
+	//if (range[1] < range[0]) {
+	//	fprintf(stderr, "lcharmap: error: provided range %i -> %i doesn't make sense.\n",
+	//		range[0], range[1]);
+	//	exit(1);
+	//}
 
-	if (range[1] == range[0]) {
-		table_print_entry(range[0], chardb_getdesc(db, range[0]));
-		return;
-	}
+	//if (range[1] == range[0]) {
+	//	table_print_entry(range[0], chardb_getdesc(db, range[0]));
+	//	return;
+	//}
 
-	if (opts->format_long) {
-		for (usize i = range[0]; i <= range[1]; ++i) {
-			table_print_entry(i, chardb_getdesc(db, i));
-			printf("\n");
-		}
-	} else {
-		table_print_header();
+	//if (opts->format_long) {
+	//	for (usize i = range[0]; i <= range[1]; ++i) {
+	//		table_print_entry(i, chardb_getdesc(db, i));
+	//		printf("\n");
+	//	}
+	//} else {
+	//	table_print_header();
 
-		for (usize i = range[0]; i <= range[1]; ++i) {
-			table_print_entry(i, chardb_getdesc(db, i));
-		}
-	}
+	//	for (usize i = range[0]; i <= range[1]; ++i) {
+	//		table_print_entry(i, chardb_getdesc(db, i));
+	//	}
+	//}
+
+	vec_rune_t entries;
+	vec_init(&entries);
+
+	vec_push(&entries, 0);
+	vec_push(&entries, 33);
+	vec_push(&entries, 85);
+	vec_push(&entries, 1212);
+
+	vec_str_t descriptions;
+	vec_init(&descriptions);
+
+	for (usize i = 0; i < entries.length; ++i)
+		vec_push(&descriptions, chardb_getdesc(db, entries.data[i]));
+
+	struct Table table = {
+		opts->ttywidth,
+		opts->format_long,
+		4,
+		&entries,
+		&descriptions
+	};
+
+	table_show(&table);
+
+	vec_deinit(&entries);
+	vec_deinit(&descriptions);
 }
 
 void
@@ -149,17 +178,17 @@ chars(void *data, char **pars, const int pars_count)
 	chartorune(chars, pars[0]);
 
 	if (len > 1 && !opts->format_long) {
-		table_print_header();
+		//table_print_header();
 	}
 
 	for (usize i = 0; i < len; ++i) {
 		if (len < 2 || opts->format_long) {
-			table_print_entry(chars[i], chardb_getdesc(db, chars[i]));
+			//table_print_entry(chars[i], chardb_getdesc(db, chars[i]));
 
 			/* line padding before next entry */
 			printf("\n");
 		} else {
-			table_print_entry(chars[i], chardb_getdesc(db, chars[i]));
+			//table_print_entry(chars[i], chardb_getdesc(db, chars[i]));
 		}
 	}
 
@@ -190,17 +219,17 @@ search(void *data, char **pars, const int pars_count)
 		die("lcharmap: error: no results found.");
 
 	if (match_count > 1 && !opts->format_long) {
-		table_print_header();
+		//table_print_header();
 	}
 
 	for (usize i = 0; i < match_count; ++i) {
 		if (match_count < 2 || opts->format_long) {
-			table_print_entry(matches[i], chardb_getdesc(db, matches[i]));
+			//table_print_entry(matches[i], chardb_getdesc(db, matches[i]));
 
 			/* line padding before next entry */
 			printf("\n");
 		} else {
-			table_print_entry(matches[i], chardb_getdesc(db, matches[i]));
+			//table_print_entry(matches[i], chardb_getdesc(db, matches[i]));
 		}
 	}
 }

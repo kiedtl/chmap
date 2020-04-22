@@ -1,11 +1,20 @@
 #ifndef TABLES_H
 #define TABLES_H
 
+#include "bool.h"
 #include "types.h"
-#include "utf.h"
+#include "vec.h"
+#include "vecdef.h"
 
-void table_print_line(u16 termwidth);
-void table_print_header(void);
-void table_print_entry(Rune entry, char *description);
+
+struct Table {
+	u16 ttywidth;
+	bool format_long;
+	usize entry_len;
+	vec_rune_t *entries;
+	vec_str_t *descrips;
+};
+
+void table_show(struct Table *self);
 
 #endif

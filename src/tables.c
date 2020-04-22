@@ -3,37 +3,44 @@
 
 #include "lcharmap.h"
 #include "tables.h"
+#include "utf.h"
 
-extern struct Options *opts;
+static void table_print_line(struct Table *self);
+static void table_print_header(struct Table *self);
+static void table_print_entry(
+	struct Table *self,
+	Rune entry,
+	char *description
+);
 
 void
-table_print_line(u16 termwidth)
+table_print_line(struct Table *self)
 {
 	/* TODO: allow user to change line character
 	 * via cmd options, just in case their terminal/font
 	 * doesn't fully support UTF8 */
 
 	/* don't forget the null terminator! */
-	char line[((termwidth) * sizeof("─")) + 1];
+	char line[((self->ttywidth) * sizeof("─")) + 1];
 	strcpy(line, "─");
-	for (usize i = 0; i < (usize) termwidth - 1; ++i) {
+	for (usize i = 0; i < (usize) self->ttywidth - 1; ++i) {
 	        strcat(line, "─");
 	}
-	line[termwidth * sizeof("─")] = '\n';
-	line[(termwidth + 1) * sizeof("─")] = '\0';
+	line[self->ttywidth * sizeof("─")] = '\n';
+	line[(self->ttywidth + 1) * sizeof("─")] = '\0';
 	printf(line);
 }
 
 void
-table_print_header(void)
+table_print_header(struct Table *self)
 {
-	table_print_line(opts->ttywidth);
+	table_print_line(self);
 	printf("DEC\tHEX\tOCT\tHTML\tCHAR\tDESC\n");
-	table_print_line(opts->ttywidth);
+	table_print_line(self);
 }
 
 void
-table_print_entry(Rune entry, char *description)
+table_print_entry(struct Table *self, Rune entry, char *description)
 {
 	char dec[snprintf(NULL, 0, "%d", entry)];
 	sprintf((char*) &dec, "%d", entry);
@@ -66,7 +73,7 @@ table_print_entry(Rune entry, char *description)
 		cha[sz] = '\0';
 	}
 
-	if (opts->format_long) {
+	if (self->format_long) {
 		printf("%c[1m%20s  %c[m%s\n", 0x1B, "decimal", 0x1B,
 			(char*) &dec);
 		printf("%c[1m%20s  %c[m%s\n", 0x1B, "hexadecimal", 0x1B,
@@ -79,9 +86,25 @@ table_print_entry(Rune entry, char *description)
 			(char*) &cha);
 		printf("%c[1m%20s  %c[m%s\n", 0x1B, "description", 0x1B,
 			description);
+		printf("\n");
 	} else {
 		printf("%s\t%s\t%s\t%s\t%s\t%s\n", &dec, &hex, &oct, &htm,
 			&cha, description);
-		table_print_line(opts->ttywidth);
+		table_print_line(self);
+	}
+}
+
+void
+table_show(struct Table *self)
+{
+	if (!self->format_long)
+		table_print_header(self);
+
+	for (usize i = 0; i < self->entry_len; ++i) {
+		table_print_entry(
+			self,
+			self->entries->data[i],
+			self->descrips->data[i]
+		);
 	}
 }
