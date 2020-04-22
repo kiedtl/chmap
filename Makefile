@@ -14,7 +14,7 @@ VERSION = \"0.3.0\"
 
 BIN     = lcharmap
 SRC     = sub/arg/argoat.c sub/vec/src/vec.c \
-	  src/util.c src/dirs.c src/tables.c \
+	  src/util.c src/dirs.c src/tables.c src/range.c \
 	  src/db.c src/terminfo.c src/$(BIN).c
 OBJ     = $(SRC:.c=.o)
 

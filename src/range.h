@@ -3,7 +3,9 @@
 
 #include "bool.h"
 #include "types.h"
+#include "vec.h"
+#include "vecdef.h"
 
-usize *expand_range(char *input);
+bool expand_range(char *s, vec_rune_t *entries);
 
 #endif

@@ -100,7 +100,7 @@ table_show(struct Table *self)
 	if (!self->format_long)
 		table_print_header(self);
 
-	for (usize i = 0; i < self->entry_len; ++i) {
+	for (usize i = 0; i < self->entries->length; ++i) {
 		table_print_entry(
 			self,
 			self->entries->data[i],

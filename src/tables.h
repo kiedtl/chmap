@@ -10,7 +10,6 @@
 struct Table {
 	u16 ttywidth;
 	bool format_long;
-	usize entry_len;
 	vec_rune_t *entries;
 	vec_str_t *descrips;
 };
