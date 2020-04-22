@@ -10,3 +10,6 @@
 [submodule "sub/ulz"]
 	path = sub/ulz
 	url = https://github.com/rofl0r/libulz
+[submodule "sub/vec"]
+	path = sub/vec
+	url = https://github.com/rxi/vec
