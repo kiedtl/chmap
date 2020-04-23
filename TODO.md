@@ -1,11 +1,14 @@
 # TODO
 
 - `--range`: support number characters from other languages
-- use cross-platform regex library (PCRE?)
 - rename ccommon to libutil, move ecalloc to libutil
-- complete Windows support for terminfo.c, dirs.c
-- move terminfo.c, dirs.c into separate submodules
 - update documentation (help message, manpage)
 - use "real" tables library instead of custom one
+
+## Winbl^H^Hdows support
+
+- use cross-platform regex library instead of `regex.h` (PCRE?)
+- complete Windows support for terminfo.c, dirs.c
+- move terminfo.c, dirs.c into separate submodules
 
 **other:** `grep -nRE 'XXX|TODO' src`
