@@ -112,6 +112,6 @@ parse_int(int *x, char *s, char **e, bool add, vec_rune_t *entries)
 	 * to be added to the entries.
 	 */
 
-	if (ok && add) vec_push(entries, (Rune) x);
+	if (ok && add) vec_push(entries, (Rune) *x);
 	return ok;
 }
