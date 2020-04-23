@@ -85,8 +85,7 @@ range(void *data, char **pars, const int pars_count)
 	vec_rune_t entries;
 	vec_init(&entries);
 
-	bool ok = expand_range(pars[0], &entries);
-	if (!ok)
+	if (!expand_range(pars[0], &entries))
 		die("lcharmap: error: '%s': invalid range.", pars[0]);
 
 	vec_str_t descriptions;
@@ -123,20 +122,28 @@ chars(void *data, char **pars, const int pars_count)
 	Rune *chars = (Rune*) ecalloc(len, sizeof(Rune));
 	chartorune(chars, pars[0]);
 
-	if (len > 1 && !opts->format_long) {
-		//table_print_header();
-	}
+	vec_str_t descriptions;
+	vec_init(&descriptions);
+
+	vec_rune_t entries;
+	vec_init(&entries);
 
 	for (usize i = 0; i < len; ++i) {
-		if (len < 2 || opts->format_long) {
-			//table_print_entry(chars[i], chardb_getdesc(db, chars[i]));
-
-			/* line padding before next entry */
-			printf("\n");
-		} else {
-			//table_print_entry(chars[i], chardb_getdesc(db, chars[i]));
-		}
+		vec_push(&entries, chars[i]);
+		vec_push(&descriptions, chardb_getdesc(db, chars[i]));
 	}
+
+	struct Table table = {
+		opts->ttywidth,
+		opts->format_long,
+		&entries,
+		&descriptions
+	};
+
+	table_show(&table);
+
+	vec_deinit(&entries);
+	vec_deinit(&descriptions);
 
 	if (chars) free(chars);
 }
@@ -164,20 +171,28 @@ search(void *data, char **pars, const int pars_count)
 	if (match_count == 0)
 		die("lcharmap: error: no results found.");
 
-	if (match_count > 1 && !opts->format_long) {
-		//table_print_header();
-	}
+	vec_rune_t entries;
+	vec_init(&entries);
+
+	vec_str_t descriptions;
+	vec_init(&descriptions);
 
 	for (usize i = 0; i < match_count; ++i) {
-		if (match_count < 2 || opts->format_long) {
-			//table_print_entry(matches[i], chardb_getdesc(db, matches[i]));
-
-			/* line padding before next entry */
-			printf("\n");
-		} else {
-			//table_print_entry(matches[i], chardb_getdesc(db, matches[i]));
-		}
+		vec_push(&entries, matches[i]);
+		vec_push(&descriptions, chardb_getdesc(db, matches[i]));
 	}
+
+	struct Table table = {
+		opts->ttywidth,
+		opts->format_long,
+		&entries,
+		&descriptions
+	};
+
+	table_show(&table);
+
+	vec_deinit(&entries);
+	vec_deinit(&descriptions);
 }
 
 void
