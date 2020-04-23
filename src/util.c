@@ -54,7 +54,7 @@ die(const char *fmt, ...)
 void
 cleanup(void)
 {
-	chardb_close(db);
+	//chardb_close(db);
 	free(opts);
 }
 
