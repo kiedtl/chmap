@@ -35,7 +35,7 @@ void
 table_print_header(struct Table *self)
 {
 	table_print_line(self);
-	printf("DEC\tHEX\tOCT\tHTML\tCHAR\tDESC\n");
+	printf("%-8s%-8s%-8s%-8s%s\n", "DEC", "HEX", "OCT", "CHAR", "DESC");
 	table_print_line(self);
 }
 
@@ -88,7 +88,7 @@ table_print_entry(struct Table *self, Rune entry, char *description)
 			description);
 		printf("\n");
 	} else {
-		printf("%s\t%s\t%s\t%s\t%s\t%s\n", &dec, &hex, &oct, &htm,
+		printf("%-8s%-8s%-8s%-8s%s\n", &dec, &hex, &oct,
 			&cha, description);
 		table_print_line(self);
 	}
