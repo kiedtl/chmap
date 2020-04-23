@@ -63,11 +63,11 @@ table_print_entry(struct Table *self, Rune entry, char *description)
 	bool iscontrol = entry < 32 || (entry > 126 && entry < 160);
 
 	usize sz;
-	if (iscontrol) sz = sizeof("<control>");
+	if (iscontrol) sz = sizeof("<ctrl>");
 	else sz = runelen(entry) + 1;
 	char cha[sz];
 	if (iscontrol) {
-		strcpy((char*) &cha, "<control>");
+		strcpy((char*) &cha, "<ctrl>");
 	} else {
 		runetochar((char*) &cha, &entry);
 		cha[sz] = '\0';

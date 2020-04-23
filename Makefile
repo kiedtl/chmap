@@ -25,7 +25,8 @@ WARNING = -Wall -Wpedantic -Wextra -Wold-style-definition \
 	  -Wmissing-prototypes -Winit-self -Wfloat-equal -Wstrict-prototypes \
 	  -Wredundant-decls -Wendif-labels -Wstrict-aliasing=2 -Woverflow \
 	  -Wformat=2 -Wmissing-include-dirs -Wno-trigraphs \
-	  -Wno-format-nonliteral
+	  -Wno-format-nonliteral -Wno-incompatible-pointer-types \
+	  -Wno-unused-parameter
 INC     = -I. -Isub/ccommon/ -Isub/arg/ -Isub/libutf/include/ -Isub/sql/ \
 	  -Isub/vec/src
 DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0

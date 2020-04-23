@@ -5,5 +5,6 @@
 - rename ccommon to libutil, move ecalloc to libutil
 - complete Windows support for terminfo.c, dirs.c
 - move terminfo.c, dirs.c into separate submodules
+- update documentation (help message, manpage)
 
 **other:** `grep -nRE 'XXX|TODO' src`
