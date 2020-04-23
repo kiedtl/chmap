@@ -10,7 +10,7 @@
 #include "vecdef.h"
 
 static bool parse_range(char *s, char **e, vec_rune_t *entries);
-static bool parse_int(int x, char *s, char **e, bool add, vec_rune_t *entries);
+static bool parse_int(int *x, char *s, char **e, bool add, vec_rune_t *entries);
 
 bool
 expand_range(char *s, vec_rune_t *entries)
@@ -24,6 +24,8 @@ expand_range(char *s, vec_rune_t *entries)
 	char **e;
 
 	for (;;) {
+		while (isspace(*s)) ++s;
+
 		/*
 		 * try to parse input as a range, and fall back
 		 * to parsing input as a single integer if that
@@ -31,10 +33,11 @@ expand_range(char *s, vec_rune_t *entries)
 		 * if both failed, it's probably a syntax error.
 		 */
 		if (!parse_range(s, e, entries)
-				&& !parse_int(x, s, e, TRUE, entries))
+				&& !parse_int(&x, s, e, TRUE, entries))
 			break;
 		s = *e;
 		
+		while (isspace(*s)) ++s;
 		if ((*s) == '\0') return TRUE;
 
 		/* check if there's something more to parse */
@@ -58,7 +61,7 @@ parse_range(char *s, char **e, vec_rune_t *entries)
 	char *ee;
 
 	/* try to parse left-hand side of range */
-	if (!parse_int(x, s, &ee, FALSE, entries))
+	if (!parse_int(&x, s, &ee, FALSE, entries))
 		return FALSE;
 	s = ee;
 
@@ -67,16 +70,17 @@ parse_range(char *s, char **e, vec_rune_t *entries)
 	if (*s != '-') {
 		*(char **) e = s;
 		return FALSE;
+	} else {
+		++s;
 	}
 	
-	++s;
 	/* try to parse right-hand side of range */
-	if (!parse_int(y, s, e, FALSE, entries))
+	if (!parse_int(&y, s, e, FALSE, entries))
 		return FALSE;
 
 	/* check if left-hand size is greater than
 	 * right-hand side of range */
-	if (y <= x) return FALSE;
+	if (y < x) return FALSE;
 
 	/* copy onto accumulator */
 	for (usize i = x; i <= y; ++i)
@@ -85,10 +89,15 @@ parse_range(char *s, char **e, vec_rune_t *entries)
 }
 
 bool
-parse_int(int x, char *s, char **e, bool add, vec_rune_t *entries)
+parse_int(int *x, char *s, char **e, bool add, vec_rune_t *entries)
 {
-	/* TODO: bases */
-	x = strtol(s, e, 10);
+	usize base = 10;
+	if (!strncmp(s, "0x", 2))
+		base = 16;
+	else if (!strncmp(s, "0o", 2))
+		base = 8;
+
+	*x = strtol(s, e, base);
 	bool ok = *e != s;
 
 	/* HACK: the add parameter controls whether
