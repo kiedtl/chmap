@@ -48,8 +48,8 @@ table_print_entry(struct Table *self, Rune entry, char *description)
 	char hex[snprintf(NULL, 0, "0x%X", entry)];
 	sprintf((char*) &hex, "0x%X", entry);
 
-	char oct[snprintf(NULL, 0, "0b%o", entry)];
-	sprintf((char*) &oct, "0b%o", entry);
+	char oct[snprintf(NULL, 0, "0o%o", entry)];
+	sprintf((char*) &oct, "0o%o", entry);
 
 	/*
 	 * TODO: display "readable" html entities
