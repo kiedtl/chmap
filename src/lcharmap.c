@@ -87,7 +87,7 @@ range(void *data, char **pars, const int pars_count)
 
 	bool ok = expand_range(pars[0], &entries);
 	if (!ok)
-		die("lcharmap: error: '%s': invalid range.\n", pars[0]);
+		die("lcharmap: error: '%s': invalid range.", pars[0]);
 
 	vec_str_t descriptions;
 	vec_init(&descriptions);
