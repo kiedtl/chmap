@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "fort.h"
 #include "lcharmap.h"
 #include "tables.h"
 #include "utf.h"
@@ -10,7 +11,8 @@ static void table_print_header(struct Table *self);
 static void table_print_entry(
 	struct Table *self,
 	Rune entry,
-	char *description
+	char *description,
+	ft_table_t *t
 );
 
 void
@@ -40,7 +42,7 @@ table_print_header(struct Table *self)
 }
 
 void
-table_print_entry(struct Table *self, Rune entry, char *description)
+table_print_entry(struct Table *self, Rune entry, char *description, ft_table_t *t)
 {
 	char dec[snprintf(NULL, 0, "%d", entry)];
 	sprintf((char*) &dec, "%d", entry);
@@ -73,6 +75,9 @@ table_print_entry(struct Table *self, Rune entry, char *description)
 		cha[sz] = '\0';
 	}
 
+	ft_write_ln(t, &dec, &hex, &oct, &cha, description);
+	return;
+
 	if (self->format_long) {
 		printf("%c[1m%20s  %c[m%s\n", 0x1B, "decimal", 0x1B,
 			(char*) &dec);
@@ -97,14 +102,23 @@ table_print_entry(struct Table *self, Rune entry, char *description)
 void
 table_show(struct Table *self)
 {
-	if (!self->format_long)
-		table_print_header(self);
+	ft_table_t *t = ft_create_table();
+
+	ft_set_border_style(t, FT_PLAIN_STYLE);
+
+	ft_set_cell_prop(t, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+	ft_write_ln(t, "DEC", "HEX", "OCT", "CHAR", "DESC");
+
 
 	for (usize i = 0; i < self->entries->length; ++i) {
 		table_print_entry(
 			self,
 			self->entries->data[i],
-			self->descrips->data[i]
+			self->descrips->data[i],
+			t
 		);
 	}
+
+	printf("%s\n", ft_to_string(t));
+	ft_destroy_table(t);
 }

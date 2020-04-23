@@ -14,6 +14,7 @@ VERSION = \"0.3.0\"
 
 BIN     = lcharmap
 SRC     = sub/arg/argoat.c sub/vec/src/vec.c \
+	  sub/fort/fort.c \
 	  src/util.c src/dirs.c src/tables.c src/range.c \
 	  src/db.c src/terminfo.c src/$(BIN).c
 OBJ     = $(SRC:.c=.o)
@@ -28,7 +29,7 @@ WARNING = -Wall -Wpedantic -Wextra -Wold-style-definition \
 	  -Wno-format-nonliteral -Wno-incompatible-pointer-types \
 	  -Wno-unused-parameter
 INC     = -I. -Isub/ccommon/ -Isub/arg/ -Isub/libutf/include/ -Isub/sql/ \
-	  -Isub/vec/src
+	  -Isub/vec/src -Isub/fort/
 DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0
 
 AR      = ar
