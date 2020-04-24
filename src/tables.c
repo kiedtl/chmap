@@ -75,7 +75,24 @@ table_print_entry(struct Table *self, Rune entry, char *description, ft_table_t 
 		cha[sz] = '\0';
 	}
 
-	ft_write_ln(t, &dec, &hex, &oct, &cha, description);
+	const usize max_short_desc_sz = 50;
+
+	char dsc[128];
+	if (!self->format_long) {
+		/* depending on how long the descriptions is,
+		 * we might have to truncate it */
+		if (strlen(description) > max_short_desc_sz) {
+			strncpy(dsc, description, max_short_desc_sz - 3);
+			dsc[max_short_desc_sz - 2] = '\0';
+			strcat(dsc, "...");
+		} else {
+			strcpy(dsc, description);
+		}
+	} else {
+		strcpy(dsc, description);
+	}
+
+	ft_write_ln(t, &dec, &hex, &oct, &cha, &dsc);
 	return;
 
 	if (self->format_long) {
@@ -102,6 +119,7 @@ table_print_entry(struct Table *self, Rune entry, char *description, ft_table_t 
 void
 table_show(struct Table *self)
 {
+	/* TODO: use libfort for long format too */
 	ft_table_t *t = ft_create_table();
 
 	ft_set_border_style(t, FT_PLAIN_STYLE);
