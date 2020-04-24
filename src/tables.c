@@ -92,9 +92,6 @@ table_print_entry(struct Table *self, Rune entry, char *description, ft_table_t 
 		strcpy(dsc, description);
 	}
 
-	ft_write_ln(t, &dec, &hex, &oct, &cha, &dsc);
-	return;
-
 	if (self->format_long) {
 		printf("%c[1m%20s  %c[m%s\n", 0x1B, "decimal", 0x1B,
 			(char*) &dec);
@@ -110,9 +107,7 @@ table_print_entry(struct Table *self, Rune entry, char *description, ft_table_t 
 			description);
 		printf("\n");
 	} else {
-		printf("%-8s%-8s%-8s%-8s%s\n", &dec, &hex, &oct,
-			&cha, description);
-		table_print_line(self);
+		ft_write_ln(t, &dec, &hex, &oct, &cha, &dsc);
 	}
 }
 
@@ -122,10 +117,12 @@ table_show(struct Table *self)
 	/* TODO: use libfort for long format too */
 	ft_table_t *t = ft_create_table();
 
-	ft_set_border_style(t, FT_PLAIN_STYLE);
-
-	ft_set_cell_prop(t, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
-	ft_write_ln(t, "DEC", "HEX", "OCT", "CHAR", "DESC");
+	if (!self->format_long) {
+		ft_set_border_style(t, FT_PLAIN_STYLE);
+		ft_set_cell_prop(t, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE,
+			FT_ROW_HEADER);
+		ft_write_ln(t, "DEC", "HEX", "OCT", "CHAR", "DESC");
+	}
 
 
 	for (usize i = 0; i < self->entries->length; ++i) {
@@ -137,6 +134,8 @@ table_show(struct Table *self)
 		);
 	}
 
-	printf("%s\n", ft_to_string(t));
+	if (!self->format_long)
+		printf("%s\n", ft_to_string(t));
+
 	ft_destroy_table(t);
 }
