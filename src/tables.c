@@ -101,7 +101,7 @@ table_print_entry(struct Table *self, Rune entry, char *description, ft_table_t 
 			(char*) &oct);
 		printf("%c[1m%20s  %c[m%s\n", 0x1B, "HTML entity", 0x1B,
 			(char*) &htm);
-		printf("%c[1m%20s  %c[m%s\n", 0x1B, "character", 0x1B,
+		printf("%c[1m%20s  %c[m%s\n", 0x1B, "glyph", 0x1B,
 			(char*) &cha);
 		printf("%c[1m%20s  %c[m%s\n", 0x1B, "description", 0x1B,
 			description);
@@ -121,7 +121,7 @@ table_show(struct Table *self)
 		ft_set_border_style(t, FT_PLAIN_STYLE);
 		ft_set_cell_prop(t, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE,
 			FT_ROW_HEADER);
-		ft_write_ln(t, "DEC", "HEX", "OCT", "CHAR", "DESC");
+		ft_write_ln(t, "decimal", "hex", "octal", "glyph", "description");
 	}
 
 
