@@ -3,7 +3,7 @@
 - `--range`: support number characters from other languages
 - rename ccommon to libutil, move ecalloc to libutil
 - update documentation (help message, manpage)
-- use "real" tables library instead of custom one
+- use "real" tables library instead of custom one (for long format)
 
 ## new fields
 
