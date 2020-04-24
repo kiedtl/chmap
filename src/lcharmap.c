@@ -114,13 +114,14 @@ chars(void *data, char **pars, const int pars_count)
 		die("lcharmap: error: argument to --chars missing.");
 
 	/*
-	 * we must process each character as a Rune, not byte-wise (char),
-	 * to ensure that UTF8 continuation bytes don't get treated as a
-	 * separate character.
+	 * we must process each character as a Rune, not byte-wise.
+	 * This is to ensure that UTF8 continuation bytes don't get
+	 * treated as a separate character.
 	 */
 	usize len = utflen(pars[0]);
 	Rune *chars = (Rune*) ecalloc(len, sizeof(Rune));
-	chartorune(chars, pars[0]);
+	for (usize i = 0; i < len; ++i)
+		chartorune(chars, pars[0]);
 
 	vec_str_t descriptions;
 	vec_init(&descriptions);
