@@ -58,11 +58,17 @@ chardb_getdesc(sqlite3 *db, Rune _char)
 
 	/* copy string onto our buffer, to prevent
 	 * sqlite3_finalize from ruining it */
-	char *desc = strdup((char*) sqlite3_column_text(stmt, 0));
+	char *desc;
+	if (sqlite3_column_text(stmt, 0) != NULL)
+		strdup((char*) sqlite3_column_text(stmt, 0));
+	else
+		desc = "";
+
 	sqlite3_finalize(stmt);
 
 	if (err != NULL) {
-		fprintf(stderr, "lcharmap: warning: character database error: %s\n", err);
+		fprintf(stderr, "lcharmap: warning: character"
+			"database error: %s\n", err);
 	}
 
 	return desc;
