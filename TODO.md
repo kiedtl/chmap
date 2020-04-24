@@ -5,6 +5,11 @@
 - update documentation (help message, manpage)
 - use "real" tables library instead of custom one
 
+## new fields
+
+- binary representation
+- UTF-8 encoding
+
 ## Winbl^H^Hdows support
 
 - use cross-platform regex library instead of `regex.h` (PCRE?)
