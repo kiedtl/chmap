@@ -128,6 +128,12 @@ Unfortunately:
   be (2.8M instead of 800K). In the future this will be fixed by storing a byte count in the first byte of each description, thus negating
   the need for each description to be the same size (since we will already know how long each description is simply from reading the first byte).
 
+### Inspiration
+
+- Window's `charmap.exe`
+- Eric Raymond's `ascii` utility
+- `uniname` from uniutils
+
 ### License
 This lame little utility is licensed under the MIT License. See the `LICENSE.md`
 file for more information.
