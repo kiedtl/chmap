@@ -1,19 +1,26 @@
 # TODO
 
+## v2.0.0 -- complete C rewrite
+
+- throw tantrum on invalid UTF-8 input
 - `--range`: support number characters from other languages
 - rename ccommon to libutil, move ecalloc to libutil
 - update documentation (help message, manpage)
+
+## v2.1.0 -- new fields, misc
+
+- new field: binary representation
+- new field: UTF-8 encoding
+- accept input from stdin
+- only links bits of sqlite3 that are actually needed
 - use "real" tables library instead of custom one (for long format)
 
-## new fields
-
-- binary representation
-- UTF-8 encoding
-
-## Winbl^H^Hdows support
+## v2.2.0 -- Winbl^H^Hdows support
 
 - use cross-platform regex library instead of `regex.h` (PCRE?)
 - complete Windows support for terminfo.c, dirs.c
 - move terminfo.c, dirs.c into separate submodules
+
+---
 
 **other:** `grep -nRE 'XXX|TODO' src`
