@@ -40,10 +40,8 @@ LDFLAGS = -lpthread -ldl -fuse-ld=$(LD)
 
 all: man/$(BIN).1 debug
 
-.o.a:
-	$(CMD)$(AR) rvs $@ $(^:.c=.o) >/dev/null 2>&1
-
 .c.o:
+	@printf "    %-8s%s\n" "CC" $@
 	$(CMD)$(CC) $(CFLAGS) $(CFLAGS_OPT) -c $< -o $(<:.c=.o)
 
 debug: CFLAGS_OPT := -O0 -ggdb

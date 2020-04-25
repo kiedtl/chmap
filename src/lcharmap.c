@@ -120,8 +120,10 @@ chars(void *data, char **pars, const int pars_count)
 	 */
 	usize len = utflen(pars[0]);
 	Rune *chars = (Rune*) ecalloc(len, sizeof(Rune));
-	for (usize i = 0; i < len; ++i)
-		chartorune(chars, pars[0]);
+	Rune *p = chars;
+	for (usize i = 0; i < len; ++i, ++p)
+		pars[0] += chartorune(p, pars[0]);
+	*p = '\0';
 
 	vec_str_t descriptions;
 	vec_init(&descriptions);
