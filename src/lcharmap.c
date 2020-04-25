@@ -221,7 +221,7 @@ version(void *data, char **pars, const int pars_count)
 void
 usage(void *data, char **pars, const int pars_count)
 {
-	printf("Usage: lcharmap [OPTIONS] [ARGS]\n");
+	printf("Usage: lcharmap [-rcs] [CHAR]... [OPTION]...\n");
 	printf("Print and search information on the provided Unicode characters.\n\n");
 	printf("OPTIONS:\n");
 	printf("    -l, --long          print character entries in the long format.\n");
@@ -231,13 +231,7 @@ usage(void *data, char **pars, const int pars_count)
 	printf("    -r, --range RANGE   print a range of Unicode characters.\n");
 	printf("    -c, --chars CHARS   print a range of Unicode codepoints that match\n");
 	printf("                        provided character(s).\n");
-	printf("    -s, --search TERM   search character descriptions for TERM.\n\n");
-	printf("EXAMPLES:\n");
-	printf("    lcharmap -r 0,128   print information for characters from 0 to 128.\n");
-	printf("    lcharmap -c abcde   print information for characters 'a', 'b', 'c',\n");
-	printf("                        'd', and 'e'.\n");
-	printf("    lcharmap -s latin   search characters for description 'latin'.\n");
-	printf("                        regular expressions are supported.\n\n");
+	printf("    -s, --search REGEX  search character descriptions for REGEX.\n\n");
 	printf("Report issues to https://github.com/lptstr/lcharmap.\n");
 	printf("Full documentation is available locally at lcharmap(1).\n");
 	exit(0);
