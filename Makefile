@@ -10,7 +10,7 @@ DESTDIR =
 PREFIX  = /usr/local
 
 CMD     = @
-VERSION = \"2.0.0\"
+VERSION = \"1.0.0\"
 
 BIN     = lcharmap
 SRC     = sub/arg/argoat.c sub/vec/src/vec.c \
