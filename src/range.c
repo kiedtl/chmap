@@ -16,7 +16,7 @@ static bool parse_int(int *x, char *s, char **e, bool add, vec_rune_t *entries);
 bool
 expand_range(char *s, vec_rune_t *entries)
 {
-	int x;
+	int x = 0;
 	char **e;
 
 	for (;;) {
@@ -53,7 +53,7 @@ expand_range(char *s, vec_rune_t *entries)
 bool
 parse_range(char *s, char **e, vec_rune_t *entries)
 {
-	int x, y;
+	int x = 0, y = 0;
 	char *ee;
 
 	/* try to parse left-hand side of range */
