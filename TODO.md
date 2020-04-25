@@ -2,8 +2,6 @@
 
 ## v2.0.0 -- complete C rewrite
 
-- throw tantrum on invalid UTF-8 input
-- `--range`: support number characters from other languages
 - rename ccommon to libutil, move ecalloc to libutil
 - update documentation (help message, manpage)
 
@@ -11,7 +9,7 @@
 
 - new field: binary representation
 - new field: UTF-8 encoding
-- accept input from stdin
+- `--chars`: accept input from stdin
 - only links bits of sqlite3 that are actually needed
 - use "real" tables library instead of custom one (for long format)
 
@@ -20,6 +18,11 @@
 - use cross-platform regex library instead of `regex.h` (PCRE?)
 - complete Windows support for terminfo.c, dirs.c
 - move terminfo.c, dirs.c into separate submodules
+
+## v2.3.0
+
+- throw tantrum on invalid UTF-8 input
+- `--range`: support number characters from other languages
 
 ---
 
