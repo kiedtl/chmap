@@ -87,11 +87,19 @@ parse_range(char *s, char **e, vec_rune_t *entries)
 bool
 parse_int(int *x, char *s, char **e, bool add, vec_rune_t *entries)
 {
-	usize base = 10;
-	if (!strncmp(s, "0x", 2))
+	usize base;
+	if (!strncmp(s, "0x", 2)) {
 		base = 16;
-	else if (!strncmp(s, "0o", 2))
+		s += 2;
+	} else if (!strncmp(s, "0o", 2)) {
 		base = 8;
+		s += 2;
+	} else if (!strncmp(s, "0b", 2)) {
+		base = 2;
+		s += 2;
+	} else {
+		base = 10;
+	}
 
 	*x = strtol(s, e, base);
 	bool ok = *e != s;
