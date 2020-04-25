@@ -6,40 +6,12 @@
 #include "tables.h"
 #include "utf.h"
 
-static void table_print_line(struct Table *self);
-static void table_print_header(struct Table *self);
 static void table_print_entry(
 	struct Table *self,
 	Rune entry,
 	char *description,
 	ft_table_t *t
 );
-
-void
-table_print_line(struct Table *self)
-{
-	/* TODO: allow user to change line character
-	 * via cmd options, just in case their terminal/font
-	 * doesn't fully support UTF8 */
-
-	/* don't forget the null terminator! */
-	char line[((self->ttywidth) * sizeof("─")) + 1];
-	strcpy(line, "─");
-	for (usize i = 0; i < (usize) self->ttywidth - 1; ++i) {
-	        strcat(line, "─");
-	}
-	line[self->ttywidth * sizeof("─")] = '\n';
-	line[(self->ttywidth + 1) * sizeof("─")] = '\0';
-	printf(line);
-}
-
-void
-table_print_header(struct Table *self)
-{
-	table_print_line(self);
-	printf("%-8s%-8s%-8s%-8s%s\n", "DEC", "HEX", "OCT", "CHAR", "DESC");
-	table_print_line(self);
-}
 
 void
 table_print_entry(struct Table *self, Rune entry, char *description, ft_table_t *t)
@@ -123,7 +95,6 @@ table_show(struct Table *self)
 			FT_ROW_HEADER);
 		ft_write_ln(t, "decimal", "hex", "octal", "glyph", "description");
 	}
-
 
 	for (usize i = 0; i < self->entries->length; ++i) {
 		table_print_entry(

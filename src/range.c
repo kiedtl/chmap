@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -15,11 +16,6 @@ static bool parse_int(int *x, char *s, char **e, bool add, vec_rune_t *entries);
 bool
 expand_range(char *s, vec_rune_t *entries)
 {
-	/* save start point of input string
-	 * so we can print it out in case of a
-	 * syntax error */
-	char *startptr = s;
-
 	int x;
 	char **e;
 
