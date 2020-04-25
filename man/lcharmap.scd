@@ -6,16 +6,13 @@ lcharmap - retrieve information for Unicode characters.
 
 # SYNOPSIS
 
-*lcharmap* [OPTIONS] [ARGUMENTS]
+*lcharmap* [-rcs] [CHAR]... [OPTION]...
 
 # DESCRIPTION
 
-lcharmap prints information for the provided character codes, including decimal,
-hexadecimal, octal, and HTML codes. It also prints out a description of each
-character, taken from it's character database located at
-_$HOME/.local/share/lcharmap/chars.db_ (on Linux).
-This character database is generated automatically on installation from
-the UCD (Unicode Character Database).
+lcharmap retrieves information about Unicode characters, including a
+short description, it's HTML code, and it's decimal, hexadecimal, and octal
+representation.
 
 # OPTIONS
 
@@ -28,31 +25,52 @@ the UCD (Unicode Character Database).
 *-l, --long*
 	Print information in the long format.
 
-# ARGUMENTS
+# COMMANDS
 
-*-r, --range* START,END
-	Print a range of Unicode codepoints. (e.g., `128,255')
+*-r, --range*=_RANGE_
+	Print a range of Unicode codepoints. (e.g. `0x033-0x035',
+	or `1,3,6-9')
 
-*-c, --chars* CHARS
+	Range values can be in binary, octal, hexadecimal, in addition
+	to decimal. In that case, they must be prefixed with a `0b', `0o',
+	or `0x`, respectively.
+
+*-c, --chars*=_CHARS_
 	Print a range of Unicode codepoints that match the provided
 	character(s). (e.g., `George Washington')
 
-*-s, --search* REGEX
-	Search character descriptions for *REGEX*.
+*-s, --search*=_REGEX_
+	Search character descriptions for _REGEX_.
 
 # EXAMPLES
 
-lcharmap --range 128,136
+lcharmap -r=33,36,45-47
+	Print information for characters 33, 36, 45, 46, and 47.
 
-lcharmap --chars ThisIsATest
+lcharmap -r=0o033,0xAB,0b1101
+	Print information for characters 27, 171, and 13.
 
-lcharmap --search "^LATIN (SMALL|CAPITAL) A"
+lcharmap -c=Asbjørn
+	Print information for all characters in the name `Asbjørn'.
+
+lcharmap -s="^latin .\* a$"
+	Search with regular expression "^latin .\* a$".
 
 # KNOWN ISSUES
 
-- lcharmap currently only supports English.
+- table isn't formatted correctly when displaying multibyte characters.
 - lcharmap is currently buggy and untested on Windows.
 
 # REPORTING BUGS
 
 Please report any found bugs to _https://github.com/lptstr/lcharmap/issues_
+
+# SEE ALSO
+
+The full documentation for *lcharmap* is not maintained as a Texinfo manual.
+If the *info* and *lcharmap* programs are properly installed on your system,
+the command
+
+	*info lcharmap*
+
+should not give you access to the complete manual.
