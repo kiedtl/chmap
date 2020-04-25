@@ -60,7 +60,7 @@ chardb_getdesc(sqlite3 *db, Rune _char)
 	 * sqlite3_finalize from ruining it */
 	char *desc;
 	if (sqlite3_column_text(stmt, 0) != NULL)
-		strdup((char*) sqlite3_column_text(stmt, 0));
+		desc = strdup((char*) sqlite3_column_text(stmt, 0));
 	else
 		desc = "";
 
