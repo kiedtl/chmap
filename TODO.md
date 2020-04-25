@@ -2,7 +2,7 @@
 
 ## v2.0.0 -- complete C rewrite
 
-- rename ccommon to libutil, move ecalloc to libutil
+- move ecalloc to libutil
 - update documentation (help message, manpage)
 
 ## v2.1.0 -- new fields, misc
