@@ -44,7 +44,7 @@ table_print_entry(struct Table *self, Rune entry, char *description, ft_table_t 
 		strcpy((char*) &cha, "<ctrl>");
 	} else {
 		runetochar((char*) &cha, &entry);
-		cha[sz] = '\0';
+		cha[sz-1] = '\0';
 	}
 
 	const usize max_short_desc_sz = 50;
@@ -96,7 +96,8 @@ table_show(struct Table *self)
 		ft_write_ln(t, "decimal", "hex", "octal", "glyph", "description");
 	}
 
-	for (usize i = 0; i < self->entries->length; ++i) {
+	/* yes yes shut up -Wsign-compare */
+	for (int i = 0; i < self->entries->length; ++i) {
 		table_print_entry(
 			self,
 			self->entries->data[i],
