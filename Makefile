@@ -9,7 +9,7 @@
 DESTDIR =
 PREFIX  = /usr/local
 
-CMD     =
+CMD     = @
 VERSION = \"0.3.0\"
 
 BIN     = lcharmap
@@ -54,15 +54,19 @@ release: LDFLAGS_OPT := -march=native -flto -s
 release: $(BIN)
 
 $(BIN): $(OBJ) $(LIBUTF) $(SQLITE)
+	@printf "    %-8s%s\n" "CCLD" $@
 	$(CMD)$(CC) -o $@ $^ $(CFLAGS) $(CFLAGS_OPT) $(LDFLAGS) $(LDFLAGS_OPT)
 
 $(LIBUTF):
+	@printf "    %-8s%s\n" "MAKE" $@
 	$(CMD)make -C sub/libutf
 
 lib/chars.db:
-	$(CMD)cd lib && make
+	@printf "    %-8s%s\n" "GEN" $@
+	$(CMD)make -C lib
 
 man/$(BIN).1: man/$(BIN).scd
+	@printf "    %-8s%s\n" "SCDOC" $@
 	$(CMD)scdoc < $^ > $@
 
 clean:
