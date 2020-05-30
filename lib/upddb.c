@@ -54,7 +54,7 @@ main(void)
 	usize len  = 0;
 	isize read = 0;
 	usize linectr = 0;
-	while ((read = getline(&line, &len, unicode_txt)) != -1) {
+	while ((read = getline(&line, (size_t*) &len, unicode_txt)) != -1) {
 		/* TODO: don't hardcode maximum number of entries */
 		fprintf(stdout, "\rstoring description for character %i/%i", linectr, 32841);
 
