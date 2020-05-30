@@ -214,7 +214,7 @@ handle_anger(void *data, char **pars, const int pars_count)
 void
 version(void *data, char **pars, const int pars_count)
 {
-	fprintf(stdout, "lcharmap %s\n", VERSION);
+	fprintf(stdout, "lcharmap v%s\n", VERSION);
 	exit(0);
 }
 
