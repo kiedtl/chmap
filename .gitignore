@@ -8,4 +8,5 @@ lcharmap.1
 
 # ignore compiled files
 *.[ao]
+*.xz
 lcharmap

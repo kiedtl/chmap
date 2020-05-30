@@ -8,7 +8,7 @@
 
 include config.mk
 
-VERSION = \"1.0.0\"
+VERSION = 1.0.0
 
 BIN     = lcharmap
 SRC     = sub/arg/argoat.c sub/vec/src/vec.c \
@@ -30,9 +30,9 @@ WARNING = -Wall -Wpedantic -Wextra -Wold-style-definition \
 	  -Wno-unused-parameter
 INC     = -I. -Isub/ccommon/include/ -Isub/arg/ -Isub/libutf/include/ \
 	  -Isub/sql/ -Isub/vec/src -Isub/fort/
-DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0
-
-CFLAGS  = -std=c99 -DVERSION=$(VERSION) -D_DEFAULT_SOURCE $(WARNING) $(INC)
+DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0 \
+	  -D_DEFAULT_SOURCE
+CFLAGS  = -std=c99 -DVERSION=\"$(VERSION)\" $(WARNING) $(INC)
 LDFLAGS = -lpthread -ldl -fuse-ld=$(LD)
 
 all: man/$(BIN).1 debug
@@ -82,6 +82,14 @@ clean:
 	$(CMD)make -C sub/fort clean
 	$(CMD)make -C sub/libutf clean
 	$(CMD)make -C sub/sql clean
+	$(CMD)rm -rf dist/ *.xz
+
+dist: clean
+	$(CMD)mkdir -p dist
+	$(CMD)cp -r config.mk Makefile *.md lib man src sub \
+		dist
+	$(CMD)tar -cvf - dist | xz -qcT 0 > lcharmap-v$(VERSION).tar.xz
+	$(CMD)rm -rf dist
 
 install: $(BIN) man/$(BIN).1 lib/chars.db
 	$(CMD)install -Dm755 $(BIN) $(DESTDIR)/$(PREFIX)/bin/$(BIN)
@@ -93,4 +101,4 @@ uninstall:
 	$(CMD)rm -f $(DESTDIR)/$(PREFIX)/share/man/man1/$(BIN).1
 	$(CMD)rm -f $(HOME)/.local/share/$(BIN)/chars.db
 
-.PHONY: all debug release clean install uninstall
+.PHONY: all debug release clean dist install uninstall
