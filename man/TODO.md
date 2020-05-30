@@ -6,7 +6,6 @@
 - new field: UTF-8 encoding
 - `--chars`: accept input from stdin
 - only links bits of sqlite3 that are actually needed
-- use "real" tables library instead of custom one (for long format)
 
 ## v1.2.0 -- Winbl^H^Hdows support
 
@@ -18,7 +17,8 @@
 
 - throw tantrum on invalid UTF-8 input
 - `--range`: support number characters from other languages
-
+- remove long format entirely
+- add ability to disable/enable individual fields from table from cmd args
 ---
 
 **other:** `grep -nRE 'XXX|TODO' src`
