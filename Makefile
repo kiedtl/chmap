@@ -17,6 +17,8 @@ SRC     = sub/arg/argoat.c sub/vec/src/vec.c \
 	  src/db.c src/terminfo.c src/$(BIN).c
 OBJ     = $(SRC:.c=.o)
 
+ARGOAT  = sub/arg/argoat.a
+LIBFORT = sub/fort/fort.a
 LIBUTF  = sub/libutf/lib/libutf.a
 SQLITE  = sub/sql/sqlite3.a
 
@@ -51,9 +53,19 @@ $(BIN): $(OBJ) $(LIBUTF) $(SQLITE)
 	@printf "    %-8s%s\n" "CCLD" $@
 	$(CMD)$(CC) -o $@ $^ $(CFLAGS) $(CFLAGS_OPT) $(LDFLAGS) $(LDFLAGS_OPT)
 
+$(ARGOAT):
+	@printf "    %-8s%s\n" "MAKE" $@
+	$(CMD)make -C sub/arg
+
+$(LIBFORT):
+	@printf "    %-8s%s\n" "MAKE" $@
+	$(CMD)make -C sub/fort
 $(LIBUTF):
 	@printf "    %-8s%s\n" "MAKE" $@
 	$(CMD)make -C sub/libutf
+$(SQLITE):
+	@printf "    %-8s%s\n" "MAKE" $@
+	$(CMD)make -C sub/sql
 
 lib/chars.db:
 	@printf "    %-8s%s\n" "GEN" $@
@@ -65,6 +77,10 @@ man/$(BIN).1: man/$(BIN).scd
 
 clean:
 	$(CMD)rm -f $(BIN) $(OBJ) man/$(BIN).1
+	$(CMD)make -C sub/arg clean
+	$(CMD)make -C sub/fort clean
+	$(CMD)make -C sub/libutf clean
+	$(CMD)make -C sub/sql clean
 
 install: $(BIN) $(BIN).1 lib/chars.db
 	$(CMD)install -Dm755 $(BIN) $(DESTDIR)/$(PREFIX)/bin/$(BIN)
