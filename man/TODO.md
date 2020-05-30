@@ -6,6 +6,7 @@
 - new field: UTF-8 encoding
 - `--chars`: accept input from stdin
 - only links bits of sqlite3 that are actually needed
+- use ccommon's `ccm_list` instead of vec's `vec_T_t`
 
 ## v1.2.0 -- Winbl^H^Hdows support
 
