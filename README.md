@@ -1,34 +1,34 @@
 # `lcharmap`
 
-> A CLI port of the Windows `charmap` utility
+> Get information on Unicode characters in the terminal
 
 ### Status
 
-**This utility is currently being rewritten in C for speed and size, and will
-also use sqlite3 instead of a custom database format.** The `master` branch is
-currently broken, so it is advised to build from the latest stable release
-instead.
+A few bugs remain to be fixed, but the tool is about 70% complete at this
+point. Check [`man/TODO.md`](man/TODO.md) to see whats planned for later
+releases.
 
 ### What?
 
-`lcharmap` is similar to the `charmap.exe` utility in Windows XP and newer.
-It displays information for a particular Unicode code point, including
-it's hexadecimal/octal and HTML entity representation. It is also capable of
-displaying a description for each character from a database generated at
-install time.
+`lcharmap` is a little utility to get information on Unicode characters,
+including its name and hexadecimal/octal representation. It is also capable
+of searching the UCD (Unicode Character Database) with a regular
+expression.
+
+`lcharmap` was inspired by the `charmap.exe` tool present in Windows XP and
+newer.
 
 ### Where?
-#### Dependencies
-- Windows (*supported, not tested*)
+#### Platforms
 - macOS (*not supported or tested*)
 - Linux (*supported and tested*)
-- Free|Open|Net|Dragonfly BSD (*not supported, not tested*)
+- Windows (*not supported (yet), not tested*)
+- Free|Open|Net|Dragonfly BSD (*not supported (yet), not tested*)
 
 #### Build dependencies
-- the GNU C compiler (`gcc`)
-- `binutils`
-- the Rust compiler toolchain (Stable)
-- [just](https://github.com/casey/just)
+- a C99 compiler
+- GNU Make
+- `ar` 
 
 #### Binaries
 In the future, compiled binaries for the following platforms will be
@@ -108,26 +108,6 @@ Run `lcharmap --help`/`man lcharmap` for more information.
 ### Why?
 I miss some Windows utilities.
 
-### Known Issues
-- the source is extremely messy.
-- resulting binary isn't as small as I would like it to be (debug: 12M, release: 1.4M)
-- very slow on certain systems (due to the fact that `lcharmap` loads a *2.8M* database to search. there doesn't
-seem to be any way around this, see below)
-
-#### the description database
-Currently, lcharmap uses a database generated with upddb (located in `lcharmap/lib/upddb.c`) in `/etc/chars.db`. The database contains the
-descriptions for each character. Each database entry is exactly 85 bytes long, which has two advanteges:
-- for loading the description for a single codepoint, we can simply move the file pointer to where we know the description is
-  and read 85 bytes. No parsing or lexing needed, and there is no need to load the entire 3M database at once.
-- for loading the description for multiple codepoints, we just do the above multiple times. No parsing or lexing needed here either.
-Unfortunately:
-- for searching, we must load the entire database at once, read every description, and check if the provided term matches it.
-  if someone has a better idea of how to do this without loading the entire database at once, please file an issue.
-- most of the descriptions *aren't* 85 bytes long. This means that when the database is generated, "filler bytes" (of the value `0x00`)
-  have to be added to the end of the description to make it the same size. Which means that the database is 3 time bigger that it could
-  be (2.8M instead of 800K). In the future this will be fixed by storing a byte count in the first byte of each description, thus negating
-  the need for each description to be the same size (since we will already know how long each description is simply from reading the first byte).
-
 ### Inspiration
 
 - Window's `charmap.exe`
@@ -135,5 +115,6 @@ Unfortunately:
 - `uniname` from uniutils
 
 ### License
-This lame little utility is licensed under the MIT License. See the `LICENSE.md`
-file for more information.
+
+This lame little utility is licensed under the MIT License. See
+the `LICENSE.md` file for more information.
