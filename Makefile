@@ -1,15 +1,13 @@
 #
-# lcharmap: a Linux port of the Windows `charmap` utility. 
+# lcharmap: retreive information about Unicode characters
 # https://github.com/lptstr/lcharmap
 #
 # (c) Kiëd Llaentenn and contributors
 # See the LICENSE.md file for more information
 #
 
-DESTDIR =
-PREFIX  = /usr/local
+include config.mk
 
-CMD     = @
 VERSION = \"1.0.0\"
 
 BIN     = lcharmap
@@ -32,9 +30,6 @@ INC     = -I. -Isub/ccommon/include/ -Isub/arg/ -Isub/libutf/include/ \
 	  -Isub/sql/ -Isub/vec/src -Isub/fort/
 DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0
 
-AR      = ar
-CC      = cc
-LD      = gold
 CFLAGS  = -std=c99 -DVERSION=$(VERSION) -D_DEFAULT_SOURCE $(WARNING) $(INC)
 LDFLAGS = -lpthread -ldl -fuse-ld=$(LD)
 
@@ -44,11 +39,12 @@ all: man/$(BIN).1 debug
 	@printf "    %-8s%s\n" "CC" $@
 	$(CMD)$(CC) $(CFLAGS) $(CFLAGS_OPT) -c $< -o $(<:.c=.o)
 
-debug: CFLAGS_OPT := -O0 -ggdb
+debug: CFLAGS_OPT  := $(DEBUG_CFLAGS)
+debug: LDFLAGS_OPT := $(DEBUG_LDFLAGS)
 debug: $(BIN)
 
-release: CFLAGS_OPT  := -O3
-release: LDFLAGS_OPT := -march=native -flto -s
+release: CFLAGS_OPT  := $(RELEASE_CFLAGS)
+release: LDFLAGS_OPT := $(RELEASE_LDFLAGS)
 release: $(BIN)
 
 $(BIN): $(OBJ) $(LIBUTF) $(SQLITE)
