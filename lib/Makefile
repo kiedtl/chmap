@@ -1,7 +1,8 @@
-CC      = cc
-CFLAGS  = -O4 -s -I../sub/ccommon/
-LDFLAGS = -lsqlite3
-SRC     = upddb.c
+include ../config.mk
+
+DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0
+INC = -I../sub/ccommon/include/ -I../sub/sql/
+LDFLAGS = -lpthread -ldl -fuse-ld=$(LD)
 
 all: unicode.txt clean chars.db
 
@@ -9,10 +10,12 @@ clean:
 	rm -f upddb chars.db chars.db-journal
 
 chars.db: upddb unicode.txt
-	./upddb
+	@printf "    %-8s%s\n" "GEN" $@
+	$(CMD)./upddb
 
-upddb: $(SRC)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(SRC)
+upddb: upddb.c ../sub/sql/sqlite3.a
+	@printf "    %-8s%s\n" "CC" $@
+	$(CMD)$(CC) -O3 -s $(LDFLAGS) $(DEF) $(INC) -o $@ $^
 
 unicode.txt:
 	@echo Oops, looks like unicode.txt is missing.

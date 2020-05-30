@@ -55,9 +55,6 @@ main(void)
 	isize read = 0;
 	usize linectr = 0;
 	while ((read = getline(&line, (size_t*) &len, unicode_txt)) != -1) {
-		/* TODO: don't hardcode maximum number of entries */
-		fprintf(stdout, "\rstoring description for character %i/%i", linectr, 32841);
-
 		char *tmp = NULL;
 		char *data[20];
 		usize i = 0;
@@ -98,7 +95,6 @@ main(void)
 		++linectr;
 	}
 
-	fprintf(stdout, "\n");
 	sqlite3_finalize(insert_stmt);
 	sqlite3_exec(db, "END TRANSACTION", NULL, NULL, &err);
 	sqlite3_exec(db, "CREATE INDEX idx ON map (id);", NULL, NULL, &err);
