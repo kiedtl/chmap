@@ -55,21 +55,22 @@ $(BIN): $(OBJ) $(LIBUTF) $(SQLITE)
 
 $(ARGOAT):
 	@printf "    %-8s%s\n" "MAKE" $@
-	$(CMD)make -C sub/arg
+	$(CMD)cd sub/arg && make
 
 $(LIBFORT):
 	@printf "    %-8s%s\n" "MAKE" $@
-	$(CMD)make -C sub/fort
+	$(CMD)cd sub/fort && make
+
 $(LIBUTF):
 	@printf "    %-8s%s\n" "MAKE" $@
-	$(CMD)make -C sub/libutf
+	$(CMD)cd sub/libutf && make
 $(SQLITE):
 	@printf "    %-8s%s\n" "MAKE" $@
-	$(CMD)make -C sub/sql
+	$(CMD)cd sub/sql && make
 
 lib/chars.db:
 	@printf "    %-8s%s\n" "GEN" $@
-	$(CMD)make -C lib
+	$(CMD)cd sub/lib && make
 
 man/$(BIN).1: man/$(BIN).scd
 	@printf "    %-8s%s\n" "SCDOC" $@
@@ -82,7 +83,7 @@ clean:
 	$(CMD)make -C sub/libutf clean
 	$(CMD)make -C sub/sql clean
 
-install: $(BIN) $(BIN).1 lib/chars.db
+install: $(BIN) man/$(BIN).1 lib/chars.db
 	$(CMD)install -Dm755 $(BIN) $(DESTDIR)/$(PREFIX)/bin/$(BIN)
 	$(CMD)install -Dm644 man/$(BIN).1 $(DESTDIR)/$(PREFIX)/share/man/man1/$(BIN).1
 	$(CMD)install -Dm644 lib/chars.db $(HOME)/.local/share/$(BIN)/chars.db
