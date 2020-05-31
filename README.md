@@ -43,26 +43,16 @@ available to download from GitHub Releases:
 For now, you must build from source.
 
 #### Building from Source
-Download the latest release:
+
+Download the latest source tarball from GitHub releases
+(`lcharmap-v$VERSION.tar.xz`), extract, and build:
+
 ```
-$ wget https://github.com/lptstr/lcharmap/archive/0.1.0.tar.gz
+# make install
 ```
 
-Build:
-```
-$ tar -xvf 0.1.0.tar.gz
-$ cd lcharmap-0.1.0
-$ just release
-```
-
-Install:
-```
-# just install
-```
-
-*Note: on the installation step, you may need root/admin privileges.*
-*Note: `just install` also installs the character database to `/etc/chars.db`, so if
-you install manually, ensure that you complete that step with `cd lib; just install`.**
+**Note:** `make install` also installs the character database, so if you
+install manually, ensure that you complete that step with `make -C lib`.
 
 ### How?
 
