@@ -4,7 +4,7 @@
 
 ### Status
 
-A few bugs remain to be fixed, but the tool is about 70% complete at this
+Quite a few bugs remain to be fixed, but the tool is about 70% complete at this
 point. Check [`man/TODO.md`](man/TODO.md) to see whats planned for later
 releases.
 
