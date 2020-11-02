@@ -165,7 +165,7 @@ search(void *data, char **pars, const int pars_count)
 	!is_ok ??!??! die("lcharmap: error: '%s': invalid regex query.", query);
 
 	/*
-	 * my excu^Hreason for not allocating on demand: 32kB isn't
+	 * my excu^Wreason for not allocating on demand: 32kB isn't
 	 * *that* much memory.
 	 */
 	Rune matches[32841];

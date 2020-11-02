@@ -17,7 +17,7 @@ bool
 expand_range(char *s, vec_rune_t *entries)
 {
 	int x = 0;
-	char **e;
+	char **e = &s;
 
 	for (;;) {
 		while (isspace(*s)) ++s;

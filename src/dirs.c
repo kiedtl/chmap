@@ -39,15 +39,11 @@ dirs_data_dir(void)
 	if (data_dir == NULL) {
 		char *home = dirs_home_dir();
 
-		usize size = strlen(home)
-			+ (sizeof("/.local/share") - 1)
-			+ 1 /* null terminator */;
-		char *buf = malloc(size * sizeof(char));
-		if (!buf) return NULL;
-		buf[size - 1] = '\0';
+		static char buf[4096];
+		buf[4096 - 1] = '\0';
 
-		strcpy(buf, home);
-		strcat(buf, "/.local/share");
+		strcpy(&buf, home);
+		strcat(&buf, "/.local/share");
 
 		return buf;
 	}
