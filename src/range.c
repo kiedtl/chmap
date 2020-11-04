@@ -28,13 +28,15 @@ expand_range(char *s, vec_rune_t *entries)
 		 * failed.
 		 * if both failed, it's probably a syntax error.
 		 */
-		if (!parse_range(s, e, entries)
-				&& !parse_int(&x, s, e, TRUE, entries))
-			break;
+		if (!parse_range(s, e, entries)) {
+			if (!parse_int(&x, s, e, TRUE, entries)) {
+				break;
+			}
+		}
 		s = *e;
 		
 		while (isspace(*s)) ++s;
-		if ((*s) == '\0') return TRUE;
+		if (strlen(s) == 0) return TRUE;
 
 		/* check if there's something more to parse */
 		if ((*s) == ',') {
@@ -55,6 +57,7 @@ parse_range(char *s, char **e, vec_rune_t *entries)
 {
 	int x = 0, y = 0;
 	char *ee;
+	char *start = s;
 
 	/* try to parse left-hand side of range */
 	if (!parse_int(&x, s, &ee, FALSE, entries))
@@ -64,7 +67,7 @@ parse_range(char *s, char **e, vec_rune_t *entries)
 	/* check if this is really a range, or just
 	 * a single integer */
 	if (*s != '-') {
-		*(char **) e = s;
+		e = &start;
 		return FALSE;
 	} else {
 		++s;
