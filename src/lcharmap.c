@@ -162,7 +162,7 @@ handle_bool(void *data, char **pars, const int pars_count)
 void
 handle_anger(void *data, char **pars, const int pars_count)
 {
-	die("Grrr");
+	die("rawr");
 }
 
 void
