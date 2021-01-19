@@ -12,13 +12,11 @@ VERSION = 1.0.0
 
 BIN     = lcharmap
 SRC     = sub/arg/argoat.c sub/vec/src/vec.c \
-	  sub/fort/fort.c \
 	  src/util.c src/dirs.c src/tables.c src/range.c \
 	  src/db.c src/terminfo.c src/$(BIN).c
 OBJ     = $(SRC:.c=.o)
 
 ARGOAT  = sub/arg/argoat.a
-LIBFORT = sub/fort/fort.a
 LIBUTF  = sub/libutf/lib/libutf.a
 SQLITE  = sub/sql/sqlite3.a
 
@@ -29,7 +27,7 @@ WARNING = -Wall -Wpedantic -Wextra -Wold-style-definition \
 	  -Wno-format-nonliteral -Wno-incompatible-pointer-types \
 	  -Wno-unused-parameter
 INC     = -I. -Isub/ccommon/include/ -Isub/arg/ -Isub/libutf/include/ \
-	  -Isub/sql/ -Isub/vec/src -Isub/fort/
+	  -Isub/sql/ -Isub/vec/src
 DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0 \
 	  -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=500
 CFLAGS  = -std=c99 -DVERSION=\"$(VERSION)\" $(WARNING) $(INC)
@@ -57,10 +55,6 @@ $(ARGOAT):
 	@printf "    %-8s%s\n" "MAKE" $@
 	$(CMD)cd sub/arg && make
 
-$(LIBFORT):
-	@printf "    %-8s%s\n" "MAKE" $@
-	$(CMD)cd sub/fort && make
-
 $(LIBUTF):
 	@printf "    %-8s%s\n" "MAKE" $@
 	$(CMD)cd sub/libutf && make
@@ -79,7 +73,6 @@ man/$(BIN).1: man/$(BIN).scd
 clean:
 	$(CMD)rm -f $(BIN) $(OBJ) man/$(BIN).1
 	$(CMD)make -C sub/arg clean
-	$(CMD)make -C sub/fort clean
 	$(CMD)make -C sub/libutf clean
 	$(CMD)make -C sub/sql clean
 	$(CMD)rm -rf dist/ *.xz
