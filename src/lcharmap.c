@@ -28,7 +28,7 @@ main(int argc, char **argv)
 	/* load database */
 	char *datadir = dirs_data_dir();
 	if (datadir == NULL)
-		err(1, "lcharmap: can't find character database.");
+		errx(1, "lcharmap: can't find character database.");
 	db = chardb_open(format("%s%clcharmap%cchars.db",
 				datadir, pathsep(), pathsep()));
 
@@ -79,13 +79,13 @@ range(void *data, char **pars, const int pars_count)
 	 * e.g. Chinese
 	 */
 	if (pars_count < 1)
-		err(1, "lcharmap: error: argument to --range missing.");
+		errx(1, "lcharmap: error: argument to --range missing.");
 
 	vec_rune_t entries;
 	vec_init(&entries);
 
 	if (!expand_range(pars[0], &entries))
-		err(1, "lcharmap: error: '%s': invalid range.", pars[0]);
+		errx(1, "lcharmap: error: '%s': invalid range.", pars[0]);
 
 	for (usize i = 0; i < (usize)entries.length; ++i) {
 		char *desc = chardb_getdesc(db, entries.data[i]);
@@ -99,7 +99,7 @@ void
 chars(void *data, char **pars, const int pars_count)
 {
 	if (pars_count < 1)
-		err(1, "lcharmap: error: argument to --chars missing.");
+		errx(1, "lcharmap: error: argument to --chars missing.");
 
 	/*
 	 * we must process each character as a Rune, not byte-wise.
@@ -125,14 +125,14 @@ void
 search(void *data, char **pars, const int pars_count)
 {
 	if (pars_count < 1)
-		err(1, "lcharmap: error: argument to --search missing.");
+		errx(1, "lcharmap: error: argument to --search missing.");
 
 	char *query = pars[0];
 	regex_t re;
 
 	/* TODO: get char of error and error message */
 	if (regcomp(&re, query, 0))
-		err(1, "lcharmap: '%s': invalid regex query.", query);
+		errx(1, "lcharmap: '%s': invalid regex query.", query);
 
 	/*
 	 * my excu^Wreason for not allocating on demand: 32kB isn't
@@ -142,7 +142,7 @@ search(void *data, char **pars, const int pars_count)
 	usize match_count = chardb_search(db, &re, &matches);
 
 	if (match_count == 0)
-		err(1, "lcharmap: error: no results found.");
+		errx(1, "lcharmap: error: no results found.");
 
 	for (usize i = 0; i < match_count; ++i) {
 		char *desc = chardb_getdesc(db, matches[i]);
@@ -160,7 +160,7 @@ handle_bool(void *data, char **pars, const int pars_count)
 void
 handle_anger(void *data, char **pars, const int pars_count)
 {
-	err(1, "rawr");
+	errx(1, "rawr");
 }
 
 void
