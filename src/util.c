@@ -21,7 +21,7 @@ ecalloc(size_t ct, size_t sz)
 {
 	void *mem = calloc(ct, sz);
 	if (mem == NULL)
-		err(1, "lcharmap: can't allocate memory:");
+		err(1, "chmap: can't allocate memory:");
 	return mem;
 }
 

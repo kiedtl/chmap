@@ -22,7 +22,7 @@ chardb_open(char *path)
 	 * the character database */
 	if (access(path, R_OK) != -1) {
 		if (sqlite3_open(path, &db)) {
-			warnx("lcharmap: can't open character db: %s",
+			warnx("chmap: can't open character db: %s",
 					sqlite3_errmsg(db));
 			sqlite3_close(db);
 			exit(1);
@@ -30,7 +30,7 @@ chardb_open(char *path)
 
 		return db;
 	} else {
-		errx(1, "lcharmap: can't access character db at '%s'.\n", path);
+		errx(1, "chmap: can't access character db at '%s'.\n", path);
 	}
 }
 

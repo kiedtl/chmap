@@ -1,6 +1,6 @@
 #
-# lcharmap: retreive information about Unicode characters
-# https://github.com/lptstr/lcharmap
+# chmap: retreive information about Unicode characters
+# https://github.com/lptstr/chmap
 #
 # (c) Kiëd Llaentenn and contributors
 # See the LICENSE.md file for more information
@@ -10,8 +10,8 @@ include config.mk
 
 VERSION = 1.1.0
 
-BIN     = lcharmap
-SRC     = sub/arg/argoat.c src/util.c src/dirs.c src/db.c src/$(BIN).c
+BIN     = chmap
+SRC     = sub/arg/argoat.c src/util.c src/dirs.c src/db.c src/main.c
 OBJ     = $(SRC:.c=.o)
 
 ARGOAT  = sub/arg/argoat.a
@@ -71,7 +71,7 @@ dist: clean
 	$(CMD)mkdir -p dist
 	$(CMD)cp -r config.mk Makefile *.md lib man src sub \
 		dist
-	$(CMD)tar -cvf - dist | xz -qcT 0 > lcharmap-v$(VERSION).tar.xz
+	$(CMD)tar -cvf - dist | xz -qcT 0 > chmap-v$(VERSION).tar.xz
 	$(CMD)rm -rf dist
 
 install: $(BIN) man/$(BIN).1 lib/chars.db
