@@ -16,6 +16,7 @@
 #include "utf.h"
 #include "vec.h"
 #include "vecdef.h"
+#include "range.h"
 
 sqlite3 *db;
 struct Options *opts;
@@ -88,23 +89,12 @@ range(void *data, char **pars, const int pars_count)
 	if (!expand_range(pars[0], &entries))
 		die("lcharmap: error: '%s': invalid range.", pars[0]);
 
-	vec_str_t descriptions;
-	vec_init(&descriptions);
-
-	for (usize i = 0; i < entries.length; ++i)
-		vec_push(&descriptions, chardb_getdesc(db, entries.data[i]));
-
-	struct Table table = {
-		opts->ttywidth,
-		opts->format_long,
-		&entries,
-		&descriptions
-	};
-
-	table_show(&table);
+	for (usize i = 0; i < (usize)entries.length; ++i) {
+		char *desc = chardb_getdesc(db, entries.data[i]);
+		r_table_print_entry(entries.data[i], desc);
+	}
 
 	vec_deinit(&entries);
-	vec_deinit(&descriptions);
 }
 
 void
@@ -125,28 +115,10 @@ chars(void *data, char **pars, const int pars_count)
 		pars[0] += chartorune(p, pars[0]);
 	*p = '\0';
 
-	vec_str_t descriptions;
-	vec_init(&descriptions);
-
-	vec_rune_t entries;
-	vec_init(&entries);
-
 	for (usize i = 0; i < len; ++i) {
-		vec_push(&entries, chars[i]);
-		vec_push(&descriptions, chardb_getdesc(db, chars[i]));
+		char *desc = chardb_getdesc(db, chars[i]);
+		r_table_print_entry(chars[i], desc);
 	}
-
-	struct Table table = {
-		opts->ttywidth,
-		opts->format_long,
-		&entries,
-		&descriptions
-	};
-
-	table_show(&table);
-
-	vec_deinit(&entries);
-	vec_deinit(&descriptions);
 
 	if (chars) free(chars);
 }
@@ -174,28 +146,10 @@ search(void *data, char **pars, const int pars_count)
 	if (match_count == 0)
 		die("lcharmap: error: no results found.");
 
-	vec_rune_t entries;
-	vec_init(&entries);
-
-	vec_str_t descriptions;
-	vec_init(&descriptions);
-
 	for (usize i = 0; i < match_count; ++i) {
-		vec_push(&entries, matches[i]);
-		vec_push(&descriptions, chardb_getdesc(db, matches[i]));
+		char *desc = chardb_getdesc(db, matches[i]);
+		r_table_print_entry(matches[i], desc);
 	}
-
-	struct Table table = {
-		opts->ttywidth,
-		opts->format_long,
-		&entries,
-		&descriptions
-	};
-
-	table_show(&table);
-
-	vec_deinit(&entries);
-	vec_deinit(&descriptions);
 }
 
 void

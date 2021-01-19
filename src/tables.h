@@ -15,5 +15,6 @@ struct Table {
 };
 
 void table_show(struct Table *self);
+void r_table_print_entry(Rune entry, char *description);
 
 #endif

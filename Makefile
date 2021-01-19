@@ -31,7 +31,7 @@ WARNING = -Wall -Wpedantic -Wextra -Wold-style-definition \
 INC     = -I. -Isub/ccommon/include/ -Isub/arg/ -Isub/libutf/include/ \
 	  -Isub/sql/ -Isub/vec/src -Isub/fort/
 DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0 \
-	  -D_DEFAULT_SOURCE
+	  -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=500
 CFLAGS  = -std=c99 -DVERSION=\"$(VERSION)\" $(WARNING) $(INC)
 LDFLAGS = -lpthread -ldl -fuse-ld=$(LD)
 

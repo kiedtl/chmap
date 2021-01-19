@@ -12,10 +12,10 @@ DESTDIR =
 PREFIX  = /usr/local
 
 AR = ar
-CC = cc
-LD = gold
+CC = clang
+LD = bfd
 
 RELEASE_CFLAGS  = -Os
 RELEASE_LDFLAGS = -march=native -flto -s
 DEBUG_CFLAGS    = -Og -ggdb
-DEBUG_LDFLAGS   = -fsanitize=address
+DEBUG_LDFLAGS   =

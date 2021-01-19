@@ -1,14 +1,15 @@
-/* TODO: sort include alphabetically */
-#include "utf.h"
 #include "bool.h"
+#include "db.h"
+#include "types.h"
+#include "utf.h"
+
+#include <alloca.h>
 #include <regex.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sqlite3.h>
 #include <unistd.h>
-#include "db.h"
-#include <stdlib.h>
-#include "types.h"
 
 /* TODO: make database loading/descriptions optional */
 /* TODO: allow user to modify db path at runtime via cmd args */
@@ -56,19 +57,18 @@ chardb_getdesc(sqlite3 *db, Rune _char)
 	sqlite3_prepare_v2(db, (char*) &query, querylen, &stmt, NULL);
 	sqlite3_step(stmt);
 
-	/* copy string onto our buffer, to prevent
-	 * sqlite3_finalize from ruining it */
+	/* copy string onto our buffer, to prevent sqlite3_finalize from ruining it */
 	char *desc;
-	if (sqlite3_column_text(stmt, 0) != NULL)
+	if (sqlite3_column_text(stmt, 0) != NULL) {
 		desc = strdup((char*) sqlite3_column_text(stmt, 0));
-	else
+	} else {
 		desc = "";
+	}
 
 	sqlite3_finalize(stmt);
 
 	if (err != NULL) {
-		fprintf(stderr, "lcharmap: warning: character"
-			"database error: %s\n", err);
+		fprintf(stderr, "lcharmap: warning: %s", err);
 	}
 
 	return desc;
