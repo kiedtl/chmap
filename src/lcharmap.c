@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <sqlite3.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "argoat.h"
 #include "db.h"
@@ -15,6 +16,7 @@
 #include "range.c"
 
 sqlite3 *db;
+_Bool istty = false;
 
 static void
 range(void *data, char **pars, const int pars_count)
@@ -36,7 +38,7 @@ range(void *data, char **pars, const int pars_count)
 
 	for (size_t i = 0; i < (size_t)entries_len; ++i) {
 		char *desc = chardb_getdesc(db, entries[i]);
-		printentry(entries[i], desc);
+		printentry(entries[i], desc, istty);
 	}
 }
 
@@ -62,7 +64,7 @@ chars(void *data, char **pars, const int pars_count)
 
 	for (size_t i = 0; i < len; ++i) {
 		char *desc = chardb_getdesc(db, chars[i]);
-		printentry(chars[i], desc);
+		printentry(chars[i], desc, istty);
 	}
 
 	if (chars) free(chars);
@@ -95,7 +97,7 @@ search(void *data, char **pars, const int pars_count)
 
 	for (size_t i = 0; i < match_count; ++i) {
 		char *desc = chardb_getdesc(db, matches[i]);
-		printentry(matches[i], desc);
+		printentry(matches[i], desc, istty);
 	}
 }
 
@@ -146,6 +148,8 @@ usage(void *data, char **pars, const int pars_count)
 int
 main(int argc, char **argv)
 {
+	istty = isatty(STDOUT_FILENO);
+
 	/* load database */
 	char *datadir = dirs_data_dir();
 	if (datadir == NULL)

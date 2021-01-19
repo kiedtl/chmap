@@ -8,7 +8,7 @@
 
 include config.mk
 
-VERSION = 1.0.0
+VERSION = 1.1.0
 
 BIN     = lcharmap
 SRC     = sub/arg/argoat.c src/util.c src/dirs.c src/db.c src/$(BIN).c

@@ -13,24 +13,33 @@ fmt_bytes(char *bytes)
 	memset(buf, 0x0, sizeof(buf));
 
 	for (size_t i = 0; bytes[i]; ++i)
-		strcat(buf, format("\\x%hhX ", bytes[i]));
+		strcat(buf, format("%hhX ", bytes[i]));
 
 	return (char *)&buf;
 }
 
 static void
-printentry(Rune entry, char *description)
+fmt_entry(_Bool fancy, char *key, char *value)
+{
+	if (fancy)
+		printf("\033[1m%-11s\033[m %s\n", key, value);
+	else
+		printf("%-11s %s\n", key, value);
+}
+
+static void
+printentry(Rune entry, char *description, _Bool fancy)
 {
 	char charbuf[7];
-	runetochar((char*) &charbuf, &entry);
-	charbuf[sizeof(charbuf)-1] = '\0';
+	memset(charbuf, 0x0, sizeof(charbuf));
+	runetochar(charbuf, &entry);
 
 	/* disable character field if entry is a control character */
 	_Bool iscontrol = entry < 32 || (entry > 126 && entry < 160);
 
-	printf("codepoint    %-5d 0x%-5X 0o%-5o\n", entry, entry, entry);
-	printf("UTF-8        %s\n", fmt_bytes(charbuf));
-	printf("glyph        %s\n", iscontrol ? CTRL : charbuf);
-	printf("description  %s\n", description);
+	fmt_entry(fancy, "codepoint",   format("%-5d 0x%-5X 0o%-5o", entry, entry, entry));
+	fmt_entry(fancy, "UTF-8",       format("%s", fmt_bytes(charbuf)));
+	fmt_entry(fancy, "glyph",       format("%s", iscontrol ? CTRL : charbuf));
+	fmt_entry(fancy, "description", format("%s", description));
 	printf("\n");
 }
