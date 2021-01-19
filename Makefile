@@ -23,9 +23,7 @@ SQLITE  = sub/sql/sqlite3.a
 WARNING = -Wall -Wpedantic -Wextra -Wold-style-definition \
 	  -Wmissing-prototypes -Winit-self -Wfloat-equal -Wstrict-prototypes \
 	  -Wredundant-decls -Wendif-labels -Wstrict-aliasing=2 -Woverflow \
-	  -Wformat=2 -Wmissing-include-dirs -Wno-trigraphs \
-	  -Wno-format-nonliteral -Wno-incompatible-pointer-types \
-	  -Wno-unused-parameter
+	  -Wformat=2 -Wmissing-include-dirs
 INC     = -I. -Isub/ccommon/include/ -Isub/arg/ -Isub/libutf/include/ \
 	  -Isub/sql/ -Isub/vec/src
 DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0 \
