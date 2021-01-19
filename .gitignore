@@ -4,9 +4,9 @@
 # ignore generated files
 lib/upddb
 lib/chars.db
-lcharmap.1
+chmap.1
 
 # ignore compiled files
 *.[ao]
 *.xz
-lcharmap
+chmap
