@@ -16,17 +16,16 @@ OBJ     = $(SRC:.c=.o)
 
 ARGOAT  = sub/arg/argoat.a
 LIBUTF  = sub/libutf/lib/libutf.a
-SQLITE  = sub/sql/sqlite3.a
 
 WARNING = -Wall -Wpedantic -Wextra -Wold-style-definition \
 	  -Wmissing-prototypes -Winit-self -Wfloat-equal -Wstrict-prototypes \
 	  -Wredundant-decls -Wendif-labels -Wstrict-aliasing=2 -Woverflow \
 	  -Wformat=2 -Wmissing-include-dirs
-INC     = -I. -Isub/arg/ -Isub/libutf/include/ -Isub/sql/ -Isub/vec/src
+INC     = -I. -Isub/arg/ -Isub/libutf/include/ -Isub/vec/src
 DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0 \
 	  -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=500 -D_POSIX_C_SOURCE=200809L
 CFLAGS  = -std=c99 -DVERSION=\"$(VERSION)\" $(WARNING) $(INC)
-LDFLAGS = -lpthread -ldl -fuse-ld=$(LD)
+LDFLAGS = -lpthread -ldl -lsqlite3 -fuse-ld=$(LD)
 
 all: man/$(BIN).1 debug
 
@@ -42,7 +41,7 @@ release: CFLAGS_OPT  := $(RELEASE_CFLAGS)
 release: LDFLAGS_OPT := $(RELEASE_LDFLAGS)
 release: $(BIN)
 
-$(BIN): $(OBJ) $(LIBUTF) $(SQLITE)
+$(BIN): $(OBJ) $(LIBUTF)
 	@printf "    %-8s%s\n" "CCLD" $@
 	$(CMD)$(CC) -o $@ $^ $(CFLAGS) $(CFLAGS_OPT) $(LDFLAGS) $(LDFLAGS_OPT)
 
@@ -53,9 +52,6 @@ $(ARGOAT):
 $(LIBUTF):
 	@printf "    %-8s%s\n" "MAKE" $@
 	$(CMD)cd sub/libutf && make
-$(SQLITE):
-	@printf "    %-8s%s\n" "MAKE" $@
-	$(CMD)cd sub/sql && make
 
 lib/chars.db:
 	@printf "    %-8s%s\n" "GEN" $@
@@ -69,7 +65,6 @@ clean:
 	$(CMD)rm -f $(BIN) $(OBJ) man/$(BIN).1
 	$(CMD)make -C sub/arg clean
 	$(CMD)make -C sub/libutf clean
-	$(CMD)make -C sub/sql clean
 	$(CMD)rm -rf dist/ *.xz
 
 dist: clean
