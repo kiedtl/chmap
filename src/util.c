@@ -2,6 +2,9 @@
 #define WOE_IS_ME
 #endif
 
+#include <assert.h>
+#include <err.h>
+#include <execinfo.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,44 +20,68 @@
 extern sqlite3 *db;
 extern struct Options *opts;
 
-void*
+void *
 ecalloc(usize ct, usize sz)
 {
 	void *mem = calloc(ct, sz);
 	if (mem == NULL)
-		die("lcharmap: error: unable to allocate memory:");
+		err(1, "lcharmap: can't allocate memory:");
 	return mem;
 }
 
-usize
+_Noreturn void __attribute__((format(printf, 1, 2)))
 die(const char *fmt, ...)
 {
+	fprintf(stderr, "fatal: ");
+
 	va_list ap;
 	va_start(ap, fmt);
 	vfprintf(stderr, fmt, ap);
 	va_end(ap);
 
-	if (fmt[0] && fmt[strlen(fmt)-1] == ':') {
-		fputc(' ', stderr);
-		perror(NULL);
+	if (fmt[0] && fmt[strlen(fmt) - 1] == ':') {
+		perror(" ");
 	} else {
 		fputc('\n', stderr);
 	}
 
-	cleanup();
-	exit(1);
+	char *buf_sz_str = getenv("CHMAP_DEBUG");
 
-	/* return dummy value so that die() can
-	 * be used with a boolean expression
-	 * e.g.: is_ok || die("message")
-	 */
-	return 0;
+	if (buf_sz_str == NULL) {
+		fprintf(stderr, "NOTE: set $CHMAP_DEBUG >0 for a backtrace.\n");
+	} else {
+		size_t buf_sz = strtol(buf_sz_str, NULL, 10);
+		void *buffer[buf_sz];
+
+		int nptrs = backtrace(buffer, buf_sz);
+		char **strings = backtrace_symbols(buffer, nptrs);
+		assert(strings);
+
+		fprintf(stderr, "backtrace:\n");
+		for (size_t i = 0; i < (size_t) nptrs; ++i)
+			fprintf(stderr, "   %s\n", strings[i]);
+		free(strings);
+	}
+
+	_Exit(EXIT_FAILURE);
+}
+
+char * __attribute__((format(printf, 1, 2)))
+format(const char *fmt, ...)
+{
+	static char buf[8192];
+	memset(buf, 0x0, sizeof(buf));
+	va_list ap;
+	va_start(ap, fmt);
+	int len = vsnprintf(buf, sizeof(buf), fmt, ap);
+	va_end(ap);
+	assert((size_t) len < sizeof(buf));
+	return (char *) &buf;
 }
 
 void
 cleanup(void)
 {
-	//chardb_close(db);
 	free(opts);
 }
 

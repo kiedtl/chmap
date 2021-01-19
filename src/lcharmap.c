@@ -1,3 +1,4 @@
+#include <err.h>
 #include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,14 +26,11 @@ int
 main(int argc, char **argv)
 {
 	/* load database */
-	char dbpath[4091];
-	
 	char *datadir = dirs_data_dir();
 	if (datadir == NULL)
-		die("lcharmap: error: unable to determine location of character database.");
-
-	sprintf(&dbpath, "%s%clcharmap%cchars.db", datadir, pathsep(), pathsep());
-	db = chardb_open((char*) &dbpath);
+		err(1, "lcharmap: can't find character database.");
+	db = chardb_open(format("%s%clcharmap%cchars.db",
+				datadir, pathsep(), pathsep()));
 
 	/* set default options */
 	opts = (struct Options*) ecalloc(1, sizeof(struct Options));
@@ -81,13 +79,13 @@ range(void *data, char **pars, const int pars_count)
 	 * e.g. Chinese
 	 */
 	if (pars_count < 1)
-		die("lcharmap: error: argument to --range missing.");
+		err(1, "lcharmap: error: argument to --range missing.");
 
 	vec_rune_t entries;
 	vec_init(&entries);
 
 	if (!expand_range(pars[0], &entries))
-		die("lcharmap: error: '%s': invalid range.", pars[0]);
+		err(1, "lcharmap: error: '%s': invalid range.", pars[0]);
 
 	for (usize i = 0; i < (usize)entries.length; ++i) {
 		char *desc = chardb_getdesc(db, entries.data[i]);
@@ -101,7 +99,7 @@ void
 chars(void *data, char **pars, const int pars_count)
 {
 	if (pars_count < 1)
-		die("lcharmap: error: argument to --chars missing.");
+		err(1, "lcharmap: error: argument to --chars missing.");
 
 	/*
 	 * we must process each character as a Rune, not byte-wise.
@@ -127,14 +125,14 @@ void
 search(void *data, char **pars, const int pars_count)
 {
 	if (pars_count < 1)
-		die("lcharmap: error: argument to --search missing.");
+		err(1, "lcharmap: error: argument to --search missing.");
 
 	char *query = pars[0];
 	regex_t re;
-	isize is_ok = regcomp(&re, query, 0);
 
 	/* TODO: get char of error and error message */
-	!is_ok ??!??! die("lcharmap: error: '%s': invalid regex query.", query);
+	if (regcomp(&re, query, 0))
+		err(1, "lcharmap: '%s': invalid regex query.", query);
 
 	/*
 	 * my excu^Wreason for not allocating on demand: 32kB isn't
@@ -144,7 +142,7 @@ search(void *data, char **pars, const int pars_count)
 	usize match_count = chardb_search(db, &re, &matches);
 
 	if (match_count == 0)
-		die("lcharmap: error: no results found.");
+		err(1, "lcharmap: error: no results found.");
 
 	for (usize i = 0; i < match_count; ++i) {
 		char *desc = chardb_getdesc(db, matches[i]);
@@ -162,7 +160,7 @@ handle_bool(void *data, char **pars, const int pars_count)
 void
 handle_anger(void *data, char **pars, const int pars_count)
 {
-	die("rawr");
+	err(1, "rawr");
 }
 
 void
