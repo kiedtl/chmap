@@ -1,15 +1,15 @@
-#include "bool.h"
-#include "db.h"
-#include "types.h"
-#include "utf.h"
-
 #include <alloca.h>
+#include <err.h>
 #include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sqlite3.h>
 #include <unistd.h>
+
+#include "util.h"
+#include "db.h"
+#include "utf.h"
 
 /* TODO: make database loading/descriptions optional */
 /* TODO: allow user to modify db path at runtime via cmd args */
@@ -21,21 +21,16 @@ chardb_open(char *path)
 	/* just in case the user didn't install
 	 * the character database */
 	if (access(path, R_OK) != -1) {
-		int rc = sqlite3_open(path, &db);
-		if (rc) {
-			fprintf(stderr,
-				"lcharmap: error: unable to access character database: %s\n",
-				sqlite3_errmsg(db));
+		if (sqlite3_open(path, &db)) {
+			warnx("lcharmap: can't open character db: %s",
+					sqlite3_errmsg(db));
 			sqlite3_close(db);
 			exit(1);
 		}
 
 		return db;
 	} else {
-		fprintf(stderr,
-			"lcharmap: error: unable to open character database at '%s'.\n",
-			path);
-		exit(1);
+		errx(1, "lcharmap: can't access character db at '%s'.\n", path);
 	}
 }
 
@@ -48,13 +43,16 @@ chardb_close(sqlite3 *db)
 char*
 chardb_getdesc(sqlite3 *db, Rune _char)
 {
-	usize querylen = snprintf(NULL, 0, "SELECT description FROM map WHERE id=%i;", _char);
-	char query[querylen];
+	char *query = SQL(
+		SELECT description FROM map WHERE id=:id;
+	);
 
 	char *err = NULL;
-	sprintf((char*) &query, "SELECT description FROM map WHERE id=%i;", _char);
 	sqlite3_stmt *stmt;
-	sqlite3_prepare_v2(db, (char*) &query, querylen, &stmt, NULL);
+	sqlite3_prepare_v2(db, query, strlen(query), &stmt, NULL);
+	ssize_t index = sqlite3_bind_parameter_index(stmt, ":id");
+	if (!index || sqlite3_bind_int64(stmt, index, (sqlite3_int64)_char))
+		die("sqlite3 error: %s", sqlite3_errmsg(db));
 	sqlite3_step(stmt);
 
 	/* copy string onto our buffer, to prevent sqlite3_finalize from ruining it */
@@ -67,27 +65,26 @@ chardb_getdesc(sqlite3 *db, Rune _char)
 
 	sqlite3_finalize(stmt);
 
-	if (err != NULL) {
-		fprintf(stderr, "lcharmap: warning: %s", err);
-	}
+	if (err != NULL)
+		die("sqlite3 error: %s", err);
 
 	return desc;
 }
 
-usize
+size_t
 chardb_search(sqlite3 *db, regex_t *re, Rune *matchbuf)
 {
-	usize mctr = 0;
+	size_t mctr = 0;
 
 	/* TODO: panic on sqlite err */
 	char *query = "SELECT description FROM map;";
-	usize query_len = strlen(query);
+	size_t query_len = strlen(query);
 
 	sqlite3_stmt *stmt;
 	sqlite3_prepare_v2(db, query, query_len, &stmt, NULL);
 
-	isize result = 0;
-	for (usize i = 0; ; ++i) {
+	ssize_t result = 0;
+	for (size_t i = 0; ; ++i) {
 		result = sqlite3_step(stmt);
 
 		/* is another row available? */
@@ -96,7 +93,7 @@ chardb_search(sqlite3 *db, regex_t *re, Rune *matchbuf)
 		}
 
 		char *desc = (char*) sqlite3_column_text(stmt, 0);
-		bool match = !regexec(re, desc, 0, NULL, 0);
+		_Bool match = !regexec(re, desc, 0, NULL, 0);
 		
 		if (match) {
 			matchbuf[mctr] = i;

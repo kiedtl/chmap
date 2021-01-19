@@ -1,96 +1,17 @@
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
 
-#include "bool.h"
-#include "range.h"
-#include "types.h"
 #include "util.h"
-#include "vec.h"
-#include "vecdef.h"
 
-static bool parse_range(char *s, char **e, vec_rune_t *entries);
-static bool parse_int(int *x, char *s, char **e, bool add, vec_rune_t *entries);
+static size_t _buf_len = 0;
 
-bool
-expand_range(char *s, vec_rune_t *entries)
+static _Bool
+parse_int(int *x, char *s, char **e, _Bool add, Rune *buf)
 {
-	int x = 0;
-	char **e = &s;
-
-	for (;;) {
-		while (isspace(*s)) ++s;
-
-		/*
-		 * try to parse input as a range, and fall back
-		 * to parsing input as a single integer if that
-		 * failed.
-		 * if both failed, it's probably a syntax error.
-		 */
-		if (!parse_range(s, e, entries)) {
-			if (!parse_int(&x, s, e, TRUE, entries)) {
-				break;
-			}
-		}
-		s = *e;
-		
-		while (isspace(*s)) ++s;
-		if (strlen(s) == 0) return TRUE;
-
-		/* check if there's something more to parse */
-		if ((*s) == ',') {
-			++s;
-			continue;
-		}
-
-		break;
-	}
-
-	/* if we broke out of the main loop then a syntax
-	 * error must have occurred */
-	return FALSE;
-}
-
-bool
-parse_range(char *s, char **e, vec_rune_t *entries)
-{
-	int x = 0, y = 0;
-	char *ee;
-	char *start = s;
-
-	/* try to parse left-hand side of range */
-	if (!parse_int(&x, s, &ee, FALSE, entries))
-		return FALSE;
-	s = ee;
-
-	/* check if this is really a range, or just
-	 * a single integer */
-	if (*s != '-') {
-		e = &start;
-		return FALSE;
-	} else {
-		++s;
-	}
-	
-	/* try to parse right-hand side of range */
-	if (!parse_int(&y, s, e, FALSE, entries))
-		return FALSE;
-
-	/* check if left-hand size is greater than
-	 * right-hand side of range */
-	if (y < x) return FALSE;
-
-	/* copy onto accumulator */
-	for (usize i = x; i <= y; ++i)
-		vec_push(entries, (Rune) i);
-	return TRUE;
-}
-
-bool
-parse_int(int *x, char *s, char **e, bool add, vec_rune_t *entries)
-{
-	usize base;
+	size_t base;
 	if (!strncmp(s, "0x", 2)) {
 		base = 16;
 		s += 2;
@@ -105,7 +26,7 @@ parse_int(int *x, char *s, char **e, bool add, vec_rune_t *entries)
 	}
 
 	*x = strtol(s, e, base);
-	bool ok = *e != s;
+	_Bool ok = *e != s;
 
 	/* HACK: the add parameter controls whether
 	 * a parsed integer is added to the entries
@@ -119,6 +40,82 @@ parse_int(int *x, char *s, char **e, bool add, vec_rune_t *entries)
 	 * to be added to the entries.
 	 */
 
-	if (ok && add) vec_push(entries, (Rune) *x);
+	if (ok && add) buf[_buf_len] = *x, ++_buf_len;
 	return ok;
+}
+
+
+static _Bool
+parse_range(char *s, char **e, Rune *buf)
+{
+	int x = 0, y = 0;
+	char *ee;
+	char *start = s;
+
+	/* try to parse left-hand side of range */
+	if (!parse_int(&x, s, &ee, false, buf))
+		return false;
+	s = ee;
+
+	/* check if this is really a range, or just
+	 * a single integer */
+	if (*s != '-') {
+		e = &start;
+		return false;
+	} else {
+		++s;
+	}
+	
+	/* try to parse right-hand side of range */
+	if (!parse_int(&y, s, e, false, buf))
+		return false;
+
+	/* check if left-hand size is greater than
+	 * right-hand side of range */
+	if (y < x) return false;
+
+	/* copy onto accumulator */
+	for (size_t i = x; i <= (size_t)y; ++i)
+		buf[_buf_len] = i, ++_buf_len;
+	return true;
+}
+
+static ssize_t
+expand_range(char *s, Rune *buf)
+{
+	_buf_len = 0;
+	int x = 0;
+	char **e = &s;
+
+	for (;;) {
+		while (isspace(*s)) ++s;
+
+		/*
+		 * try to parse input as a range, and fall back
+		 * to parsing input as a single integer if that
+		 * failed.
+		 * if both failed, it's probably a syntax error.
+		 */
+		if (!parse_range(s, e, buf)) {
+			if (!parse_int(&x, s, e, true, buf)) {
+				break;
+			}
+		}
+		s = *e;
+		
+		while (isspace(*s)) ++s;
+		if (strlen(s) == 0) return _buf_len;
+
+		/* check if there's something more to parse */
+		if ((*s) == ',') {
+			++s;
+			continue;
+		}
+
+		break;
+	}
+
+	/* if we broke out of the main loop then a syntax
+	 * error must have occurred */
+	return -1;
 }

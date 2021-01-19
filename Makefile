@@ -11,9 +11,7 @@ include config.mk
 VERSION = 1.0.0
 
 BIN     = lcharmap
-SRC     = sub/arg/argoat.c sub/vec/src/vec.c \
-	  src/util.c src/dirs.c src/tables.c src/range.c \
-	  src/db.c src/terminfo.c src/$(BIN).c
+SRC     = sub/arg/argoat.c src/util.c src/dirs.c src/db.c src/$(BIN).c
 OBJ     = $(SRC:.c=.o)
 
 ARGOAT  = sub/arg/argoat.a
@@ -24,10 +22,9 @@ WARNING = -Wall -Wpedantic -Wextra -Wold-style-definition \
 	  -Wmissing-prototypes -Winit-self -Wfloat-equal -Wstrict-prototypes \
 	  -Wredundant-decls -Wendif-labels -Wstrict-aliasing=2 -Woverflow \
 	  -Wformat=2 -Wmissing-include-dirs
-INC     = -I. -Isub/ccommon/include/ -Isub/arg/ -Isub/libutf/include/ \
-	  -Isub/sql/ -Isub/vec/src
+INC     = -I. -Isub/arg/ -Isub/libutf/include/ -Isub/sql/ -Isub/vec/src
 DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0 \
-	  -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=500
+	  -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=500 -D_POSIX_C_SOURCE=200809L
 CFLAGS  = -std=c99 -DVERSION=\"$(VERSION)\" $(WARNING) $(INC)
 LDFLAGS = -lpthread -ldl -fuse-ld=$(LD)
 

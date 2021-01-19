@@ -11,17 +11,13 @@
 #include <sqlite3.h>
 #include <string.h>
 
-#include "bool.h"
 #include "db.h"
-#include "lcharmap.h"
-#include "types.h"
 #include "util.h"
 
 extern sqlite3 *db;
-extern struct Options *opts;
 
 void *
-ecalloc(usize ct, usize sz)
+ecalloc(size_t ct, size_t sz)
 {
 	void *mem = calloc(ct, sz);
 	if (mem == NULL)
@@ -77,12 +73,6 @@ format(const char *fmt, ...)
 	va_end(ap);
 	assert((size_t) len < sizeof(buf));
 	return (char *) &buf;
-}
-
-void
-cleanup(void)
-{
-	free(opts);
 }
 
 char

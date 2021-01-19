@@ -6,9 +6,6 @@
  * TODO: separate this into it's own submodule and maintain separately
  * TODO: provide the rest of the functionality of the `dirs` crate
  *
- * Please note that this file will ONLY support Linux and Windows.
- * no support for macOS, BSD, Minix, Haiku, Redox, etc, etc, etc
- *
  * See also: https://docs.rs/dirs/2.0.2/dirs/
  */
 
@@ -23,12 +20,12 @@
 #include <unistd.h>
 #endif
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "dirs.h"
-#include "types.h"
 
-char*
+char *
 dirs_data_dir(void)
 {
 #ifdef WOE_IS_ME
@@ -40,11 +37,8 @@ dirs_data_dir(void)
 		char *home = dirs_home_dir();
 
 		static char buf[4096];
-		buf[4096 - 1] = '\0';
-
-		strcpy(&buf, home);
-		strcat(&buf, "/.local/share");
-
+		memset(buf, 0x0, sizeof(buf));
+		sprintf(buf, "%s/.local/share", home);
 		return buf;
 	}
 
@@ -61,7 +55,6 @@ dirs_home_dir(void)
 		/* TODO: Windows support */
 		return NULL;
 #else
-		/* read /etc/passwd */
 		struct passwd *pwdata = getpwuid(getuid());
 		return pwdata->pw_dir;
 #endif

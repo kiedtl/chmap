@@ -1,79 +1,26 @@
 #include <err.h>
 #include <regex.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sqlite3.h>
 #include <string.h>
 
 #include "argoat.h"
-#include "bool.h"
 #include "db.h"
 #include "dirs.h"
-#include "lcharmap.h"
-#include "tables.h"
-#include "terminfo.h"
-#include "types.h"
+#include "display.c"
 #include "util.h"
 #include "utf.h"
-#include "vec.h"
-#include "vecdef.h"
-#include "range.h"
+#include "range.c"
 
 sqlite3 *db;
-struct Options *opts;
 
-int
-main(int argc, char **argv)
-{
-	/* load database */
-	char *datadir = dirs_data_dir();
-	if (datadir == NULL)
-		errx(1, "lcharmap: can't find character database.");
-	db = chardb_open(format("%s%clcharmap%cchars.db",
-				datadir, pathsep(), pathsep()));
-
-	/* set default options */
-	opts = (struct Options*) ecalloc(1, sizeof(struct Options));
-
-	opts->format_long = FALSE;
-	opts->ttywidth    = ttywidth();
-
-	/* TODO: get a better argument parser that
-	 * - WON'T crash on unrecognized arg
-	 * - SUPPORTS simple neighbors (e.g. "head -n1")
-	 * - SUPPORTS subcommands
-	 */
-
-	/* parse arguments with cylgom/argoat */
-	const struct argoat_sprig sprigs[15] = {
-		/* unflagged */
-		{ NULL,      0, NULL,                       NULL         },
-		{ "version", 0, NULL,                       version      },
-		{ "V",       0, NULL,                       version      },
-		/* -v instead of -V will be removed soon */
-		{ "v",       0, NULL,                       version      },
-		{ "help",    0, NULL,                       usage        },
-		{ "h",       0, NULL,                       usage        },
-		{ "long",    0, (void*) &opts->format_long, handle_bool  },
-		{ "l",       0, (void*) &opts->format_long, handle_bool  },
-		{ "range",   1, NULL,                       range        },
-		{ "r",       1, NULL,                       range        },
-		{ "rage",    0, NULL,                       handle_anger },
-		{ "chars",   1, NULL,                       chars        },
-		{ "c",       1, NULL,                       chars        },
-		{ "search",  1, NULL,                       search       },
-		{ "s",       1, NULL,                       search       },
-	};
-
-	struct argoat args = { sprigs, sizeof(sprigs), NULL, 0, 0 };
-	argoat_graze(&args, argc, argv);
-
-	cleanup();
-}
-
-void
+static void
 range(void *data, char **pars, const int pars_count)
 {
+	UNUSED(data);
+
 	/*
 	 * TODO: support number characters from other languages
 	 * e.g. Chinese
@@ -81,23 +28,23 @@ range(void *data, char **pars, const int pars_count)
 	if (pars_count < 1)
 		errx(1, "lcharmap: error: argument to --range missing.");
 
-	vec_rune_t entries;
-	vec_init(&entries);
+	Rune entries[262144];
+	ssize_t entries_len = -1;
 
-	if (!expand_range(pars[0], &entries))
+	if ((entries_len = expand_range(pars[0], entries)) < 0)
 		errx(1, "lcharmap: error: '%s': invalid range.", pars[0]);
 
-	for (usize i = 0; i < (usize)entries.length; ++i) {
-		char *desc = chardb_getdesc(db, entries.data[i]);
-		r_table_print_entry(entries.data[i], desc);
+	for (size_t i = 0; i < (size_t)entries_len; ++i) {
+		char *desc = chardb_getdesc(db, entries[i]);
+		printentry(entries[i], desc);
 	}
-
-	vec_deinit(&entries);
 }
 
-void
+static void
 chars(void *data, char **pars, const int pars_count)
 {
+	UNUSED(data);
+
 	if (pars_count < 1)
 		errx(1, "lcharmap: error: argument to --chars missing.");
 
@@ -106,24 +53,26 @@ chars(void *data, char **pars, const int pars_count)
 	 * This is to ensure that UTF8 continuation bytes don't get
 	 * treated as a separate character.
 	 */
-	usize len = utflen(pars[0]);
+	size_t len = utflen(pars[0]);
 	Rune *chars = (Rune*) ecalloc(len, sizeof(Rune));
 	Rune *p = chars;
-	for (usize i = 0; i < len; ++i, ++p)
+	for (size_t i = 0; i < len; ++i, ++p)
 		pars[0] += chartorune(p, pars[0]);
 	*p = '\0';
 
-	for (usize i = 0; i < len; ++i) {
+	for (size_t i = 0; i < len; ++i) {
 		char *desc = chardb_getdesc(db, chars[i]);
-		r_table_print_entry(chars[i], desc);
+		printentry(chars[i], desc);
 	}
 
 	if (chars) free(chars);
 }
 
-void
+static void
 search(void *data, char **pars, const int pars_count)
 {
+	UNUSED(data);
+
 	if (pars_count < 1)
 		errx(1, "lcharmap: error: argument to --search missing.");
 
@@ -139,40 +88,45 @@ search(void *data, char **pars, const int pars_count)
 	 * *that* much memory.
 	 */
 	Rune matches[32841];
-	usize match_count = chardb_search(db, &re, &matches);
+	size_t match_count = chardb_search(db, &re, (Rune *)&matches);
 
 	if (match_count == 0)
 		errx(1, "lcharmap: error: no results found.");
 
-	for (usize i = 0; i < match_count; ++i) {
+	for (size_t i = 0; i < match_count; ++i) {
 		char *desc = chardb_getdesc(db, matches[i]);
-		r_table_print_entry(matches[i], desc);
+		printentry(matches[i], desc);
 	}
 }
 
-void
-handle_bool(void *data, char **pars, const int pars_count)
-{
-	*((bool*) data) = TRUE;
-}
-
 /* ¯\_(ツ)_/¯ */
-void
+static void
 handle_anger(void *data, char **pars, const int pars_count)
 {
+	UNUSED(data);
+	UNUSED(pars);
+	UNUSED(pars_count);
+
 	errx(1, "rawr");
 }
 
-void
+static void
 version(void *data, char **pars, const int pars_count)
 {
-	fprintf(stdout, "lcharmap v%s\n", VERSION);
-	exit(0);
+	UNUSED(data);
+	UNUSED(pars);
+	UNUSED(pars_count);
+
+	errx(0, "lcharmap v%s\n", VERSION);
 }
 
-void
+static void
 usage(void *data, char **pars, const int pars_count)
 {
+	UNUSED(data);
+	UNUSED(pars);
+	UNUSED(pars_count);
+
 	printf("Usage: lcharmap [-rcs] [CHAR]... [OPTION]...\n");
 	printf("Print and search information on the provided Unicode characters.\n\n");
 	printf("OPTIONS:\n");
@@ -187,4 +141,37 @@ usage(void *data, char **pars, const int pars_count)
 	printf("Report issues to https://github.com/lptstr/lcharmap.\n");
 	printf("Full documentation is available locally at lcharmap(1).\n");
 	exit(0);
+}
+
+int
+main(int argc, char **argv)
+{
+	/* load database */
+	char *datadir = dirs_data_dir();
+	if (datadir == NULL)
+		errx(1, "lcharmap: can't find character database.");
+	db = chardb_open(format("%s%clcharmap%cchars.db",
+				datadir, pathsep(), pathsep()));
+
+	/* parse arguments with cylgom/argoat */
+	const struct argoat_sprig sprigs[15] = {
+		/* unflagged */
+		{ NULL,      0, NULL,                       NULL         },
+		{ "version", 0, NULL,                       version      },
+		{ "V",       0, NULL,                       version      },
+		/* -v instead of -V will be removed soon */
+		{ "v",       0, NULL,                       version      },
+		{ "help",    0, NULL,                       usage        },
+		{ "h",       0, NULL,                       usage        },
+		{ "range",   1, NULL,                       range        },
+		{ "r",       1, NULL,                       range        },
+		{ "rage",    0, NULL,                       handle_anger },
+		{ "chars",   1, NULL,                       chars        },
+		{ "c",       1, NULL,                       chars        },
+		{ "search",  1, NULL,                       search       },
+		{ "s",       1, NULL,                       search       },
+	};
+
+	struct argoat args = { sprigs, sizeof(sprigs), NULL, 0, 0 };
+	argoat_graze(&args, argc, argv);
 }

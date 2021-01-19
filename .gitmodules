@@ -1,12 +1,6 @@
-[submodule "sub/ccommon"]
-	path = sub/ccommon
-	url = https://github.com/lptstr/ccommon
 [submodule "sub/argoat"]
 	path = sub/argoat
 	url = https://github.com/cylgom/argoat
 [submodule "sub/libutf"]
 	path = sub/libutf
 	url = https://github.com/cls/libutf
-[submodule "sub/vec"]
-	path = sub/vec
-	url = https://github.com/rxi/vec
