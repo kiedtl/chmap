@@ -28,13 +28,13 @@ range(void *data, char **pars, const int pars_count)
 	 * e.g. Chinese
 	 */
 	if (pars_count < 1)
-		errx(1, "lcharmap: error: argument to --range missing.");
+		errx(1, "argument to --range missing.");
 
 	Rune entries[262144];
 	ssize_t entries_len = -1;
 
 	if ((entries_len = expand_range(pars[0], entries)) < 0)
-		errx(1, "lcharmap: error: '%s': invalid range.", pars[0]);
+		errx(1, "'%s': invalid range.", pars[0]);
 
 	for (size_t i = 0; i < (size_t)entries_len; ++i) {
 		char *desc = chardb_getdesc(db, entries[i]);
@@ -48,7 +48,7 @@ chars(void *data, char **pars, const int pars_count)
 	UNUSED(data);
 
 	if (pars_count < 1)
-		errx(1, "lcharmap: error: argument to --chars missing.");
+		errx(1, "argument to --chars missing.");
 
 	/*
 	 * we must process each character as a Rune, not byte-wise.
@@ -76,14 +76,14 @@ search(void *data, char **pars, const int pars_count)
 	UNUSED(data);
 
 	if (pars_count < 1)
-		errx(1, "lcharmap: error: argument to --search missing.");
+		errx(1, "argument to --search missing.");
 
 	char *query = pars[0];
 	regex_t re;
 
 	/* TODO: get char of error and error message */
 	if (regcomp(&re, query, 0))
-		errx(1, "lcharmap: '%s': invalid regex query.", query);
+		errx(1, "'%s': invalid regex query.", query);
 
 	/*
 	 * my excu^Wreason for not allocating on demand: 32kB isn't
@@ -93,7 +93,7 @@ search(void *data, char **pars, const int pars_count)
 	size_t match_count = chardb_search(db, &re, (Rune *)&matches);
 
 	if (match_count == 0)
-		errx(1, "lcharmap: error: no results found.");
+		errx(1, "no results found.");
 
 	for (size_t i = 0; i < match_count; ++i) {
 		char *desc = chardb_getdesc(db, matches[i]);
@@ -109,7 +109,8 @@ handle_anger(void *data, char **pars, const int pars_count)
 	UNUSED(pars);
 	UNUSED(pars_count);
 
-	errx(1, "rawr");
+	fprintf(stderr, "rawr");
+	exit(0);
 }
 
 static void
@@ -119,7 +120,8 @@ version(void *data, char **pars, const int pars_count)
 	UNUSED(pars);
 	UNUSED(pars_count);
 
-	errx(0, "lcharmap v%s\n", VERSION);
+	printf("chmap v%s\n", VERSION);
+	exit(0);
 }
 
 static void
@@ -129,7 +131,7 @@ usage(void *data, char **pars, const int pars_count)
 	UNUSED(pars);
 	UNUSED(pars_count);
 
-	printf("Usage: lcharmap [-rcs] [CHAR]... [OPTION]...\n");
+	printf("Usage: chmap [-rcs] [CHAR]... [OPTION]...\n");
 	printf("Print and search information on the provided Unicode characters.\n\n");
 	printf("OPTIONS:\n");
 	printf("    -l, --long          print character entries in the long format.\n");
@@ -140,8 +142,8 @@ usage(void *data, char **pars, const int pars_count)
 	printf("    -c, --chars CHARS   print a range of Unicode codepoints that match\n");
 	printf("                        provided character(s).\n");
 	printf("    -s, --search REGEX  search character descriptions for REGEX.\n\n");
-	printf("Report issues to https://github.com/lptstr/lcharmap.\n");
-	printf("Full documentation is available locally at lcharmap(1).\n");
+	printf("Report issues to https://github.com/lptstr/chmap.\n");
+	printf("Full documentation is available locally at chmap(1).\n");
 	exit(0);
 }
 
@@ -153,8 +155,8 @@ main(int argc, char **argv)
 	/* load database */
 	char *datadir = dirs_data_dir();
 	if (datadir == NULL)
-		errx(1, "lcharmap: can't find character database.");
-	db = chardb_open(format("%s%clcharmap%cchars.db",
+		errx(1, "can't find character database.");
+	db = chardb_open(format("%s%cchmap%cchars.db",
 				datadir, pathsep(), pathsep()));
 
 	/* parse arguments with cylgom/argoat */
