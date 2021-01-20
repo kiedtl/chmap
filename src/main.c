@@ -1,18 +1,19 @@
 #include <err.h>
 #include <regex.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sqlite3.h>
 #include <string.h>
 #include <unistd.h>
+#include <utf8proc.h>
 
 #include "argoat.h"
 #include "db.h"
 #include "dirs.h"
 #include "display.c"
 #include "util.h"
-#include "utf.h"
 #include "range.c"
 
 sqlite3 *db;
@@ -30,7 +31,7 @@ range(void *data, char **pars, const int pars_count)
 	if (pars_count < 1)
 		errx(1, "argument to --range missing.");
 
-	Rune entries[262144];
+	uint32_t entries[262144];
 	ssize_t entries_len = -1;
 
 	if ((entries_len = expand_range(pars[0], entries)) < 0)
@@ -50,24 +51,28 @@ chars(void *data, char **pars, const int pars_count)
 	if (pars_count < 1)
 		errx(1, "argument to --chars missing.");
 
-	/*
-	 * we must process each character as a Rune, not byte-wise.
-	 * This is to ensure that UTF8 continuation bytes don't get
-	 * treated as a separate character.
-	 */
-	size_t len = utflen(pars[0]);
-	Rune *chars = (Rune*) ecalloc(len, sizeof(Rune));
-	Rune *p = chars;
-	for (size_t i = 0; i < len; ++i, ++p)
-		pars[0] += chartorune(p, pars[0]);
-	*p = '\0';
+	unsigned char *inp = (unsigned char *)pars[0];
 
-	for (size_t i = 0; i < len; ++i) {
-		char *desc = chardb_getdesc(db, chars[i]);
-		printentry(chars[i], desc, istty);
+	int32_t charbuf = 0;
+	ssize_t runelen = 0;
+
+	while (*inp) {
+		charbuf = 0;
+		runelen = utf8proc_iterate(inp, -1, &charbuf);
+
+		if (runelen < 0) {
+			size_t offset = (char *)inp - pars[0];
+			warnx("invalid byte %zu: %s",
+				offset, utf8proc_errmsg(runelen));
+			++inp;
+			continue;
+		}
+
+		inp += runelen;
+
+		char *desc = chardb_getdesc(db, charbuf);
+		printentry(charbuf, desc, istty);
 	}
-
-	if (chars) free(chars);
 }
 
 static void
@@ -89,8 +94,8 @@ search(void *data, char **pars, const int pars_count)
 	 * my excu^Wreason for not allocating on demand: 32kB isn't
 	 * *that* much memory.
 	 */
-	Rune matches[32841];
-	size_t match_count = chardb_search(db, &re, (Rune *)&matches);
+	uint32_t matches[32841];
+	size_t match_count = chardb_search(db, &re, (uint32_t *)&matches);
 
 	if (match_count == 0)
 		errx(1, "no results found.");

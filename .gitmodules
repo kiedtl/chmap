@@ -1,6 +1,3 @@
 [submodule "sub/argoat"]
 	path = sub/argoat
 	url = https://github.com/cylgom/argoat
-[submodule "sub/libutf"]
-	path = sub/libutf
-	url = https://github.com/cls/libutf

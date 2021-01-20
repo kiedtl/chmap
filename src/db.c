@@ -1,6 +1,7 @@
 #include <alloca.h>
 #include <err.h>
 #include <regex.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,7 +10,6 @@
 
 #include "util.h"
 #include "db.h"
-#include "utf.h"
 
 /* TODO: make database loading/descriptions optional */
 /* TODO: allow user to modify db path at runtime via cmd args */
@@ -41,7 +41,7 @@ chardb_close(sqlite3 *db)
 }
 
 char*
-chardb_getdesc(sqlite3 *db, Rune _char)
+chardb_getdesc(sqlite3 *db, uint32_t _char)
 {
 	char *query = SQL(
 		SELECT description FROM map WHERE id=:id;
@@ -72,7 +72,7 @@ chardb_getdesc(sqlite3 *db, Rune _char)
 }
 
 size_t
-chardb_search(sqlite3 *db, regex_t *re, Rune *matchbuf)
+chardb_search(sqlite3 *db, regex_t *re, uint32_t *matchbuf)
 {
 	size_t mctr = 0;
 

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "utf.h"
 #include "util.h"
 
 #define CTRL "<control>"
@@ -28,11 +27,12 @@ fmt_entry(_Bool fancy, char *key, char *value)
 }
 
 static void
-printentry(Rune entry, char *description, _Bool fancy)
+printentry(uint32_t entry, char *description, _Bool fancy)
 {
 	char charbuf[7];
 	memset(charbuf, 0x0, sizeof(charbuf));
-	runetochar(charbuf, &entry);
+
+	utf8proc_encode_char(entry, (unsigned char *)charbuf);
 
 	/* disable character field if entry is a control character */
 	_Bool iscontrol = entry < 32 || (entry > 126 && entry < 160);

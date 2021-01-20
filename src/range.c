@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -9,7 +10,7 @@
 static size_t _buf_len = 0;
 
 static _Bool
-parse_int(int *x, char *s, char **e, _Bool add, Rune *buf)
+parse_int(int *x, char *s, char **e, _Bool add, uint32_t *buf)
 {
 	size_t base;
 	if (!strncmp(s, "0x", 2)) {
@@ -46,7 +47,7 @@ parse_int(int *x, char *s, char **e, _Bool add, Rune *buf)
 
 
 static _Bool
-parse_range(char *s, char **e, Rune *buf)
+parse_range(char *s, char **e, uint32_t *buf)
 {
 	int x = 0, y = 0;
 	char *ee;
@@ -81,7 +82,7 @@ parse_range(char *s, char **e, Rune *buf)
 }
 
 static ssize_t
-expand_range(char *s, Rune *buf)
+expand_range(char *s, uint32_t *buf)
 {
 	_buf_len = 0;
 	int x = 0;

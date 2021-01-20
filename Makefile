@@ -14,18 +14,18 @@ BIN     = chmap
 SRC     = sub/arg/argoat.c src/util.c src/dirs.c src/db.c src/main.c
 OBJ     = $(SRC:.c=.o)
 
-ARGOAT  = sub/arg/argoat.a
-LIBUTF  = sub/libutf/lib/libutf.a
+ARGOAT   = sub/arg/argoat.a
+UTF8PROC = ~/local/lib/libutf8proc.a #-L ~/local/lib -lutf8proc
 
 WARNING = -Wall -Wpedantic -Wextra -Wold-style-definition \
 	  -Wmissing-prototypes -Winit-self -Wfloat-equal -Wstrict-prototypes \
 	  -Wredundant-decls -Wendif-labels -Wstrict-aliasing=2 -Woverflow \
 	  -Wformat=2 -Wmissing-include-dirs
-INC     = -I. -Isub/arg/ -Isub/libutf/include/ -Isub/vec/src
+INC     = -I. -Isub/arg/ -I ~/local/include/
 DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0 \
 	  -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=500 -D_POSIX_C_SOURCE=200809L
 CFLAGS  = -std=c99 -DVERSION=\"$(VERSION)\" $(WARNING) $(INC)
-LDFLAGS = -lpthread -ldl -lsqlite3 -fuse-ld=$(LD)
+LDFLAGS = -lpthread -ldl -lsqlite3 $(UTF8PROC) -fuse-ld=$(LD)
 
 all: man/$(BIN).1 debug
 
@@ -49,10 +49,6 @@ $(ARGOAT):
 	@printf "    %-8s%s\n" "MAKE" $@
 	$(CMD)cd sub/arg && make
 
-$(LIBUTF):
-	@printf "    %-8s%s\n" "MAKE" $@
-	$(CMD)cd sub/libutf && make
-
 lib/chars.db:
 	@printf "    %-8s%s\n" "GEN" $@
 	$(CMD)cd sub/lib && make
@@ -64,7 +60,6 @@ man/$(BIN).1: man/$(BIN).scd
 clean:
 	$(CMD)rm -f $(BIN) $(OBJ) man/$(BIN).1
 	$(CMD)make -C sub/arg clean
-	$(CMD)make -C sub/libutf clean
 	$(CMD)rm -rf dist/ *.xz
 
 dist: clean
