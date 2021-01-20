@@ -41,6 +41,8 @@ release: CFLAGS_OPT  := $(RELEASE_CFLAGS)
 release: LDFLAGS_OPT := $(RELEASE_LDFLAGS)
 release: $(BIN)
 
+src/main.o: src/range.c src/display.c
+
 $(BIN): $(OBJ) $(LIBUTF)
 	@printf "    %-8s%s\n" "CCLD" $@
 	$(CMD)$(CC) -o $@ $^ $(CFLAGS) $(CFLAGS_OPT) $(LDFLAGS) $(LDFLAGS_OPT)
