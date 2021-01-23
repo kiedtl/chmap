@@ -1,22 +1,21 @@
-# `lcharmap`
+# `chmap` (formerly `lcharmap`)
 
-> Get information on Unicode characters in the terminal
+> A CLI utility to get information for Unicode characters.
 
 ### Status
 
 Quite a few bugs remain to be fixed, but the tool is about 70% complete at this
-point. Check [`man/TODO.md`](man/TODO.md) to see whats planned for later
+point. Check [`man/TODO.md`](man/TODO.md) to see what's planned for later
 releases.
 
 ### What?
 
-`lcharmap` is a little utility to get information on Unicode characters,
-including its name and hexadecimal/octal representation. It is also capable
-of searching the UCD (Unicode Character Database) with a regular
-expression.
+`chmap` is a little utility to get information on Unicode characters,
+such as its description, hexadecimal/octal representation, Unicode
+category, UTF-8 encoding, and more.
 
-`lcharmap` was inspired by the `charmap.exe` tool present in Windows XP and
-newer.
+`chmap` was inspired by the `charmap.exe` tool present in Windows XP and
+later.
 
 ### Where?
 #### Platforms
@@ -28,7 +27,7 @@ newer.
 #### Build dependencies
 - a C99 compiler
 - GNU Make
-- `ar` 
+- SQLite3
 
 #### Binaries
 In the future, compiled binaries for the following platforms will be
@@ -103,6 +102,7 @@ I miss some Windows utilities.
 - Window's `charmap.exe`
 - Eric Raymond's `ascii` utility
 - `uniname` from uniutils
+- `chars` (https://github.com/antifuchs/chars)
 
 ### License
 
