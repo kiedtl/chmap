@@ -17,15 +17,17 @@ representation.
 
 # OPTIONS
 
-*-h, --help*
+*-h*
 	Print a short help message and exit.
 
-*-V, --version*
+*-V*
 	Print chmap's version and exit.
+*-l*
+	Print information in the long format.
 
 # COMMANDS
 
-*-r, --range*=_RANGE_
+*-r* _RANGE_
 	Print a range of Unicode codepoints. (e.g. `0x033-0x035',
 	or `1,3,6-9')
 
@@ -33,35 +35,40 @@ representation.
 	to decimal. In that case, they must be prefixed with a `0b', `0o',
 	or `0x`, respectively.
 
-*-c, --chars*=_CHARS_
+*-c* _CHARS_
 	Print a range of Unicode codepoints that match the provided
 	character(s). (e.g., `Kiëd')
 
-*-s, --search*=_REGEX_
+*-s* _REGEX_
 	Search character descriptions for _REGEX_.
 
 # EXAMPLES
 
-chmap -r=33,36,45-47
+chmap -r 33,36,45-47
 	Print information for characters 33, 36, 45, 46, and 47.
 
-chmap -r=0o033,0xAB,0b1101
+chmap -r 0o033,0xAB,0b1101
 	Print information for characters 27, 171, and 13.
 
-chmap -c=Asbjørn
+chmap -c Asbjørn
 	Print information for all characters in the name `Asbjørn'.
 
-chmap -s="^latin .\* a$"
+chmap -s "^latin .\* a$"
 	Search with regular expression "^latin .\* a$".
 
 # KNOWN ISSUES
 
 - chmap is currently buggy and untested on Windows and BSD.
+- The display code is utterly incomprehensible.
+
+# AUTHORS
+
+Kiëd Llaentenn <kiedtl@tilde.team>
 
 # REPORTING BUGS
 
-Please report any found bugs to _https://github.com/lptstr/chmap/issues_ or
-to <kiedtl[at]tilde[dot]team>.
+Send bugs reports, hate mail, and other chmap-related bikeshedding to the
+author's email above, or */msg kiedtl* on freenode.
 
 # SEE ALSO
 
