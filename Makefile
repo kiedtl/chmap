@@ -62,10 +62,10 @@ clean:
 	rm -rf *.xz $(PKGNAME)*
 	cd lib && make clean
 
-dist: release man/$(NAME).1
+dist: release man/$(BIN).1
 	$(CMD)mkdir $(PKGNAME)
-	$(CMD)cp man/$(NAME)   $(PKGNAME)
-	$(CMD)cp man/$(NAME).1 $(PKGNAME)
+	$(CMD)cp $(BIN)       $(PKGNAME)
+	$(CMD)cp man/$(BIN).1 $(PKGNAME)
 	$(CMD)tar -cf - $(PKGNAME) | xz -qcT0 > $(PKGNAME).tar.xz
 	$(CMD)rm -rf $(PKGNAME)
 
