@@ -4,7 +4,6 @@
 
 #include <assert.h>
 #include <err.h>
-#include <execinfo.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,24 +39,6 @@ die(const char *fmt, ...)
 		perror(" ");
 	} else {
 		fputc('\n', stderr);
-	}
-
-	char *buf_sz_str = getenv("CHMAP_DEBUG");
-
-	if (buf_sz_str == NULL) {
-		fprintf(stderr, "NOTE: set $CHMAP_DEBUG >0 for a backtrace.\n");
-	} else {
-		size_t buf_sz = strtol(buf_sz_str, NULL, 10);
-		void *buffer[buf_sz];
-
-		int nptrs = backtrace(buffer, buf_sz);
-		char **strings = backtrace_symbols(buffer, nptrs);
-		assert(strings);
-
-		fprintf(stderr, "backtrace:\n");
-		for (size_t i = 0; i < (size_t) nptrs; ++i)
-			fprintf(stderr, "   %s\n", strings[i]);
-		free(strings);
 	}
 
 	_Exit(EXIT_FAILURE);
