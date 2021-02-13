@@ -103,7 +103,7 @@ usage(_Bool _short)
 {
 	printf("Usage: chmap [-l] -r RANGE\n");
 	printf("       chmap [-l] -c CHARS\n");
-	printf("       chmap [-l] -c REGEX\n");
+	printf("       chmap [-l] -s REGEX\n");
 
 	if (_short)
 		exit(0);
