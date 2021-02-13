@@ -20,7 +20,8 @@ UTF8PROC = ~/local/lib/libutf8proc.a #-L ~/local/lib -lutf8proc
 WARNING = -Wall -Wpedantic -Wextra -Wold-style-definition \
 	  -Wmissing-prototypes -Winit-self -Wfloat-equal -Wstrict-prototypes \
 	  -Wredundant-decls -Wendif-labels -Wstrict-aliasing=2 -Woverflow \
-	  -Wformat=2 -Wmissing-include-dirs
+	  -Wformat=2 -Wmissing-include-dirs \
+	  -Werror=implicit-function-declaration
 INC     = -I. -Isub/arg/ -I ~/local/include/
 DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0 \
 	  -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=500 -D_POSIX_C_SOURCE=200809L
