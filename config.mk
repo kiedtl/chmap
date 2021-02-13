@@ -12,7 +12,7 @@ DESTDIR =
 PREFIX  = /usr/local
 
 AR = ar
-CC = clang
+CC = cc
 LD = bfd
 
 RELEASE_CFLAGS  = -O3 -mtune=native -march=native
