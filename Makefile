@@ -18,8 +18,7 @@ OBJ     = $(SRC:.c=.o)
 WARNING = -Wall -Wpedantic -Wextra -Wold-style-definition -Wformat=2 \
 	  -Wmissing-prototypes -Winit-self -Wfloat-equal -Wstrict-prototypes \
 	  -Wredundant-decls -Wendif-labels -Wstrict-aliasing=2 -Woverflow \
-	  -Werror=missing-include-dirs -Werror=implicit-function-declaration \
-	  -Werror=return-type
+	  -Werror=implicit-function-declaration -Werror=return-type
 
 INC     = -I. -I ~/local/include/
 DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0 \
