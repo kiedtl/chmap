@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <utf8proc.h>
 
-#include "argoat.h"
+#include "arg.h"
 #include "db.h"
 #include "dirs.h"
 #include "display.c"
@@ -21,29 +21,18 @@ _Bool istty = false;
 _Bool flong = false;
 
 static void
-set_bool(void *d, char **_, const int _c)
+range(char *param)
 {
-	UNUSED(_), UNUSED(_c);
-	*(_Bool*)d = !*(_Bool*)d;
-}
-
-static void
-range(void *data, char **pars, const int pars_count)
-{
-	UNUSED(data);
-
 	/*
 	 * TODO: support number characters from other languages
 	 * e.g. Chinese
 	 */
-	if (pars_count < 1)
-		errx(1, "argument to --range missing.");
 
 	uint32_t entries[262144];
 	ssize_t entries_len = -1;
 
-	if ((entries_len = expand_range(pars[0], entries)) < 0)
-		errx(1, "'%s': invalid range.", pars[0]);
+	if ((entries_len = expand_range(param, entries)) < 0)
+		errx(1, "'%s': invalid range.", param);
 
 	for (size_t i = 0; i < (size_t)entries_len; ++i) {
 		char *desc = chardb_getdesc(db, entries[i]);
@@ -52,14 +41,9 @@ range(void *data, char **pars, const int pars_count)
 }
 
 static void
-chars(void *data, char **pars, const int pars_count)
+chars(char *param)
 {
-	UNUSED(data);
-
-	if (pars_count < 1)
-		errx(1, "argument to --chars missing.");
-
-	unsigned char *inp = (unsigned char *)pars[0];
+	unsigned char *inp = (unsigned char *)param;
 
 	int32_t charbuf = 0;
 	ssize_t runelen = 0;
@@ -69,7 +53,7 @@ chars(void *data, char **pars, const int pars_count)
 		runelen = utf8proc_iterate(inp, -1, &charbuf);
 
 		if (runelen < 0) {
-			size_t offset = (char *)inp - pars[0];
+			size_t offset = (char *)inp - param;
 			warnx("invalid byte %zu: %s",
 				offset, utf8proc_errmsg(runelen));
 			++inp;
@@ -84,14 +68,9 @@ chars(void *data, char **pars, const int pars_count)
 }
 
 static void
-search(void *data, char **pars, const int pars_count)
+search(char *param)
 {
-	UNUSED(data);
-
-	if (pars_count < 1)
-		errx(1, "argument to --search missing.");
-
-	char *query = pars[0];
+	char *query = param;
 	regex_t re;
 
 	/* TODO: get char of error and error message */
@@ -114,47 +93,32 @@ search(void *data, char **pars, const int pars_count)
 	}
 }
 
-/* ¯\_(ツ)_/¯ */
 static void
-anger(void *data, char **pars, const int pars_count)
+usage(_Bool _short)
 {
-	UNUSED(data), UNUSED(pars), UNUSED(pars_count);
+	printf("Usage: chmap [-l] -r RANGE\n");
+	printf("       chmap [-l] -c CHARS\n");
+	printf("       chmap [-l] -c REGEX\n");
 
-	fprintf(stderr, "rawr");
-	exit(0);
-}
+	if (_short)
+		exit(0);
 
-static void
-version(void *data, char **pars, const int pars_count)
-{
-	UNUSED(data);
-	UNUSED(pars);
-	UNUSED(pars_count);
-
-	printf("chmap v%s\n", VERSION);
-	exit(0);
-}
-
-static void
-usage(void *data, char **pars, const int pars_count)
-{
-	UNUSED(data);
-	UNUSED(pars);
-	UNUSED(pars_count);
-
-	printf("Usage: chmap [-rcs] [CHAR]... [OPTION]...\n");
-	printf("Print and search information on the provided Unicode characters.\n\n");
+	printf("\n");
+	printf("Print information for Unicode characters.\n");
+	printf("\n");
 	printf("OPTIONS:\n");
 	printf("    -l, --long          print character entries in the long format.\n");
 	printf("    -h, --help          print this help message and exit.\n");
-	printf("    -V, --version       print version and exit.\n\n");
-	printf("ARGUMENTS:\n");
+	printf("    -V, --version       print version and exit.\n");
+	printf("\n");
+	printf("FLAGS:\n");
 	printf("    -r, --range RANGE   print a range of Unicode characters.\n");
 	printf("    -c, --chars CHARS   print a range of Unicode codepoints that match\n");
 	printf("                        provided character(s).\n");
-	printf("    -s, --search REGEX  search character descriptions for REGEX.\n\n");
-	printf("Report issues to https://github.com/lptstr/chmap.\n");
+	printf("    -s, --search REGEX  search character descriptions for REGEX.\n");
+	printf("\n");
 	printf("Full documentation is available locally at chmap(1).\n");
+
 	exit(0);
 }
 
@@ -170,27 +134,21 @@ main(int argc, char **argv)
 	db = chardb_open(format("%s%cchmap%cchars.db",
 				datadir, pathsep(), pathsep()));
 
-	/* parse arguments with cylgom/argoat */
-	const struct argoat_sprig sprigs[15] = {
-		/* unflagged */
-		{ NULL,      0, NULL,                       NULL     },
-		/* TODO: remove -v */
-		{ "v",       0, NULL,                       version  },
-		{ "V",       0, NULL,                       version  },
-		{ "version", 0, NULL,                       version  },
-		{ "h",       0, NULL,                       usage    },
-		{ "help",    0, NULL,                       usage    },
-		{ "r",       1, NULL,                       range    },
-		{ "range",   1, NULL,                       range    },
-		{ "rage",    0, NULL,                       anger    },
-		{ "c",       1, NULL,                       chars    },
-		{ "chars",   1, NULL,                       chars    },
-		{ "s",       1, NULL,                       search   },
-		{ "search",  1, NULL,                       search   },
-		{ "l",       0, &flong,                     set_bool },
-		{ "long",    0, &flong,                     set_bool },
-	};
-
-	struct argoat args = { sprigs, sizeof(sprigs), NULL, 0, 0 };
-	argoat_graze(&args, argc, argv);
+	ARGBEGIN {
+	break; case 'l':
+		flong = !flong;
+	break; case 'r':
+		range(EARGF(usage(true)));
+	break; case 'c':
+		chars(EARGF(usage(true)));
+	break; case 's':
+		search(EARGF(usage(true)));
+	break; case 'V': case 'v':
+		printf("chmap v%s\n", VERSION);
+		return 0;
+	break; case 'h':
+		usage(false);
+	break; default:
+		usage(true);
+	} ARGEND
 }

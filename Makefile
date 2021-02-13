@@ -11,7 +11,7 @@ include config.mk
 VERSION = 1.1.0
 
 BIN     = chmap
-SRC     = sub/arg/argoat.c src/util.c src/dirs.c src/db.c src/main.c
+SRC     = src/util.c src/dirs.c src/db.c src/main.c
 OBJ     = $(SRC:.c=.o)
 
 ARGOAT   = sub/arg/argoat.a
