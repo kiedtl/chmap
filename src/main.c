@@ -18,6 +18,14 @@
 
 sqlite3 *db;
 _Bool istty = false;
+_Bool flong = false;
+
+static void
+set_bool(void *d, char **_, const int _c)
+{
+	UNUSED(_), UNUSED(_c);
+	*(_Bool*)d = !*(_Bool*)d;
+}
 
 static void
 range(void *data, char **pars, const int pars_count)
@@ -39,7 +47,7 @@ range(void *data, char **pars, const int pars_count)
 
 	for (size_t i = 0; i < (size_t)entries_len; ++i) {
 		char *desc = chardb_getdesc(db, entries[i]);
-		printentry(entries[i], desc, istty);
+		printentry(entries[i], desc, istty, flong);
 	}
 }
 
@@ -71,7 +79,7 @@ chars(void *data, char **pars, const int pars_count)
 		inp += runelen;
 
 		char *desc = chardb_getdesc(db, charbuf);
-		printentry(charbuf, desc, istty);
+		printentry(charbuf, desc, istty, flong);
 	}
 }
 
@@ -102,17 +110,15 @@ search(void *data, char **pars, const int pars_count)
 
 	for (size_t i = 0; i < match_count; ++i) {
 		char *desc = chardb_getdesc(db, matches[i]);
-		printentry(matches[i], desc, istty);
+		printentry(matches[i], desc, istty, flong);
 	}
 }
 
 /* ¯\_(ツ)_/¯ */
 static void
-handle_anger(void *data, char **pars, const int pars_count)
+anger(void *data, char **pars, const int pars_count)
 {
-	UNUSED(data);
-	UNUSED(pars);
-	UNUSED(pars_count);
+	UNUSED(data), UNUSED(pars), UNUSED(pars_count);
 
 	fprintf(stderr, "rawr");
 	exit(0);
@@ -167,20 +173,22 @@ main(int argc, char **argv)
 	/* parse arguments with cylgom/argoat */
 	const struct argoat_sprig sprigs[15] = {
 		/* unflagged */
-		{ NULL,      0, NULL,                       NULL         },
-		{ "version", 0, NULL,                       version      },
-		{ "V",       0, NULL,                       version      },
-		/* -v instead of -V will be removed soon */
-		{ "v",       0, NULL,                       version      },
-		{ "help",    0, NULL,                       usage        },
-		{ "h",       0, NULL,                       usage        },
-		{ "range",   1, NULL,                       range        },
-		{ "r",       1, NULL,                       range        },
-		{ "rage",    0, NULL,                       handle_anger },
-		{ "chars",   1, NULL,                       chars        },
-		{ "c",       1, NULL,                       chars        },
-		{ "search",  1, NULL,                       search       },
-		{ "s",       1, NULL,                       search       },
+		{ NULL,      0, NULL,                       NULL     },
+		/* TODO: remove -v */
+		{ "v",       0, NULL,                       version  },
+		{ "V",       0, NULL,                       version  },
+		{ "version", 0, NULL,                       version  },
+		{ "h",       0, NULL,                       usage    },
+		{ "help",    0, NULL,                       usage    },
+		{ "r",       1, NULL,                       range    },
+		{ "range",   1, NULL,                       range    },
+		{ "rage",    0, NULL,                       anger    },
+		{ "c",       1, NULL,                       chars    },
+		{ "chars",   1, NULL,                       chars    },
+		{ "s",       1, NULL,                       search   },
+		{ "search",  1, NULL,                       search   },
+		{ "l",       0, &flong,                     set_bool },
+		{ "long",    0, &flong,                     set_bool },
 	};
 
 	struct argoat args = { sprigs, sizeof(sprigs), NULL, 0, 0 };

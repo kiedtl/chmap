@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <utf8proc.h>
 
 #include "util.h"
-
-#define CTRL "<control>"
 
 static const char *CATEGORY_STRS[] = {
 	[UTF8PROC_CATEGORY_CN] = "Other (not assigned)",
@@ -54,6 +53,24 @@ fmt_bytes(char *bytes)
 }
 
 static void
+printentry_short(uint32_t entry, char *description)
+{
+	char charbuf[7], charbuf2[7];
+	bzero(charbuf, sizeof(charbuf));
+	bzero(charbuf2, sizeof(charbuf2));
+
+	utf8proc_encode_char(entry, (unsigned char *)charbuf);
+
+	const utf8proc_property_t *prop = utf8proc_get_property((int32_t)entry);
+	_Bool iscontrol = prop->category == UTF8PROC_CATEGORY_CC;
+
+	printf("\t0x%X\t%d  %s\t%s\t%s\t%s     %s\n",
+		entry, entry, iscontrol ? "<ctrl>" : charbuf, fmt_bytes(charbuf),
+		utf8proc_isupper(entry) ? "upper" : (utf8proc_islower(entry) ? "lower" : "other"),
+		utf8proc_category_string(prop->category), description);
+}
+
+static void
 fmt_entry(_Bool fancy, char *key, char *value)
 {
 	if (fancy)
@@ -63,10 +80,11 @@ fmt_entry(_Bool fancy, char *key, char *value)
 }
 
 static void
-printentry(uint32_t entry, char *description, _Bool fancy)
+printentry_long(uint32_t entry, char *description, _Bool fancy)
 {
-	char charbuf[7];
-	memset(charbuf, 0x0, sizeof(charbuf));
+	char charbuf[7], charbuf2[7];
+	bzero(charbuf, sizeof(charbuf));
+	bzero(charbuf2, sizeof(charbuf2));
 
 	utf8proc_encode_char(entry, (unsigned char *)charbuf);
 
@@ -77,12 +95,9 @@ printentry(uint32_t entry, char *description, _Bool fancy)
 
 	fmt_entry(fancy, "codepoint",   format("%-5d 0x%-5X 0o%-5o", entry, entry, entry));
 	fmt_entry(fancy, "encoding",    format("UTF8(%s)", fmt_bytes(charbuf)));
-	fmt_entry(fancy, "glyph",       format("%s (%zd %s)", iscontrol ? CTRL : charbuf,
+	fmt_entry(fancy, "glyph",       format("%s (%zd %s)", iscontrol ? "<control>" : charbuf,
 				colwidth, colwidthstr));
 	fmt_entry(fancy, "description", format("%s", description));
-
-	char charbuf2[7];
-	memset(charbuf2, 0x0, sizeof(charbuf2));
 
 	if (utf8proc_isupper((int32_t)entry)) {
 		utf8proc_int32_t lower = utf8proc_tolower((int32_t)entry);
@@ -101,4 +116,13 @@ printentry(uint32_t entry, char *description, _Bool fancy)
 	fmt_entry(fancy, "category",    (char *)CATEGORY_STRS[prop->category]);
 
 	printf("\n");
+}
+
+static void
+printentry(uint32_t entry, char *description, _Bool fancy, _Bool flong)
+{
+	if (!flong)
+		printentry_short(entry, description);
+	else
+		printentry_long(entry, description, fancy);
 }
