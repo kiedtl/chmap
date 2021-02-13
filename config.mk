@@ -15,7 +15,7 @@ AR = ar
 CC = clang
 LD = bfd
 
-RELEASE_CFLAGS  = -Os
-RELEASE_LDFLAGS = -march=native -flto -s
-DEBUG_CFLAGS    = -Og -ggdb
+RELEASE_CFLAGS  = -O3 -mtune=native -march=native
+RELEASE_LDFLAGS = -flto -s
+DEBUG_CFLAGS    = -Og -g
 DEBUG_LDFLAGS   =

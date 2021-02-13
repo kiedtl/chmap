@@ -8,25 +8,26 @@
 
 include config.mk
 
-VERSION = 1.1.0
-
 BIN     = chmap
+VERSION = 1.1.0
+PKGNAME = $(BIN)-$(shell uname -s)-$(shell uname -m)-$(VERSION)
+
 SRC     = src/util.c src/dirs.c src/db.c src/main.c
 OBJ     = $(SRC:.c=.o)
 
-ARGOAT   = sub/arg/argoat.a
-UTF8PROC = ~/local/lib/libutf8proc.a #-L ~/local/lib -lutf8proc
-
-WARNING = -Wall -Wpedantic -Wextra -Wold-style-definition \
+WARNING = -Wall -Wpedantic -Wextra -Wold-style-definition -Wformat=2 \
 	  -Wmissing-prototypes -Winit-self -Wfloat-equal -Wstrict-prototypes \
 	  -Wredundant-decls -Wendif-labels -Wstrict-aliasing=2 -Woverflow \
-	  -Wformat=2 -Wmissing-include-dirs \
-	  -Werror=implicit-function-declaration
-INC     = -I. -Isub/arg/ -I ~/local/include/
+	  -Werror=missing-include-dirs -Werror=implicit-function-declaration \
+	  -Werror=return-type
+
+INC     = -I. -I ~/local/include/
 DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0 \
-	  -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=500 -D_POSIX_C_SOURCE=200809L
-CFLAGS  = -std=c99 -DVERSION=\"$(VERSION)\" $(WARNING) $(INC)
-LDFLAGS = -lpthread -ldl -lsqlite3 $(UTF8PROC) -fuse-ld=$(LD)
+	  -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=500 -D_POSIX_C_SOURCE=200809L \
+	  -DVERSION=\"$(VERSION)\"
+
+CFLAGS  = -std=c99 $(WARNING) $(INC) $(DEF)
+LDFLAGS = -L ~/local/lib -lpthread -ldl -lsqlite3 -lutf8proc -fuse-ld=$(LD)
 
 all: man/$(BIN).1 debug
 
@@ -40,7 +41,7 @@ debug: $(BIN)
 
 release: CFLAGS_OPT  := $(RELEASE_CFLAGS)
 release: LDFLAGS_OPT := $(RELEASE_LDFLAGS)
-release: $(BIN)
+release: $(BIN) lib/chars.db man/$(BIN).1
 
 src/main.o: src/range.c src/display.c
 
@@ -48,38 +49,35 @@ $(BIN): $(OBJ) $(LIBUTF)
 	@printf "    %-8s%s\n" "CCLD" $@
 	$(CMD)$(CC) -o $@ $^ $(CFLAGS) $(CFLAGS_OPT) $(LDFLAGS) $(LDFLAGS_OPT)
 
-$(ARGOAT):
-	@printf "    %-8s%s\n" "MAKE" $@
-	$(CMD)cd sub/arg && make
-
 lib/chars.db:
-	@printf "    %-8s%s\n" "GEN" $@
-	$(CMD)cd sub/lib && make
+	@printf "    %-8s%s\n" "MAKE" $@
+	$(CMD)cd lib && make
 
 man/$(BIN).1: man/$(BIN).scd
 	@printf "    %-8s%s\n" "SCDOC" $@
 	$(CMD)scdoc < $^ > $@
 
 clean:
-	$(CMD)rm -f $(BIN) $(OBJ) man/$(BIN).1
-	$(CMD)make -C sub/arg clean
-	$(CMD)rm -rf dist/ *.xz
+	rm -f $(BIN) $(OBJ) man/$(BIN).1
+	rm -rf *.xz $(PKGNAME)*
+	cd lib && make clean
 
-dist: clean
-	$(CMD)mkdir -p dist
-	$(CMD)cp -r config.mk Makefile *.md lib man src sub \
-		dist
-	$(CMD)tar -cvf - dist | xz -qcT 0 > chmap-v$(VERSION).tar.xz
-	$(CMD)rm -rf dist
+dist: release man/$(NAME).1
+	$(CMD)mkdir $(PKGNAME)
+	$(CMD)cp man/$(NAME)   $(PKGNAME)
+	$(CMD)cp man/$(NAME).1 $(PKGNAME)
+	$(CMD)tar -cf - $(PKGNAME) | xz -qcT0 > $(PKGNAME).tar.xz
+	$(CMD)rm -rf $(PKGNAME)
+
 
 install: $(BIN) man/$(BIN).1 lib/chars.db
-	$(CMD)install -Dm755 $(BIN) $(DESTDIR)/$(PREFIX)/bin/$(BIN)
-	$(CMD)install -Dm644 man/$(BIN).1 $(DESTDIR)/$(PREFIX)/share/man/man1/$(BIN).1
-	$(CMD)install -Dm644 lib/chars.db $(HOME)/.local/share/$(BIN)/chars.db
+	install -Dm755 $(BIN) $(DESTDIR)/$(PREFIX)/bin/$(BIN)
+	install -Dm644 man/$(BIN).1 $(DESTDIR)/$(PREFIX)/share/man/man1/$(BIN).1
+	install -Dm644 lib/chars.db $(HOME)/.local/share/$(BIN)/chars.db
 
 uninstall:
-	$(CMD)rm -f $(DESTDIR)/$(PREFIX)/bin/$(BIN)
-	$(CMD)rm -f $(DESTDIR)/$(PREFIX)/share/man/man1/$(BIN).1
-	$(CMD)rm -f $(HOME)/.local/share/$(BIN)/chars.db
+	rm -f $(DESTDIR)/$(PREFIX)/bin/$(BIN)
+	rm -f $(DESTDIR)/$(PREFIX)/share/man/man1/$(BIN).1
+	rm -f $(HOME)/.local/share/$(BIN)/chars.db
 
 .PHONY: all debug release clean dist install uninstall
