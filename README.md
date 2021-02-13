@@ -2,34 +2,29 @@
 
 > A CLI utility to get information for Unicode characters.
 
-### Status
-
-Quite a few bugs remain to be fixed, but the tool is about 70% complete at this
-point. Check [`man/TODO.md`](man/TODO.md) to see what's planned for later
-releases.
-
-### What?
+## What?
 
 `chmap` is a little utility to get information on Unicode characters,
 such as its description, hexadecimal/octal representation, Unicode
 category, UTF-8 encoding, and more.
 
+```
+$ chmap -r 9-10,13935,255-258
+codepoint  glyph  encoded     case   description
+        9         9           other  character tabulation
+       10         A           other  line feed (lf)
+    13935  㙯     E3 99 AF    other  modifier letter chinese tone yin ping
+      255  ÿ      C3 BF       lower  latin small letter y with diaeresis
+      256  Ā      C4 80       upper  latin capital letter a with macron
+      257  ā      C4 81       lower  latin small letter a with macron
+      258  Ă      C4 82       upper  latin capital letter a with breve
+```
+
 `chmap` was inspired by the `charmap.exe` tool present in Windows XP and
 later.
 
-### Where?
-#### Platforms
-- macOS (*not supported or tested*)
-- Linux (*supported and tested*)
-- Windows (*not supported (yet), not tested*)
-- Free|Open|Net|Dragonfly BSD (*not supported (yet), not tested*)
-
-#### Build dependencies
-- a C99 compiler
-- GNU Make
-- SQLite3
-
-#### Binaries
+## Where?
+### Binaries
 In the future, compiled binaries for the following platforms will be
 available to download from GitHub Releases:
 - Linux (`x86_64 glibc`)
@@ -41,7 +36,18 @@ available to download from GitHub Releases:
 
 For now, you must build from source.
 
-#### Building from Source
+### Platforms
+- macOS (*not supported or tested*)
+- Windows (*not supported (yet), not tested*)
+- Free|Open|Net|Dragonfly BSD (*not supported (yet), not tested*)
+- Linux (*supported and tested*)
+
+### Building from Source
+
+#### Build dependencies
+- a C99 compiler, GNU Make
+- [scdoc](https://git.sr.ht/~sircmpwn/scdoc) (manpage)
+- SQLite3, utf8proc
 
 Download the latest source tarball from GitHub releases
 (`chmap-v$VERSION.tar.xz`), extract, and build:
@@ -50,61 +56,22 @@ Download the latest source tarball from GitHub releases
 # make install
 ```
 
-**Note:** `make install` also installs the character database, so if you
-install manually, ensure that you complete that step with `make -C lib`.
+## How?
 
-### How?
+See `man chmap`.
 
-Simply run `chmap -r` with a range of characters you want info for:
-```
-$ chmap -r 65,66
---------------------------------------------------------------------
-DEC	HEX	OCT	HTML	CHAR    DESC
---------------------------------------------------------------------
-65	41	101	&#41;	A       LATIN CAPITAL LETTER A
---------------------------------------------------------------------
-66	42	102	&#42;	B       LATIN CAPITAL LETTER B
---------------------------------------------------------------------
-```
-You can run it on a single code point (or character!) too:
-```
-$ lcharmap -r 67
-               decimal  67
-           hexadecimal  43
-                 octal  103
-           HTML entity  &#43;
-             character  C
-           description  LATIN CAPITAL LETTER C
+## Why?
 
-$ lcharmap -c C
-               decimal  67
-           hexadecimal  43
-                 octal  103
-           HTML entity  &#43;
-             character  C
-           description  LATIN CAPITAL LETTER C
-```
-
-**Note:** if you wish, you can run `lcharmap --chars` on multiple characters as well (e.g. `lcharmap -c ThisIsATest`)
-
-Searching for a character is easy, too:
-```
-$ lcharmap -s "^LATIN (SMALL|CAPITAL) LETTER A$"
-```
-
-Run `lcharmap --help`/`man lcharmap` for more information.
-
-### Why?
 I miss some Windows utilities.
 
-### Inspiration
+## Inspiration
 
 - Window's `charmap.exe`
 - Eric Raymond's `ascii` utility
-- `uniname` from uniutils
 - `chars` (https://github.com/antifuchs/chars)
+- `uniname` from uniutils
 
-### License
+## License
 
 This lame little utility is licensed under the MIT License. See
 the `LICENSE.md` file for more information.
