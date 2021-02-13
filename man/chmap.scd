@@ -1,17 +1,18 @@
-lcharmap(1) "General Commands Manual"
+chmap(1) "General Commands Manual"
 
 # NAME
 
-lcharmap - retrieve information for Unicode characters.
+chmap - Get information for unicode characters
 
 # SYNOPSIS
 
-*lcharmap* [-rcs] [CHAR]... [OPTION]...
+*chmap* [-rcs] [ARGS]...
 
 # DESCRIPTION
 
-lcharmap retrieves information about Unicode characters, including a
-short description, it's HTML code, and it's decimal, hexadecimal, and octal
+chmap (formerly lcharmap) retrieves information regarding Unicode
+characters, including a short description, its UTF8 encoding, the Unicode
+category it belongs to, its casing, and its decimal/hexadecimal/octal
 representation.
 
 # OPTIONS
@@ -20,10 +21,7 @@ representation.
 	Print a short help message and exit.
 
 *-V, --version*
-	Print lcharmap's version and exit.
-
-*-l, --long*
-	Print information in the long format.
+	Print chmap's version and exit.
 
 # COMMANDS
 
@@ -37,40 +35,40 @@ representation.
 
 *-c, --chars*=_CHARS_
 	Print a range of Unicode codepoints that match the provided
-	character(s). (e.g., `George Washington')
+	character(s). (e.g., `Kiëd')
 
 *-s, --search*=_REGEX_
 	Search character descriptions for _REGEX_.
 
 # EXAMPLES
 
-lcharmap -r=33,36,45-47
+chmap -r=33,36,45-47
 	Print information for characters 33, 36, 45, 46, and 47.
 
-lcharmap -r=0o033,0xAB,0b1101
+chmap -r=0o033,0xAB,0b1101
 	Print information for characters 27, 171, and 13.
 
-lcharmap -c=Asbjørn
+chmap -c=Asbjørn
 	Print information for all characters in the name `Asbjørn'.
 
-lcharmap -s="^latin .\* a$"
+chmap -s="^latin .\* a$"
 	Search with regular expression "^latin .\* a$".
 
 # KNOWN ISSUES
 
-- table isn't formatted correctly when displaying multibyte characters.
-- lcharmap is currently buggy and untested on Windows.
+- chmap is currently buggy and untested on Windows and BSD.
 
 # REPORTING BUGS
 
-Please report any found bugs to _https://github.com/lptstr/lcharmap/issues_
+Please report any found bugs to _https://github.com/lptstr/chmap/issues_ or
+to <kiedtl[at]tilde[dot]team>.
 
 # SEE ALSO
 
-The full documentation for *lcharmap* is not maintained as a Texinfo manual.
-If the *info* and *lcharmap* programs are properly installed on your system,
+The full documentation for *chmap* is not maintained as a Texinfo manual.
+If the *info* and *chmap* programs are properly installed on your system,
 the command
 
-	*info lcharmap*
+	*info chmap*
 
 should not give you access to the complete manual.
