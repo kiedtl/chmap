@@ -27,7 +27,7 @@ DEF     = -DSQLITE_THREADSAFE=0 -DSQLITE_DEFAULT_MEMSTATUS=0 \
 	  -DVERSION=\"$(VERSION)\"
 
 CFLAGS  = -std=c99 $(WARNING) $(INC) $(DEF)
-LDFLAGS = -L ~/local/lib -lpthread -ldl -lsqlite3 -lutf8proc -fuse-ld=$(LD)
+LDFLAGS = -fuse-ld=$(LD) -L ~/local/lib -lsqlite3 -lutf8proc
 
 all: man/$(BIN).1 debug
 
@@ -62,10 +62,12 @@ clean:
 	rm -rf *.xz $(PKGNAME)*
 	cd lib && make clean
 
-dist: release man/$(BIN).1
+dist: release lib/chars.db man/$(BIN).1
 	$(CMD)mkdir $(PKGNAME)
-	$(CMD)cp $(BIN)       $(PKGNAME)
-	$(CMD)cp man/$(BIN).1 $(PKGNAME)
+	$(CMD)cp $(BIN)          $(PKGNAME)
+	$(CMD)cp lib/chars.db    $(PKGNAME)
+	$(CMD)cp man/$(BIN).1    $(PKGNAME)
+	$(CMD)cp tool/install.sh $(PKGNAME)
 	$(CMD)tar -cf - $(PKGNAME) | xz -qcT0 > $(PKGNAME).tar.xz
 	$(CMD)rm -rf $(PKGNAME)
 
