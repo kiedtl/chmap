@@ -10,5 +10,5 @@ die() {
 [ -f "chmap.1" ]  || die "can't find chmap's db"
 
 install -Dm755 chmap    "$1/bin/chmap"
-install -Dm644 chmap.1  "$HOME/.local/share/chmap/chars.db"
-install -Dm644 chars.db "$1/share/man/man1/chmap.1"
+install -Dm644 chars.db "$HOME/.local/share/chmap/chars.db"
+install -Dm644 chmap.1  "$1/share/man/man1/chmap.1"
