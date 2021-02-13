@@ -44,7 +44,7 @@ For now, you must build from source.
 #### Building from Source
 
 Download the latest source tarball from GitHub releases
-(`lcharmap-v$VERSION.tar.xz`), extract, and build:
+(`chmap-v$VERSION.tar.xz`), extract, and build:
 
 ```
 # make install
@@ -55,9 +55,9 @@ install manually, ensure that you complete that step with `make -C lib`.
 
 ### How?
 
-Simply run `lcharmap -r` with a range of characters you want info for:
+Simply run `chmap -r` with a range of characters you want info for:
 ```
-$ lcharmap -r 65,66
+$ chmap -r 65,66
 --------------------------------------------------------------------
 DEC	HEX	OCT	HTML	CHAR    DESC
 --------------------------------------------------------------------
