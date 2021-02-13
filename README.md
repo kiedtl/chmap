@@ -24,30 +24,27 @@ codepoint  glyph  encoded     case   description
 later.
 
 ## Where?
+
+### Dependencies
+- Linux or BSD (macOS and Windows are untested)
+- SQLite3 (`apt install libsqlite3`)
+- UTF8proc (`apt install libutf8proc2`)
+
 ### Binaries
-In the future, compiled binaries for the following platforms will be
-available to download from GitHub Releases:
-- Linux (`x86_64 glibc`)
-- Linux (`x86_64 musl`)
-- Linux (`armv6l glibc`)
-- Linux (`armv6l musl`)
-- Windows (`x86_64`)
-- BSD (`x86_64`)
 
-For now, you must build from source.
+Tarballs are available from GitHub releases for Linux-x86_64 and
+Linux-armv6l. Extract, `cd`, and run:
 
-### Platforms
-- macOS (*not supported or tested*)
-- Windows (*not supported (yet), not tested*)
-- Free|Open|Net|Dragonfly BSD (*not supported (yet), not tested*)
-- Linux (*supported and tested*)
+```
+$ sudo ./install.sh /usr/local
+```
 
 ### Building from Source
 
 #### Build dependencies
 - a C99 compiler, GNU Make
 - [scdoc](https://git.sr.ht/~sircmpwn/scdoc) (manpage)
-- SQLite3, utf8proc
+- SQLite3 and utf8proc development files
 
 Download the latest source tarball from GitHub releases
 (`chmap-v$VERSION.tar.xz`), extract, and build:
