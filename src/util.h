@@ -8,5 +8,7 @@ void* ecalloc(size_t ct, size_t sz);
 _Noreturn void __attribute__((format(printf, 1, 2))) die(const char *fmt, ...);
 char * __attribute__((format(printf, 1, 2))) format(const char *fmt, ...);
 char  pathsep(void);
+_Bool utf8isupper(uint32_t c);
+_Bool utf8islower(uint32_t c);
 
 #endif
