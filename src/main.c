@@ -34,6 +34,7 @@ range(char *param)
 	if ((entries_len = expand_range(param, entries)) < 0)
 		errx(1, "'%s': invalid range.", param);
 
+	printheader(flong);
 	for (size_t i = 0; i < (size_t)entries_len; ++i) {
 		char *desc = chardb_getdesc(db, entries[i]);
 		printentry(entries[i], desc, istty, flong);
@@ -47,6 +48,8 @@ chars(char *param)
 
 	int32_t charbuf = 0;
 	ssize_t runelen = 0;
+
+	printheader(flong);
 
 	while (*inp) {
 		charbuf = 0;
@@ -86,6 +89,8 @@ search(char *param)
 
 	if (match_count == 0)
 		errx(1, "no results found.");
+
+	printheader(flong);
 
 	for (size_t i = 0; i < match_count; ++i) {
 		char *desc = chardb_getdesc(db, matches[i]);

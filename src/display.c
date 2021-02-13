@@ -64,10 +64,10 @@ printentry_short(uint32_t entry, char *description)
 	const utf8proc_property_t *prop = utf8proc_get_property((int32_t)entry);
 	_Bool iscontrol = prop->category == UTF8PROC_CATEGORY_CC;
 
-	printf("\t0x%X\t%d  %s\t%s\t%s\t%s     %s\n",
-		entry, entry, iscontrol ? "<ctrl>" : charbuf, fmt_bytes(charbuf),
+	printf("%9d  %s\t  %-10s  %s  %s\n",
+		entry, iscontrol ? "" : charbuf, fmt_bytes(charbuf),
 		utf8proc_isupper(entry) ? "upper" : (utf8proc_islower(entry) ? "lower" : "other"),
-		utf8proc_category_string(prop->category), description);
+		description);
 }
 
 static void
@@ -116,6 +116,15 @@ printentry_long(uint32_t entry, char *description, _Bool fancy)
 	fmt_entry(fancy, "category",    (char *)CATEGORY_STRS[prop->category]);
 
 	printf("\n");
+}
+
+static void
+printheader(_Bool flong)
+{
+	if (flong)
+		return;
+
+	printf("codepoint  glyph  encoded     case   description\n");
 }
 
 static void
