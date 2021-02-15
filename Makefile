@@ -76,4 +76,7 @@ uninstall:
 	rm -f $(DESTDIR)/$(PREFIX)/bin/$(BIN)
 	rm -f $(DESTDIR)/$(PREFIX)/share/man/man1/$(BIN).1
 
-.PHONY: all debug release clean dist install uninstall
+check:
+	@cd tests && ./tests
+
+.PHONY: all debug release clean dist install uninstall check

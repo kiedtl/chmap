@@ -1,0 +1,7 @@
+#!/bin/sh
+
+for i in pilot_*.c; do
+    cc -I../src/ $i -o ${i%%.c} -O0 -g
+done
+
+find . -name '*.sh' -perm -700 -exec '{}' \;
