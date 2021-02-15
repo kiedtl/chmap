@@ -48,14 +48,12 @@ static void
 chars(char *param)
 {
 	char *inp = param;
-	uint32_t charbuf = 0;
-	ssize_t runelen = 0;
 
 	printheader(flong, istty);
 
 	while (*inp) {
-		charbuf = 0;
-		runelen = utf8_char_to_unicode(&charbuf, inp);
+		uint32_t charbuf = 0;
+		ssize_t  runelen = utf8_decode(&charbuf, inp);
 
 		if (runelen < 0) {
 			size_t offset = (char *)inp - param;
@@ -64,9 +62,8 @@ chars(char *param)
 			continue;
 		}
 
-		inp += runelen;
-
 		printentry(charbuf, charinfos[charbuf].desc, istty, flong);
+		inp += runelen;
 	}
 }
 

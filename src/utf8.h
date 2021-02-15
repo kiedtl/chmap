@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-ssize_t utf8_char_length(char c);
-ssize_t utf8_char_to_unicode(uint32_t *out, const char *c);
-size_t  utf8_unicode_to_char(char *out, uint32_t c);
+uint8_t utf8_bytesz(char c);
+ssize_t utf8_decode(uint32_t *out, const char *c);
+ssize_t utf8_encode(char *out, uint32_t c);
 
 #endif

@@ -28,7 +28,7 @@ printentry_short(uint32_t entry, char *description, _Bool fancy)
 {
 	char glyph[7];
 	bzero(glyph, sizeof(glyph));
-	utf8_unicode_to_char(glyph, entry);
+	utf8_encode(glyph, entry);
 
 	char *padding = &"     "[charwidths[entry]];
 	size_t category = charinfos[entry].category;
@@ -69,7 +69,7 @@ printentry_long(uint32_t entry, char *description, _Bool fancy)
 	bzero(charbuf, sizeof(charbuf));
 	bzero(charbuf2, sizeof(charbuf2));
 
-	utf8_unicode_to_char(charbuf, entry);
+	utf8_encode(charbuf, entry);
 
 	size_t colwidth = charwidths[entry];
 	struct CharInfo ci = charinfos[entry];
@@ -84,13 +84,13 @@ printentry_long(uint32_t entry, char *description, _Bool fancy)
 	if (unicodeisupper(entry)) {
 		int32_t lower = charinfos[entry].lower;
 		assert(lower != -1);
-		utf8_unicode_to_char(charbuf, lower);
+		utf8_encode(charbuf, lower);
 		fmt_entry(fancy, "case",
 			format("uppercase, lowercase: 0x%X %s", lower, charbuf2));
 	} else if (unicodeislower(entry)) {
 		int32_t upper = charinfos[entry].upper;
 		assert(upper != -1);
-		utf8_unicode_to_char(charbuf, upper);
+		utf8_encode(charbuf, upper);
 		fmt_entry(fancy, "case",
 			format("lowercase, uppercase: 0x%X %s", upper, charbuf2));
 	} else {

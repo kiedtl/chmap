@@ -77,6 +77,10 @@ uninstall:
 	rm -f $(DESTDIR)/$(PREFIX)/share/man/man1/$(BIN).1
 
 check:
-	@cd tests && ./tests
+	$(CMD)for i in tests/pilot_*.c; do \
+		cc -Isrc/ $$i -o $${i%%.c} -O0 -g || exit 1; \
+	done
+	$(CMD)find tests -name '*.sh' -perm -700 -exec '{}' \;
+
 
 .PHONY: all debug release clean dist install uninstall check

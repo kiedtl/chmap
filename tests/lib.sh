@@ -6,7 +6,7 @@ begin() {
 }
 
 cmdout() {
-    if [ "$($1 $2)" != "$3" ]; then
+    if [ "$(tests/pilot_$1 $2)" != "$3" ]; then
         printf 'FAIL\n'
     else
         printf 'OK\n'
@@ -14,7 +14,7 @@ cmdout() {
 }
 
 cmdend() {
-    $1 $2 2>/dev/null >&2
+    tests/pilot_$1 $2 2>/dev/null >&2
 
 	if [ $? -ne "$3" ]; then
 		printf 'FAIL\n'
