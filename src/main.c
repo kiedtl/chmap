@@ -32,7 +32,7 @@ range(char *param)
 	if ((entries_len = expand_range(param, entries)) < 0)
 		errx(1, "'%s': invalid range.", param);
 
-	printheader(flong);
+	printheader(flong, istty);
 
 	for (size_t i = 0; i < (size_t)entries_len; ++i) {
 		if (entries[i] > UNICODE_MAX) {
@@ -51,7 +51,7 @@ chars(char *param)
 	uint32_t charbuf = 0;
 	ssize_t runelen = 0;
 
-	printheader(flong);
+	printheader(flong, istty);
 
 	while (*inp) {
 		charbuf = 0;
@@ -79,7 +79,7 @@ search(char *query)
 	if (regcomp(&re, query, REG_ICASE))
 		errx(1, "'%s': invalid regex.", query);
 
-	printheader(flong);
+	printheader(flong, istty);
 
 	for (size_t i = 0; i < UNICODE_MAX; ++i) {
 		char *desc = charinfos[i].desc;

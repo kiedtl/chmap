@@ -7,6 +7,8 @@
 #include "unicode.h"
 #include "utf8.h"
 
+static size_t _state;
+
 static char *
 fmt_bytes(char *bytes)
 {
@@ -22,20 +24,34 @@ fmt_bytes(char *bytes)
 }
 
 static void
-printentry_short(uint32_t entry, char *description)
+printentry_short(uint32_t entry, char *description, _Bool fancy)
 {
-	char charbuf[7];
-	bzero(charbuf, sizeof(charbuf));
+	char glyph[7];
+	bzero(glyph, sizeof(glyph));
 
-	utf8_unicode_to_char(charbuf, entry);
+	utf8_unicode_to_char(glyph, entry);
+	char *padding = &"     "[charwidths[entry]];
 
 	size_t category = charinfos[entry].category;
 	_Bool iscontrol = category == UC_Cc;
 
-	printf("%9d  %s\t  %-11s  %s  %s\n",
-		entry, iscontrol ? "" : charbuf, fmt_bytes(charbuf),
-		unicodeisupper(entry) ? "upper" : (unicodeislower(entry) ? "lower" : "other"),
-		description ? description : "-");
+	char *casestr = "other";
+	if (unicodeisupper(entry))
+		casestr = "upper";
+	else if (unicodeislower(entry))
+		casestr = "lower";
+
+	if (fancy && (_state & 1) == 0)
+		printf("\x1b[100m");
+
+	printf("%9d  %s%s  %-11s  %s  %s",
+		entry, iscontrol ? "" : glyph, padding, fmt_bytes(glyph),
+		casestr, description ? description : "-");
+
+	if (fancy && (_state & 1) == 0)
+		printf("\x1b[K\x1b[m");
+
+	printf("\n");
 }
 
 static void
@@ -88,19 +104,24 @@ printentry_long(uint32_t entry, char *description, _Bool fancy)
 }
 
 static void
-printheader(_Bool flong)
+printheader(_Bool flong, _Bool fancy)
 {
-	if (flong)
-		return;
+	_state = 0;
 
-	printf("codepoint  glyph  encoded      case   description\n");
+	if (!flong) {
+		if (fancy) printf("\x1b[1m");
+		printf("codepoint  glyph  encoded      case   description\n");
+		if (fancy) printf("\x1b[0m");
+	}
 }
 
 static void
 printentry(uint32_t entry, char *description, _Bool fancy, _Bool flong)
 {
+	++_state;
+
 	if (!flong)
-		printentry_short(entry, description);
+		printentry_short(entry, description, fancy);
 	else
 		printentry_long(entry, description, fancy);
 }
