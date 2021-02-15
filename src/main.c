@@ -36,6 +36,10 @@ range(char *param)
 	printheader(flong);
 
 	for (size_t i = 0; i < (size_t)entries_len; ++i) {
+		if (entries[i] > UNICODE_MAX) {
+			warnx("%u is above maximum Unicode value", entries[i]);
+			continue;
+		}
 		char *desc = charinfos[entries[i]].desc;
 		printentry(entries[i], desc, istty, flong);
 	}
