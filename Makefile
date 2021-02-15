@@ -40,7 +40,7 @@ release: CFLAGS_OPT  := $(RELEASE_CFLAGS)
 release: LDFLAGS_OPT := $(RELEASE_LDFLAGS)
 release: $(BIN) man/$(BIN).1
 
-src/main.o: dat/charinfo.c src/range.c src/display.c
+src/main.o: src/range.c src/display.c
 
 $(BIN): dat/charinfo.c $(OBJ)
 	@printf "    %-8s%s\n" "CCLD" $@
