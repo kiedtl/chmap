@@ -64,19 +64,19 @@ printentry_short(uint32_t entry, char *description)
 	const utf8proc_property_t *prop = utf8proc_get_property((int32_t)entry);
 	_Bool iscontrol = prop->category == UTF8PROC_CATEGORY_CC;
 
-	printf("%9d  %s\t  %-10s  %s  %s\n",
+	printf("%9d  %s\t  %-11s  %s  %s\n",
 		entry, iscontrol ? "" : charbuf, fmt_bytes(charbuf),
 		utf8isupper(entry) ? "upper" : (utf8islower(entry) ? "lower" : "other"),
-		description);
+		description ? description : "-");
 }
 
 static void
 fmt_entry(_Bool fancy, char *key, char *value)
 {
 	if (fancy)
-		printf("\033[1m%-11s\033[m %s\n", key, value);
+		printf("\033[1m%-12s\033[m %s\n", key, value);
 	else
-		printf("%-11s %s\n", key, value);
+		printf("%-12s %s\n", key, value);
 }
 
 static void
@@ -97,7 +97,7 @@ printentry_long(uint32_t entry, char *description, _Bool fancy)
 	fmt_entry(fancy, "encoding",    format("UTF8(%s)", fmt_bytes(charbuf)));
 	fmt_entry(fancy, "glyph",       format("%s (%zd %s)", iscontrol ? "<control>" : charbuf,
 				colwidth, colwidthstr));
-	fmt_entry(fancy, "description", format("%s", description));
+	fmt_entry(fancy, "description", description ? description : "(none)");
 
 	if (utf8isupper(entry)) {
 		utf8proc_int32_t lower = utf8proc_tolower((int32_t)entry);
@@ -124,7 +124,7 @@ printheader(_Bool flong)
 	if (flong)
 		return;
 
-	printf("codepoint  glyph  encoded     case   description\n");
+	printf("codepoint  glyph  encoded      case   description\n");
 }
 
 static void
