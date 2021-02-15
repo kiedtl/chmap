@@ -34,7 +34,7 @@ printentry_short(uint32_t entry, char *description)
 
 	printf("%9d  %s\t  %-11s  %s  %s\n",
 		entry, iscontrol ? "" : charbuf, fmt_bytes(charbuf),
-		utf8isupper(entry) ? "upper" : (utf8islower(entry) ? "lower" : "other"),
+		unicodeisupper(entry) ? "upper" : (unicodeislower(entry) ? "lower" : "other"),
 		description ? description : "-");
 }
 
@@ -66,13 +66,13 @@ printentry_long(uint32_t entry, char *description, _Bool fancy)
 				colwidth, colwidth == 1 ? "column" : "columns"));
 	fmt_entry(fancy, "description", description ? description : "(none)");
 
-	if (utf8isupper(entry)) {
+	if (unicodeisupper(entry)) {
 		int32_t lower = charinfos[entry].lower;
 		assert(lower != -1);
 		utf8_unicode_to_char(charbuf, lower);
 		fmt_entry(fancy, "case",
 			format("uppercase, lowercase: 0x%X %s", lower, charbuf2));
-	} else if (utf8islower(entry)) {
+	} else if (unicodeislower(entry)) {
 		int32_t upper = charinfos[entry].upper;
 		assert(upper != -1);
 		utf8_unicode_to_char(charbuf, upper);

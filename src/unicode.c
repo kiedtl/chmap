@@ -35,3 +35,17 @@ const char *category_strs[30] = {
 
 #include "dat/charinfo.c"
 #include "dat/charwidths.c"
+
+_Bool
+unicodeisupper(uint32_t c)
+{
+	struct CharInfo ci = charinfos[c];
+	return ci.lower != ci.upper && ci.upper == -1 && ci.category != UC_Lt;
+}
+
+_Bool
+unicodeislower(uint32_t c)
+{
+	struct CharInfo ci = charinfos[c];
+	return ci.lower != ci.upper && ci.lower == -1;
+}

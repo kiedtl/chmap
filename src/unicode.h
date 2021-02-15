@@ -79,4 +79,7 @@ struct CharInfo {
 extern const struct CharInfo charinfos[UNICODE_MAX];
 extern const uint8_t charwidths[UNICODE_MAX];
 
+_Bool unicodeisupper(uint32_t c);
+_Bool unicodeislower(uint32_t c);
+
 #endif
