@@ -10,8 +10,7 @@
 #include <utf8proc.h>
 
 #include "arg.h"
-#include "db.h"
-#include "dirs.h"
+#include "chars.h"
 #include "display.c"
 #include "util.h"
 #include "range.c"
@@ -35,8 +34,9 @@ range(char *param)
 		errx(1, "'%s': invalid range.", param);
 
 	printheader(flong);
+
 	for (size_t i = 0; i < (size_t)entries_len; ++i) {
-		char *desc = chardb_getdesc(db, entries[i]);
+		char *desc = charinfos[entries[i]].desc;
 		printentry(entries[i], desc, istty, flong);
 	}
 }
@@ -65,37 +65,30 @@ chars(char *param)
 
 		inp += runelen;
 
-		char *desc = chardb_getdesc(db, charbuf);
-		printentry(charbuf, desc, istty, flong);
+		printentry(charbuf, charinfos[charbuf].desc, istty, flong);
 	}
 }
 
 static void
-search(char *param)
+search(char *query)
 {
-	char *query = param;
 	regex_t re;
 
 	/* TODO: get char of error and error message */
-	if (regcomp(&re, query, 0))
-		errx(1, "'%s': invalid regex query.", query);
-
-	/*
-	 * my excu^Wreason for not allocating on demand: 32kB isn't
-	 * *that* much memory.
-	 */
-	uint32_t matches[32841];
-	size_t match_count = chardb_search(db, &re, (uint32_t *)&matches);
-
-	if (match_count == 0)
-		errx(1, "no results found.");
+	if (regcomp(&re, query, REG_ICASE))
+		errx(1, "'%s': invalid regex.", query);
 
 	printheader(flong);
 
-	for (size_t i = 0; i < match_count; ++i) {
-		char *desc = chardb_getdesc(db, matches[i]);
-		printentry(matches[i], desc, istty, flong);
+	for (size_t i = 0; i < UNICODE_MAX; ++i) {
+		char *desc = charinfos[i].desc;
+		if (desc == NULL)
+			continue;
+		if (regexec(&re, desc, 0, NULL, 0) != REG_NOMATCH)
+			printentry(i, desc, istty, flong);
 	}
+
+	regfree(&re);
 }
 
 static void
@@ -131,13 +124,6 @@ int
 main(int argc, char **argv)
 {
 	istty = isatty(STDOUT_FILENO);
-
-	/* load database */
-	char *datadir = dirs_data_dir();
-	if (datadir == NULL)
-		errx(1, "can't find character database.");
-	db = chardb_open(format("%s%cchmap%cchars.db",
-				datadir, pathsep(), pathsep()));
 
 	ARGBEGIN {
 	break; case 'l':

@@ -2,8 +2,7 @@
 *.sw[po]
 
 # ignore generated files
-lib/upddb
-lib/chars.db
+chars.h
 chmap.1
 
 # ignore compiled files
