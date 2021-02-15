@@ -28,10 +28,9 @@ printentry_short(uint32_t entry, char *description, _Bool fancy)
 {
 	char glyph[7];
 	bzero(glyph, sizeof(glyph));
-
 	utf8_unicode_to_char(glyph, entry);
-	char *padding = &"     "[charwidths[entry]];
 
+	char *padding = &"     "[charwidths[entry]];
 	size_t category = charinfos[entry].category;
 	_Bool iscontrol = category == UC_Cc;
 
