@@ -7,13 +7,12 @@
 #include <sqlite3.h>
 #include <string.h>
 #include <unistd.h>
-#include <utf8proc.h>
 
 #include "arg.h"
-#include "chars.h"
 #include "display.c"
 #include "util.h"
 #include "range.c"
+#include "unicode.h"
 
 sqlite3 *db;
 _Bool istty = false;
@@ -48,21 +47,19 @@ range(char *param)
 static void
 chars(char *param)
 {
-	unsigned char *inp = (unsigned char *)param;
-
-	int32_t charbuf = 0;
+	char *inp = param;
+	uint32_t charbuf = 0;
 	ssize_t runelen = 0;
 
 	printheader(flong);
 
 	while (*inp) {
 		charbuf = 0;
-		runelen = utf8proc_iterate(inp, -1, &charbuf);
+		runelen = utf8_char_to_unicode(&charbuf, inp);
 
 		if (runelen < 0) {
 			size_t offset = (char *)inp - param;
-			warnx("invalid byte %zu: %s",
-				offset, utf8proc_errmsg(runelen));
+			warnx("invalid UTF8 rune at offset %zu", offset);
 			++inp;
 			continue;
 		}

@@ -2,7 +2,7 @@
 *.sw[po]
 
 # ignore generated files
-chars.h
+charinfo.c
 chmap.1
 
 # ignore compiled files

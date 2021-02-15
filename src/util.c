@@ -3,18 +3,15 @@
 #endif
 
 #include <assert.h>
+#include <stdint.h>
 #include <err.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sqlite3.h>
 #include <string.h>
-#include <utf8proc.h>
 
-#include "db.h"
 #include "util.h"
-
-extern sqlite3 *db;
+#include "unicode.h"
 
 void *
 ecalloc(size_t ct, size_t sz)
@@ -70,16 +67,13 @@ pathsep(void)
 _Bool
 utf8isupper(uint32_t c)
 {
-	const utf8proc_property_t *p = utf8proc_get_property((int32_t)c);
-	return p->lowercase_seqindex != p->uppercase_seqindex
-		&& p->uppercase_seqindex == UINT16_MAX
-		&& p->category != UTF8PROC_CATEGORY_LT;
+	struct CharInfo ci = charinfos[c];
+	return ci.lower != ci.upper && ci.upper == -1 && ci.category != UC_Lt;
 }
 
 _Bool
 utf8islower(uint32_t c)
 {
-	const utf8proc_property_t *p = utf8proc_get_property((int32_t)c);
-	return p->lowercase_seqindex != p->uppercase_seqindex
-		&& p->lowercase_seqindex == UINT16_MAX;
+	struct CharInfo ci = charinfos[c];
+	return ci.lower != ci.upper && ci.lower == -1;
 }

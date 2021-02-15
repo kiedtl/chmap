@@ -3,29 +3,39 @@
 -- (c) Kiëd Llaentenn <kiedtl@tilde.team>
 -- See the COPYING file for copyright information.
 
-print("#ifndef CHARS_H")
-print("#define CHARS_H")
+function mytonumber(a, ...)
+    if a and a ~= "" then
+        return tonumber(a, ...)
+    else
+        return -1
+    end
+end
 
-print("")
-print("/* This file has automatically generated. */")
-print("")
-print("#define UNICODE_MAX 0x10FFFF")
-print("")
-print("struct CharInfo {")
-print("\tchar *desc;")
-print("} charinfos[UNICODE_MAX] = {")
+print("\
+#include <stdint.h>\
+#include \"unicode.h\"\
+\
+/* This file has automatically generated. */\
+\
+const struct CharInfo charinfos[UNICODE_MAX] = {\
+")
 
 local data = io.stdin:read('*all')
 for line in data:gmatch("([^\n]+)\n?") do
-    local ch, desc, edesc = line:match("(.-);(.-);.-;.-;.-;.-;.-;.-;.-;.-;(.-);")
+    local ch, desc, category, bidi, decimal, olddesc, upper, lower = line:match("(.-);(.-);(.-);.-;(.-);.-;(.-);.-;.-;.-;(.-);.-;(.-);(.-);")
 
     ch = tonumber(ch, 16)
-    if desc == "<control>" then desc = edesc end
+    category = "UC_" .. category
+    bidi = "UBIDI_" .. bidi
+    decimal = mytonumber(decimal)
+    if desc == "<control>" then desc = olddesc end
+    upper = mytonumber(upper, 16)
+    lower = mytonumber(lower, 16)
 
     desc = desc:lower()
 
-    print(string.format("\t[%5d] = { \"%s\" },", ch, desc))
+    print(string.format("\t[%5d] = { %s, %s, %d, \"%s\", %d, %d },",
+        ch, category, bidi, decimal, desc, upper, lower))
 end
 
 print("};")
-print("#endif")
