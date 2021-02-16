@@ -55,9 +55,9 @@ man/$(BIN).1: man/$(BIN).scd
 	$(CMD)scdoc < $^ > $@
 
 clean:
-	rm -f $(BIN) $(OBJ) man/$(BIN).1
+	rm -rf $(BIN) $(OBJ) man/$(BIN).1
 	rm -rf *.xz $(PKGNAME)*
-	rm dat/charinfo.c
+	rm -rf dat/charinfo.c
 
 dist: release man/$(BIN).1
 	$(CMD)mkdir $(PKGNAME)
