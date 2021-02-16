@@ -48,15 +48,16 @@ static void
 chars(char *param)
 {
 	char *inp = param;
+	size_t len = strlen(inp);
 
 	printheader(flong, istty);
 
 	while (*inp) {
+		size_t   offset = inp - param;
 		uint32_t charbuf = 0;
-		ssize_t  runelen = utf8_decode(&charbuf, inp);
+		ssize_t  runelen = utf8_decode(&charbuf, inp, len - offset);
 
 		if (runelen < 0) {
-			size_t offset = (char *)inp - param;
 			warnx("invalid UTF8 rune at offset %zu", offset);
 			++inp;
 			continue;

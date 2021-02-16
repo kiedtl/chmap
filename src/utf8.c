@@ -40,6 +40,9 @@
  * FE and FF do not match any allowed character pattern and are therefore not
  * valid start bytes.            -- Wikipedia article on UTF8
  *
+ * Additionally, values between 0x80 and 0xbf inclusive are marked with 0, as
+ * they are continuation bytes and may not appear at the beginning of an
+ * encoded rune sequence.
  */
 static const uint8_t utf8_length[256] = {
      /* 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F */
@@ -51,10 +54,10 @@ static const uint8_t utf8_length[256] = {
 /* 5 */ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 /* 6 */ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 /* 7 */ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-/* 8 */ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-/* 9 */ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-/* A */ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-/* B */ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+/* 8 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+/* 9 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+/* A */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+/* B */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 /* C */ 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 /* D */ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 /* E */ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
@@ -75,11 +78,14 @@ utf8_bytesz(char c)
 }
 
 ssize_t
-utf8_decode(uint32_t *out, const char *c)
+utf8_decode(uint32_t *out, char *c, size_t sz)
 {
+	if (c[0] == 0 || sz == 0)
+		return -1;
+
 	uint8_t len = utf8_bytesz(*c);
 
-	if (len == 0)
+	if (len == 0 || len > sz)
 		return -1;
 
 	uint32_t result = c[0] & utf8_mask[len-1];

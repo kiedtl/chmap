@@ -2,23 +2,39 @@ printf '== %s\n' "$0"
 trap "printf '\n'" EXIT
 
 begin() {
-	printf '%-50s' "$1"
+    trmcols=$(stty size | cut -d' ' -f2)
+    padding=$(($trmcols - 5))
+    printf "%-${padding}s" "$1"
+}
+
+failure() {
+    printf 'FAIL\n'
+}
+
+success() {
+    printf '  OK\n'
 }
 
 cmdout() {
-    if [ "$(tests/pilot_$1 $2)" != "$3" ]; then
-        printf 'FAIL\n'
+    arg=$(/usr/bin/printf '%b' "$2")
+    if [ "$(tests/pilot_$1 $arg)" != "$3" ]; then
+        failure
     else
-        printf 'OK\n'
+        success
     fi
 }
 
 cmdend() {
-    tests/pilot_$1 $2 2>/dev/null >&2
+    arg=$(/usr/bin/printf '%b' "$2")
+    tests/pilot_$1 $arg 2>/dev/null >&2
 
-	if [ $? -ne "$3" ]; then
-		printf 'FAIL\n'
-	else
-		printf 'OK\n'
-	fi
+    if [ $? -ne "$3" ]; then
+        failure
+    else
+        success
+    fi
+}
+
+chkend() {
+    if [ $? -eq 0 ]; then success; else failure; fi
 }
