@@ -1,4 +1,4 @@
-chmap(1) "General Commands Manual"
+chmap(1) "Something Something Manual" "Something Something Manual"
 
 # NAME
 
@@ -39,6 +39,8 @@ representation.
 	Print a range of Unicode codepoints that match the provided
 	character(s). (e.g., `Kiëd')
 
+	The input must be a valid UTF8-encoded string.
+
 *-s* _REGEX_
 	Search character descriptions for _REGEX_.
 
@@ -54,11 +56,12 @@ chmap -c Asbjørn
 	Print information for all characters in the name `Asbjørn'.
 
 chmap -s "^latin .\* a$"
-	Search with regular expression "^latin .\* a$".
+	Print all characters where the description matches the regular
+	expression "^latin .\* a$".
 
 # KNOWN ISSUES
 
-- chmap is currently buggy and untested on Windows and BSD.
+- chmap is currently buggy and untested on Windows and macOS.
 - The display code is utterly incomprehensible.
 
 # AUTHORS
