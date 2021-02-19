@@ -5,8 +5,10 @@ years.
 
 - new field: digit/numeric/decimal value for rune
 - new field: UTF-16 encoding
+- -c should sort and deduplicate input
+- an -f flag to filter output by property (e.g. `-f case=upper`)
 - simplify display code
-- ncurses client(?)
+- X11/ncurses client, which an interface similar to charmap.exe
 - use cross-platform regex library instead of `regex.h` (PCRE?)
 
 ---
