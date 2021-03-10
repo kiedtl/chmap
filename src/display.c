@@ -43,8 +43,9 @@ printentry_short(uint32_t entry, char *description, _Bool fancy)
 	if (fancy && (_state & 1) == 0)
 		printf("\x1b[100m");
 
-	printf("%9d  %s%s  %-11s  %s  %s",
-		entry, iscontrol ? "" : glyph, padding, fmt_bytes(glyph),
+	printf("%8s  %s%s  %-11s  %s  %s",
+		format("0x%X", entry), iscontrol ? "" : glyph,
+		padding, fmt_bytes(glyph),
 		casestr, description ? description : "-");
 
 	if (fancy && (_state & 1) == 0)
