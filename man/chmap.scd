@@ -6,7 +6,7 @@ chmap - Get information for unicode characters
 
 # SYNOPSIS
 
-*chmap* [-rcs] [ARGS]...
+*chmap* [-C always|never|auto] [-l] [-r RANGE] [-c CHARS] [-s REGEX]
 
 # DESCRIPTION
 
@@ -22,8 +22,12 @@ representation.
 
 *-V*
 	Print chmap's version and exit.
+
 *-l*
 	Print information in the long format.
+
+*-C* _WHEN_
+	Control color usage (_WHEN_ can be *always*, *auto*, *never*).
 
 # COMMANDS
 

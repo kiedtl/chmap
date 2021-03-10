@@ -93,9 +93,7 @@ search(char *query)
 static void
 usage(_Bool _short)
 {
-	printf("Usage: chmap [-l] -r RANGE\n");
-	printf("       chmap [-l] -c CHARS\n");
-	printf("       chmap [-l] -s REGEX\n");
+	printf("Usage: chmap [-C always|never|auto] [-l] [-r RANGE] [-c CHARS] [-s REGEX]\n");
 
 	if (_short)
 		exit(0);
@@ -104,8 +102,8 @@ usage(_Bool _short)
 	printf("Print information for Unicode characters.\n");
 	printf("\n");
 	printf("OPTIONS:\n");
-	printf("    -l, --long	  print character entries in the long format.\n");
-	printf("    -h, --help	  print this help message and exit.\n");
+	printf("    -l, --long          Show character entries in the long format.\n");
+	printf("    -h, --help          print this help message and exit.\n");
 	printf("    -V, --version       print version and exit.\n");
 	printf("\n");
 	printf("FLAGS:\n");
