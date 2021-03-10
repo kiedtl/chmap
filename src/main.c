@@ -109,7 +109,7 @@ usage(_Bool _short)
 	printf("FLAGS:\n");
 	printf("    -r, --range RANGE   print a range of Unicode characters.\n");
 	printf("    -c, --chars CHARS   print a range of Unicode codepoints that match\n");
-	printf("			provided character(s).\n");
+	printf("                        provided character(s).\n");
 	printf("    -s, --search REGEX  search character descriptions for REGEX.\n");
 	printf("\n");
 	printf("Full documentation is available locally at chmap(1).\n");
