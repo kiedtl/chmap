@@ -3,7 +3,6 @@
 Sorted in order of the chance that they'll be implemented in the next 10
 years.
 
-- new field: digit/numeric/decimal value for rune
 - new field: UTF-16 encoding
 - -c should sort and deduplicate input
 - an -f flag to filter output by property (e.g. `-f case=upper`)
