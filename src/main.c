@@ -104,14 +104,14 @@ usage(_Bool _short)
 	printf("Print information for Unicode characters.\n");
 	printf("\n");
 	printf("OPTIONS:\n");
-	printf("    -l, --long          print character entries in the long format.\n");
-	printf("    -h, --help          print this help message and exit.\n");
+	printf("    -l, --long	  print character entries in the long format.\n");
+	printf("    -h, --help	  print this help message and exit.\n");
 	printf("    -V, --version       print version and exit.\n");
 	printf("\n");
 	printf("FLAGS:\n");
 	printf("    -r, --range RANGE   print a range of Unicode characters.\n");
 	printf("    -c, --chars CHARS   print a range of Unicode codepoints that match\n");
-	printf("                        provided character(s).\n");
+	printf("			provided character(s).\n");
 	printf("    -s, --search REGEX  search character descriptions for REGEX.\n");
 	printf("\n");
 	printf("Full documentation is available locally at chmap(1).\n");
@@ -119,10 +119,28 @@ usage(_Bool _short)
 	exit(0);
 }
 
+static _Bool
+usecolor(void)
+{
+	if (!isatty(STDOUT_FILENO))
+		return false;
+
+	char *env_NOCOLOR = getenv("NO_COLOR");
+	char *env_TERM = getenv("TERM");
+
+	if (env_NOCOLOR)
+		return false;
+
+	if (!env_TERM || !strcmp(env_TERM, "dumb"))
+		return false;
+
+	return true;
+}
+
 int
 main(int argc, char **argv)
 {
-	istty = isatty(STDOUT_FILENO);
+	istty = usecolor();
 
 	ARGBEGIN {
 	break; case 'l':
@@ -133,6 +151,16 @@ main(int argc, char **argv)
 		chars(EARGF(usage(true)));
 	break; case 's':
 		search(EARGF(usage(true)));
+	break; case 'C':
+		optarg = EARGF(usage(true));
+		if (!strncmp(optarg, "au", 2))
+			istty = usecolor();
+		else if (!strncmp(optarg, "al", 2))
+			istty = true;
+		else if (!strncmp(optarg, "ne", 2))
+			istty = false;
+		else
+			usage(true);
 	break; case 'V': case 'v':
 		printf("chmap v%s\n", VERSION);
 		return 0;
