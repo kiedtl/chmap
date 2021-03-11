@@ -58,9 +58,9 @@ static void
 fmt_entry(_Bool fancy, char *key, char *value)
 {
 	if (fancy)
-		printf("\033[1m%-12s\033[m %s\n", key, value);
+		printf("\033[1m%-14s\033[m %s\n", key, value);
 	else
-		printf("%-12s %s\n", key, value);
+		printf("%-14s %s\n", key, value);
 }
 
 static void
@@ -76,11 +76,11 @@ printentry_long(uint32_t entry, char *description, _Bool fancy)
 	struct CharInfo ci = charinfos[entry];
 	_Bool iscontrol = ci.category == UC_Cc;
 
-	fmt_entry(fancy, "codepoint",   format("%-5d 0x%-5X 0o%-5o", entry, entry, entry));
-	fmt_entry(fancy, "encoding",    format("UTF8(%s)", fmt_bytes(charbuf)));
-	fmt_entry(fancy, "glyph",       format("%s (%zd %s)", iscontrol ? "<control>" : charbuf,
+	fmt_entry(fancy, "codepoint",     format("U+%04X    %-5d 0o%o", entry, entry, entry));
+	fmt_entry(fancy, "UTF8 encoding", fmt_bytes(charbuf));
+	fmt_entry(fancy, "glyph",         format("%s (%zd %s)", iscontrol ? "<control>" : charbuf,
 				colwidth, colwidth == 1 ? "column" : "columns"));
-	fmt_entry(fancy, "description", description ? description : "(none)");
+	fmt_entry(fancy, "description",   description ? description : "(none)");
 
 	if (unicodeisupper(entry)) {
 		int32_t lower = charinfos[entry].lower;
