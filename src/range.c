@@ -12,7 +12,7 @@ static _Bool
 parse_int(int *x, char *s, char **e, _Bool add, uint32_t *buf)
 {
 	size_t base;
-	if (!strncmp(s, "0x", 2)) {
+	if (!strncmp(s, "0x", 2) || !strncmp(s, "U+", 2)) {
 		base = 16;
 		s += 2;
 	} else if (!strncmp(s, "0o", 2)) {
@@ -28,16 +28,14 @@ parse_int(int *x, char *s, char **e, _Bool add, uint32_t *buf)
 	*x = strtol(s, e, base);
 	_Bool ok = *e != s;
 
-	/* HACK: the add parameter controls whether
-	 * a parsed integer is added to the entries
-	 * if it succeeds in parsing it.
+	/* HACK: the add parameter controls whether a parsed integer is
+	 * added to the entries if it succeeds in parsing it.
 	 *
-	 * The reason it is needed is because parsed_int
-	 * is used in two places: 1) in expand_range (where
-	 * we *want* successfully parse integers to be
-	 * added to the entries) and 2) in parse_range
-	 * (where we *don't want* successfully parsed integers
-	 * to be added to the entries.
+	 * The reason it is needed is because parsed_int is used in two
+	 * places: 1) in expand_range (where we *want* successfully parse
+	 * integers to be added to the entries) and 2) in parse_range (where
+	 * we *don't want* successfully parsed integers to be added to the
+	 * entries.
 	 */
 
 	if (ok && add) buf[_buf_len] = *x, ++_buf_len;
