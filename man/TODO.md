@@ -3,6 +3,7 @@
 Sorted in order of the chance that they'll be implemented in the next 10
 years.
 
+- Upgrade to Unicode 14
 - "--pager" flag
 - "-e" command to search emojis by CLDR (see https://github.com/arp242/uni)
   - "--tone" flag to change skin tone
